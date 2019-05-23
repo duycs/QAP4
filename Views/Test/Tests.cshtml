@@ -1,0 +1,174 @@
+﻿@{
+    ViewBag.Title = "Bài kiểm tra & thi";
+}
+
+@using (Html.BeginForm())
+{
+    <div id="Courses" class="container courses tests">
+        <!--require or create a topic-->
+        <div class="container full-width actions padding-bottom-base padding-top-base">
+            @*<span class="header-text"><i class="question icon"></i>Bạn chưa từng tạo một khóa học nào, hãy chia sẻ kiến thức để giúp đỡ mọi người nhé</span>*@
+            <div class="container">
+                <!--create-->
+                <a asp-controller="Test"
+                   asp-action="CreateWrtingTest"
+                   asp-protocol="http">
+                    <div class="ui green tiny button padding-base right">
+                        Tạo bài
+                    </div>
+                </a>
+
+                <!--request-->
+                <a asp-controller="Test"
+                   asp-action="RequestTest"
+                   asp-protocol="http">
+                    <div class="ui green tiny button padding-base right">
+                        Yêu cầu bài
+                    </div>
+                </a>
+
+            </div>
+        </div>
+
+        <div class="container no-padding">
+            <div class="col-lg-2 col-md-2"></div>
+            <div class="col-lg-8 col-md-8 col-xs-12 col-sm-12 no-padding">
+
+                <div class="ui tabular menu">
+                    <div class="item active" data-tab="tab-new">Mới nhất</div>
+                    <div class="item" data-tab="tab-feature">Nổi bật</div>
+                    <div class="item" data-tab="tab-popular">Phổ biến</div>
+                </div>
+
+                <!--new-->
+                <div class="ui tab active" data-tab="tab-new">
+                    <div class="container no-padding">
+                        <div class="container left no-padding">
+                            <!--list-->
+                            @for (int i = 0; i < 3; i++)
+                            {
+                                <div class="ui items">
+                                    <div class="item border-bottom">
+
+
+
+                                        <div class="content">
+                                            <!--title-->
+                                            @if (i % 2 == 0)
+                                            {
+                                                @Html.ActionLink("Giải toán bằng cách lập phương trình", "CourseView", "Course", new { area = "" }, new { @class = "header title-post left" })
+                                            }
+                                            else
+                                            {
+                                                @Html.ActionLink("Cách trình bày một văn bản", "CourseView", "Course", new { area = "" }, new { @class = "header title-post left" })
+                                            }
+
+                                            <!--description-->
+                                            <div class="description full-width padding-bottom-base left">
+                                                <p>Khóa học giúp học sinh ôn thi lên 10 kiểm tra và củng cố kiến thức</p>
+                                            </div>
+                                            <!--info-->
+                                            <div class="container infor full-width no-padding padding-top-base left">
+                                                <!--require by-->
+                                                <span class="caption-text">Ngần Đặng yêu cầu khoảng 2 ngày trước</span>
+                                            </div>
+
+                                            <!--submit-->
+                                            <div class="container full-width padding-base right">
+                                                <div class="ui tiny horizontal statistics left">
+                                                    <div class="statistic">
+                                                        <div class="value">
+                                                            22
+                                                        </div>
+                                                        <div class="label">
+                                                            người cũng mong
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <a class="right" href="~/Course/CourseView">
+                                                    <div class="ui green tiny button">
+                                                        <i class="add icon"></i>
+                                                        Tạo khóa học
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            <div class="hide container view-more center"><span class="action-text center normal">Xem thêm ...<i class="angle double right icon"></i></span></div>
+                        </div>
+                    </div>
+                </div>
+                <!--feature-->
+                <div class="ui tab" data-tab="tab-feature">
+
+                </div>
+                <!--popular-->
+                <div class="ui tab" data-tab="tab-popular">
+
+                </div>
+            </div>
+            <!--right-nav-->
+            <div class="right-nav col-lg-2 col-md-2">
+                <div class="container meta-hot-tags padding-base">
+                    <!--topic hot-->
+                    <span class="header-text"><i class="tag icon"></i>Chủ đề nổi bật</span>
+                    <div class="ui labels">
+                        <a class="ui label">
+                            Cuộc sống
+                            <div class="detail">2</div>
+                        </a>
+                        <a class="ui label">
+                            Trâm ngôn
+                            <div class="detail">22</div>
+                        </a>
+                        <a class="ui label">
+                            Chơi
+                            <div class="detail">22</div>
+                        </a>
+                        <a class="ui label">
+                            Ăn mặc
+                            <div class="detail">40</div>
+                        </a>
+                        <a class="ui label">
+                            Tính cách
+                            <div class="detail">10</div>
+                        </a>
+                    </div>
+                    <!--user ranking-->
+                    <div class="container user-ranking padding-base">
+                        <span class="header-text"><i class="user icon"></i>Thành viên tích cực</span>
+                        <div class="ui labels">
+                            <a class="ui basic image label">
+                                <img src="http://graph.facebook.com/913908542013150/picture?type=normal">
+                                Sỹ Duy
+                            </a>
+                            <a class="ui basic image label">
+                                <img src="http://graph.facebook.com/913908542013150/picture?type=normal">
+                                Chu Dương
+                            </a>
+                            <a class="ui basic image label">
+                                <img src="http://graph.facebook.com/913908542013150/picture?type=normal">
+                                Trúc Quỳnh
+                            </a>
+                            <a class="ui basic image label">
+                                <img src="http://graph.facebook.com/913908542013150/picture?type=normal">
+                                Đặng Phương
+                            </a>
+                            <a class="ui basic image label">
+                                <img src="http://graph.facebook.com/913908542013150/picture?type=normal">
+                                Đặng Thanh
+                            </a>
+                            <a class="ui basic image label">
+                                <img src="http://graph.facebook.com/913908542013150/picture?type=normal">
+                                Phạm Quỳnh
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+}

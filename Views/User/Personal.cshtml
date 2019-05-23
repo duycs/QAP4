@@ -1,0 +1,458 @@
+﻿
+@{
+    ViewBag.Title = ViewBag.UserDisplayName;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .body-content { padding-top: 20px !important }
+    .body-content .body { margin-left: 0px; }
+    /*.vertical.menu { display: none !important }*/
+</style>
+
+
+
+@model UsersView
+@using QAP4.ViewModels
+@{var user = Model.User;}
+@{ var postsNewest = Model.PostsNewest;}
+@{ var questionsNewest = Model.QuestionsNewest;}
+@{ var usersFollowing = Model.UsersFollowing;}
+@{ var testsNewest = Model.TestsNewest;}
+@{ var tutorialsNewest = Model.TutorialsNewest;}
+@{ var tagsFeature = Model.TagsFeature;}
+
+
+<div id="personal" class="container body-content personal">
+    <div class="col-lg-2 col-md-2 col-sx-12 col-sm-12">
+
+    </div>
+    <!--content-->
+    <div class="col-lg-8 col-md-8 col-sx-12 col-sm-12 no-padding">
+        <div class="container banner-cover-img head border-bottom masthead segment bg7" style="background-image: url(@Model.User?.BannerImg)">
+            <div class="container full-width" style="height:5vh;">
+            </div>
+            <!--avatar-->
+            <div class="container avartar full-width" style="height:14vh;">
+                <a class="ui basic massive image label">
+                    <img class="avatar-on-banner" src="@Model.User?.Avatar">
+                    @user.DisplayName
+                    @*<div class="detail"></div>*@
+                </a>
+            </div>
+
+            <div class="hide container statistic" style="height:3vh;">
+                <div class="col-lg-6 col-md-6 col-xs-12">
+                    <div class="ui stackable four column grid padding-top-base">
+                        <div class="column no-padding-lr"><p class="caption-text">Bài viết</p></div>
+                        <div class="column no-padding-lr"><p class="caption-text">Theo dõi</p></div>
+                        <div class="column no-padding-lr"><p class="caption-text">Yêu mến</p></div>
+                        <div class="column no-padding-lr"><p class="caption-text hide">Down vote</p></div>
+                    </div>
+                    <div class="ui stackable four column grid" style="margin:0px">
+                        <div class="column no-padding-lr"><p class="caption-text">@user.PostsCount</p></div>
+                        <div class="column no-padding-lr"><p class="caption-text">@usersFollowing.Count()</p></div>
+                        <div class="column no-padding-lr"><p class="caption-text">@user.UpVotes</p></div>
+                        <div class="column no-padding-lr"><p class="caption-text">@user.DownVotes</p></div>
+                    </div>
+                </div>
+
+
+                <div class="col-lg-6 col-md-6 col-xs-12">
+                    @if (user.Id > 0)
+                    {
+                        <a href="/posts/manager?u_i=@user.Id">
+                            <div class="ui basic small button">
+                                <i class="write icon"></i>
+                                Viết bài
+                            </div>
+                        </a>
+                    }
+
+                    <button class="ui basic small button">
+                        <i class="rss icon"></i>
+                        Theo dõi
+                    </button>
+                    <button class="ui basic small button">
+                        <i class="star icon"></i>
+                        Yêu mến
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <!--add profile info-->
+        <div class="container add-info no-padding">
+            <input class='hide input-avatar-file' type="file" id="avatar-file" name="file" multiple />
+            <input class='hide input-banner-file' type="file" id="banner-file" name="file" multiple />
+
+            @if (string.IsNullOrEmpty(Model.User?.Avatar))
+            {
+                <span class="add-avatar pointer green header-text padding-top-base">
+                    <i class="add icon"></i>
+                    Thêm ảnh đại diện
+                </span>
+            }
+            else
+            {
+                <span class="add-avatar pointer green header-text padding-top-base">
+                    <i class="add icon"></i>
+                    Cập nhật ảnh đại diện
+                </span>
+            }
+
+            @if (string.IsNullOrEmpty(Model.User?.BannerImg))
+            {
+                <span class="add-banner pointer green header-text padding-top-base">
+                    <i class="add icon"></i>
+                    Thêm ảnh bìa
+                </span>
+            }
+            else
+            {
+                <span class="add-banner pointer green header-text padding-top-base">
+                    <i class="add icon"></i>
+                    Cập nhật ảnh bìa
+                </span>
+            }
+
+            <img class='temp-avatar' src='' />
+            <img class='temp-banner' src='' />
+        </div>
+
+        <!--tags-->
+        @if (tagsFeature.Count() > 0)
+        {
+            <div class="container tags padding-bottom-base">
+                <span class="header-text padding-top-base full-width"><i class="tag icon"></i>Chủ đề</span>
+
+                <div class="ui labels">
+                    @foreach (var item in tagsFeature)
+                    {
+                        <a class="ui label">
+                            @item.Name
+                            <div class="detail">@item.Count</div>
+                        </a>
+                    }
+                </div>
+            </div>
+        }
+
+
+        <!--list-->
+        <div class="container post-list background-white">
+            <div class="ui tabular menu">
+                @if (postsNewest != null && postsNewest.Any())
+                {
+                    <div class="item tab-1 active" data-tab="tab-posts">Bài viết</div>
+                }
+                @if (questionsNewest != null && questionsNewest.Any())
+                {
+                    <div class="item tab-2" data-tab="tab-question">Hỏi đáp</div>
+                }
+                <div class="hide item tab-3" data-tab="tab-tutorial">Khóa học</div>
+                <div class="hide item tab-4" data-tab="tab-test">Bài thi</div>
+            </div>
+
+            <!--Tab-->
+            @if (postsNewest != null && postsNewest.Any())
+            {
+                <div class="ui tab tab-1 active" data-tab="tab-posts">
+                    @foreach (var item in postsNewest)
+                    {
+                        <div class="ui items">
+                            <div class="item border-bottom">
+                                <a href="/posts/@item.Id?po=@item.Id&u=@ViewBag.UserId"
+                                   class="ui small image">
+                                    <img src="@item.CoverImg" alt="">
+                                </a>
+                                <div class="content">
+
+                                    <a href="/posts/@item.Id?po=@item.Id&u=@ViewBag.UserId"
+                                       class="header title-post left">
+                                        @item.Title
+                                    </a>
+                                    @if (!string.IsNullOrEmpty(item.Tags))
+                                    {
+                                        @foreach (var tag in item.Tags.Split(','))
+                                        {
+                                            <div class="ui labels tags right">
+                                                <a class="ui label">@tag</a>
+                                            </div>
+                                        }
+                                    }
+
+                                    <div class="description padding-bottom-base full-width left">
+                                        <p>@item.HeadContent<span>...</span></p>
+                                    </div>
+                                    <div class="container infor full-width no-padding left">
+                                        <a href="/user/@item.OwnerUserId"
+                                           class="ui basic image label">
+                                            <img src="@item?.UserAvatar">
+                                            @item.UserDisplayName
+                                        </a>
+                                        <span class="create-time caption-text">
+                                            <i class="clock icon"></i>
+                                            @String.Format("{0:M/d/yyyy HH:mm}", @item.CreationDate)
+                                        </span>
+                                        <span class="book-mark-num pointer right"><i class="bookmark icon"></i></span>
+                                        <span class="comment-num pointer right"><i class="comment icon"></i>@item.CommentCount</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    <a href="/posts?tab=1">
+                        <div class="hide container view-more center"><span class="action-text center normal">Xem thêm ...<i class="angle double right icon"></i></span></div>
+                    </a>
+                </div>
+            }
+
+
+            <!-- Tab-->
+            @if (questionsNewest != null && questionsNewest.Any())
+            {
+                <div class="ui tab tab-2" data-tab="tab-question">
+                    <div id="tab-question-menu">
+                        <div id="container no-padding">
+                            @foreach (var item in questionsNewest)
+                            {
+                                <div class="ui items">
+                                    <div class="item border-bottom">
+
+                                        <div class="ui tiny statistics col-lg-1 col-md-1 col-sm-1 col-xs-1 hidden">
+                                            <div class="statistic">
+                                                <div class="value">
+                                                    @item.VoteCount
+                                                </div>
+                                                <div class="label">
+                                                    Vote
+                                                </div>
+                                            </div>
+                                            <div class="statistic">
+                                                <div class="value">
+                                                    @item.CommentCount
+                                                </div>
+                                                <div class="label" style="font-size:0.8rem!important">
+                                                    Trả lời
+                                                </div>
+                                            </div>
+                                            <div class="statistic">
+                                                <div class="value">
+                                                    @item.ViewCount
+                                                </div>
+                                                <div class="label">
+                                                    Xem
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="content">
+                                            <!--title-->
+                                            <a href="/posts/@item.Id"
+                                               class="header title-post left">@item.Title</a>
+                                            <!--description-->
+                                            <div class="description full-width padding-bottom-base left">
+                                                <p>@item.HeadContent</p>
+                                            </div>
+                                            <div class="container infor full-width no-padding padding-top-base left">
+                                                <!--user create-->
+                                                <a class="ui basic image label">
+                                                    <img src="@Model.User?.Avatar">
+                                                    @item.UserDisplayName
+                                                </a>
+                                                <!--created time-->
+                                                <span class="create-time caption-text">
+                                                    <i class="clock icon"></i>
+                                                    @String.Format("{0:M/d/yyyy HH:mm}", @item.CreationDate)
+                                                </span>
+                                                <!--tags-->
+                                                @if (!string.IsNullOrEmpty(item.Tags))
+                                                {
+                                                    <div class="tags">
+                                                        @foreach (var tag in item.Tags.Split(','))
+                                                        {
+                                                            <div class="ui labels tags right">
+                                                                <a class="ui label">@tag</a>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            <div class="hide container view-more center"><span class="action-text center normal">Xem thêm ...<i class="angle double right icon"></i></span></div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!--Tab-->
+            @if (tutorialsNewest != null && tutorialsNewest.Any())
+            {
+                <div class="hide ui tab tab-3" data-tab="tab-tutorial">
+
+                    <div id="tab-course">
+                        <div class="ui three stackable cards full-width">
+                            <div class="card">
+                                <div class="content">
+                                    <div class="header">Ôn thi Đại Số 10</div>
+                                    <div class="description">
+                                        Khóa học ôn thi Đại Số 10:<br />- 10 chủ điểm<br />- 20 đề thi thử tự luận <br />- 20 đề thi trắc nghiệm...
+                                    </div>
+                                </div>
+                                <a href="~/Template/CourseView">
+                                    <div class="ui bottom attached button">
+                                        <i class="add icon"></i>
+                                        Tham gia
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="card">
+                                <div class="content">
+                                    <div class="header">Thi viết văn</div>
+                                    <div class="description">
+                                        Cuộc thi viết văn theo chủ đề cuộc sống.
+                                        <br />Phần thưởng là một chuyến du lịch quanh làng
+                                    </div>
+                                </div>
+                                <div class="ui bottom attached button">
+                                    <i class="add icon"></i>
+                                    Tham gia
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="content">
+                                    <div class="header">Khóa học tiếng Anh</div>
+                                    <div class="description">
+                                        Jenny is a student studying Media Management at the New School
+                                        Jenny is a student studying Media Management at the New School
+                                        Jenny is a student studying Media Management at the New School
+                                    </div>
+                                </div>
+                                <a href="">
+                                    <div class="ui bottom attached button">
+                                        <i class="add icon"></i>
+                                        Tham gia
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!--Tab-->
+            @if (testsNewest != null && testsNewest.Any())
+            {
+                <div class="hide ui tab tab-4" data-tab="tab-test">
+                </div>
+            }
+        </div>
+
+    </div>
+
+    <!--statistic-->
+    <div class="right-nav col-xs-2 col-md-2">
+
+    </div>
+</div>
+
+<script type="text/javascript">
+
+//global
+    var inputFileAvatar = $(".input-avatar-file");
+    var inputFileBanner = $('.input-banner-file');
+    var btnAvatar = $('.add-avatar');
+    var btnBanner = $('.add-banner');
+    var avatarOnBanner = $('.avatar-on-banner');
+    var bannerCoverImage = $('.banner-cover-img');
+
+$(document).ready(function (e) {
+//avatar handle
+   btnAvatar.on('click', function () {
+        inputFileAvatar.click();
+   });
+
+   inputFileAvatar.on('change', function(){
+       uploadAvatarFile(this);
+    });
+
+    //banner handle
+    btnBanner.on('click', function () {
+        inputFileBanner.click();
+    });
+
+    inputFileBanner.on('change', function () {
+        uploadBannerFile(this);
+    });
+});
+
+    //upload avatar
+function uploadAvatarFile(input) {
+  var file    = input.files[0];
+  var reader  = new FileReader();
+
+  reader.addEventListener("load", function () {
+      avatarOnBanner.attr('src', reader.result);
+  }, false);
+
+  if (file) {
+    reader.readAsDataURL(file);
+      var formData = new FormData();
+    formData.set("file", file, file.name);
+        $.ajax({
+            url: '/api/user/@user.Id/avatar',
+            type: 'post',
+            data: formData,
+            contentType: false,
+            processData: false,
+            async: false,
+            success: function (response) {
+                var imageUrl = response.imageUrl;
+                if (imageUrl) {
+                    avatarOnBanner.attr('src', imageUrl);
+                }
+            },
+        });
+    return reader.result;
+  }
+}
+
+    //upload banner
+    function uploadBannerFile(input) {
+  var file    = input.files[0];
+  var reader  = new FileReader();
+
+        reader.addEventListener("load", function () {
+            //bannerCoverImage.attr('background-image', reader.result);
+  }, false);
+
+  if (file) {
+    reader.readAsDataURL(file);
+      var formData = new FormData();
+    formData.set("file", file, file.name);
+        $.ajax({
+            url: '/api/user/@user.Id/banner',
+            type: 'post',
+            data: formData,
+            contentType: false,
+            processData: false,
+            async: false,
+            success: function (data) {
+                console.log(data);
+                var imageUrl = data.imageUrl;
+                if (imageUrl) {
+                    imageUrl = "url(" + imageUrl + ")";
+                    bannerCoverImage.css('background-image', imageUrl);
+                }
+            },
+        });
+    return reader.result;
+  }
+}
+
+</script>

@@ -1,0 +1,140 @@
+﻿@{
+    ViewBag.Title = "Yêu cầu khóa học";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
+    <script>
+        var screeWidth = $(window).width();
+        var screenHeight = $(window).height();
+        var mToolbar = 'insertfile | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image';
+
+        if (screeWidth <= 767) {
+            mToolbar = 'styleselect | bullist numlist | link image';
+        }
+        //tinny mce init
+        tinymce.init({
+            selector: 'textarea',
+            //language_url: '/Libs/TinnyMCE/language/vi_VN.js',
+            theme: 'modern',
+            menubar: false,
+            statusbar: true,
+            theme: 'modern',
+            skin: "lightgray",
+            min_height: 250,
+            max_width: 720,
+            //content_css: '/Content/myTinnyMCE.css',
+            plugins: [
+                'advlist autolink lists link image charmap print preview anchor',
+                'searchreplace visualblocks code fullscreen',
+                'insertdatetime media table contextmenu paste code'
+            ],
+            toolbar: mToolbar,
+            content_css: '//www.tinymce.com/css/codepen.min.css',
+            menubar: false,
+
+            //custom button
+        });
+
+        //ready function
+        $(document).ready(function () {
+            //tags
+            $('.tag.dropdown').dropdown({ allowAdditions: true });
+
+        });
+    </script>
+}
+
+@using (Html.BeginForm())
+{
+    <div id="Question" class="container index-page">
+        <div class="col-lg-2 col-md-2"></div>
+        <div class="col-lg-8 col-md-8 col-xs-12 col-sm-12 no-padding">
+            <!--search before request a topic or course-->
+            <!--request a course-->
+            <span class="header-text">Tiêu đề<i class="question icon"></i></span>
+            <div class="ui input full-width">
+                <input type="text" placeholder="Chủ đề bài thi muốn yêu cầu">
+            </div>
+            <!--title-->
+            <span class="header-text">Hãy trình bày cho mọi người biết bạn chưa hiểu điều gì</span>
+            <!--editor content-->
+            <div id="tinnyMCE" class="padding-top-base" style="margin-top:30px; margin-bottom:15px;">
+                <textarea></textarea>
+            </div>
+            <!--tags for question-->
+            <div class="ui tag fluid multiple search selection dropdown full-width visible">
+                <i class="ui tags icon left pointer"></i>
+                <input name="tags" type="hidden">
+                <i class="dropdown icon"></i>
+                <input class="search" autocomplete="off" tabindex="0"><span class="sizer"></span><span class="sizer"></span><div class="default text" style="left:26px">Gắn thẻ liên quan tới chủ đề khóa học</div>
+                <div class="menu" tabindex="-1">
+                    @*<div class="item selected" data-value="angular">Angular</div>
+                    <div class="item" data-value="css">CSS</div>
+                    <div class="item" data-value="design">Graphic Design</div>*@
+                </div>
+            </div>
+            <!--submit-->
+            <div class="container padding-top-base">
+                <!--check send update via email-->
+                <div class="ui checkbox">
+                    <input type="checkbox" name="example">
+                    <label>Gửi cập nhật cho tôi qua email</label>
+                </div>
+                <a asp-controller="Course"
+                   asp-action="Post"
+                   asp-protocol="http">
+                    <div class="ui green tiny button padding-base right">
+                        Yêu cầu khóa học
+                    </div>
+                </a>
+
+                <a asp-controller="Course"
+                   asp-action="Discard"
+                   asp-protocol="http">
+                    <div class="ui tiny button padding-base right">
+                        Hủy bỏ
+                    </div>
+                </a>
+            </div>
+
+        </div>
+        <div class="right-nav col-lg-2 col-md-2">
+            <!--Questions that may already have your answer-->
+            <div class="container padding-base">
+                <span class="header-text"><i class="question icon"></i>Một số chủ đề tương tự</span>
+                <span class="" style="font-style:italic">bạn hãy xem xét để tránh đặt trùng lặp chủ đề mà người khác đã từng yêu cầu</span>
+                <div class="ui relaxed divided list already-questions" style="max-height:50vh;">
+                    <div class="item">
+                        <i></i>
+                        <div class="content">
+                            <a class="header">Học thế nào thì hiệu quả?</a>
+                            <div class="description">Ít được quan tâm</div>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <i></i>
+                        <div class="content">
+                            <a class="header">Làm sao để thi đỗ cấp 3?</a>
+                            <div class="description">Rất được quan tâm</div>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <i></i>
+                        <div class="content">
+                            <a class="header">Làm sao để học giỏi tiếng anh?</a>
+                            <div class="description">Ít được quan tâm</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!--How to make a question-->
+            <div class="container padding-base">
+                <span class="header-text"><i class="idea icon"></i>Nên trình bày rằng bạn chưa hiểu một chủ đề như thế nào?</span>
+                <p>- Tùy thuộc vào vấn đề mà bạn gặp phải, trước tiên hãy diễn tả vấn đề của bạn. Sau đó bạn hãy suy nghĩ xem vấn đề đó có thể đặt câu hỏi như nào:
+                <p>1. Hãy chỉ ra những cụm từ mà bạn chưa hiểu</p>
+                <p>2. Hãy chỉ ra chỗ trong tài liệu (bài giảng, sách báo...) mà bạn chưa hiểu</p>
+                <p>3. Nếu bạn hiểu theo cách của bạn mà chưa chắc chắn, hãy hỏi rằng bạn hiểu như vậy đã đúng chưa đề nhờ mọi người nhận xét giúp. Nếu bạn hoàn toàn chưa hiểu theo một cách nào cả, hãy nhờ mọi người đưa ra cách lý giải và ví dụ cụ thể.</p>
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,48 @@
+﻿
+@{
+    ViewBag.Title = "Viết bài";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    @*<link href="~/lib/dragula/dist/dragula.css" rel="stylesheet" />*@
+
+    <script src="~/lib/tinymce/tinymce.js"></script>
+    <script src="~/lib/Split.js/split.js"></script>
+    <script src="~/lib/dragula/dist/dragula.js"></script>
+
+    <style type="text/css">
+        /*body { overflow: hidden; }*/
+        #WrapContent { overflow: hidden }
+    </style>
+}
+
+@model IEnumerable<Posts>
+@using QAP4.Models
+<div class="container">
+    <!--list posts-->
+    <div class="col-lg-2 col-md-2"></div>
+    <div class="col-lg-8 col-md-8 col-xs-12 col-sm-12 no-padding">
+        <div class="posts-list">
+            <div id="left-copy" class="list ui relaxed divided full-width full-height">
+                @if (Model.Any())
+                {
+                    @foreach (var posts in Model)
+                    {
+                        <div data-id="@posts.Id" class="item padding-base">
+                            <div class="content">
+                                <a class="header" href="\posts\manager?u_i=@ViewBag.UserId&pg=0&or_d=cr_d&po_i=@posts.Id&po_t=@posts.PostTypeId&po_lst_t=0&pr_i=@posts.ParentId">@posts.Title</a>
+                                <div class="description">@posts.HeadContent</div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="title">
+                        <span>Danh sách trống</span>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="right-nav col-lg-2 col-md-2"></div>
+</div>

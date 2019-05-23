@@ -1,0 +1,90 @@
+﻿
+@{
+    ViewBag.Title = "Đăng nhập";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<style type="text/css">
+    body { overflow: hidden; }
+    .body-content .body { margin-left: 0px; }
+    .posts-manager .list-post { display: none }
+</style>
+
+@model LoginView
+@using QAP4.ViewModels
+
+@using (Html.BeginForm())
+{
+    <div id="loginFrom" asp-action="" method="post" class="container login-form">
+        <div class="container full-width">
+            <h1 class="title ui-header center">Posts Study</h1>
+        </div>
+        <div class="col-lg-8 col-md-8 col-xs-12 col-sm-12 center">
+            <div class="ui middle aligned center aligned grid">
+                <div class="column">
+                    <h2 class="ui teal image header">
+                        @*<img src="assets/images/logo.png" class="image">*@
+                        <div class="content">
+                            <h2>Học tập và chia sẻ cùng nhau dễ dàng hơn</h2>
+                        </div>
+                    </h2>
+                    <div class="ui large form">
+                        <div class="ui segment">
+
+                            <div class="field">
+                                <div class="ui large left icon input">
+                                    <i class="mail icon"></i>
+                                    <input asp-for="EmailOrPhone" name="EmailOrPhone" type="text" placeholder="email hoặc số điện thoại">
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="ui large left icon input">
+                                    <i class="lock icon"></i>
+                                    <input asp-for="Password" name="Password" type="password" placeholder="Mật khẩu">
+                                </div>
+                            </div>
+                            <div class="field hidden">
+                                <div class="ui large left icon input">
+                                    <i class="lock icon"></i>
+                                    <input asp-for="Screen" name="Screen" type="text" value="@ViewBag.Screen">
+                                </div>
+                            </div>
+                            <div class="field">
+                                <button asp-controller="User"
+                                        asp-action="checklogin"
+                                        asp-protocol="http"
+                                        class="ui fluid large teal submit button">
+                                    ĐĂNG NHẬP
+                                </button>
+                            </div>
+                            <div class="ui horizontal divider">
+                                Hoặc
+                            </div>
+                            <div class="hide ui big blue labeled icon button" style="margin-top:0px!important">
+                                <i class="facebook icon"></i>
+                                Facebook
+                            </div>
+                            <div class="hide ui big red labeled icon button" style="margin-top:0px!important">
+                                <i class="google icon"></i>
+                                Google
+                            </div>
+                        </div>
+
+                        <div class="ui error message"></div>
+
+
+                    </div>
+
+
+                    <div class="ui message">
+                        Bạn là người mới? <a asp-controller="User"
+                                             asp-action="Register"
+                                             asp-protocol="http"><p>Đăng ký</p></a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+}

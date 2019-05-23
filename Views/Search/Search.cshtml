@@ -1,0 +1,311 @@
+﻿@{
+    ViewBag.Title = "Tìm kiếm";
+}
+
+<style>
+    .body-content .body { margin-left: 0px; }
+</style>
+
+
+
+@model SearchView
+@using QAP4.ViewModels;
+
+@{ var simplePosts = Model?.SimplePosts;}
+@{ var questions = Model?.Questions;}
+@{ var tutorials = Model?.Tutorials;}
+@{ var tags = Model?.Tags; }
+@{ var users = Model?.Users; }
+@{ var tagsRelation = Model?.TagsRelation;}
+
+@if (Model != null)
+{
+<div id="indexPage" class="container index-page">
+    <div class="col-lg-2 col-md-2"></div>
+    <div class="col-lg-8 col-md-8 col-xs-12 col-sm-12 no-padding">
+
+        <!--key-->
+        <div class="container key-search no-padding">
+            <input class="search-field padding-bottom-base" value="@Model.Key" autocomplete="off" autofocus onfocus="this.value = this.value" />
+        </div>
+
+        <!--list-->
+        <div class="container post-list background-white no-padding">
+            <div class="ui tabular menu">
+                @if (simplePosts != null && simplePosts.Any())
+                {
+                    <div class="item active" data-tab="tab-simple-posts">Bài viết đơn</div>
+                }
+                @if (questions != null && questions.Any())
+                {
+                    <div class="item" data-tab="tab-questions">Hỏi đáp</div>
+                }
+                @if (tutorials != null && tutorials.Any())
+                {
+                    <div class="item" data-tab="tab-tutorials">Bài hướng dẫn</div>
+                }
+                @if (tags != null && tags.Any())
+                {
+                    <div class="item" data-tab="tab-tag">Thẻ</div>
+                }
+                @if (users != null && users.Any())
+                {
+                    <div class="item" data-tab="tab-user">Thành viên</div>
+                }
+            </div>
+
+            <!-- Tab posts !-->
+            @if (simplePosts != null && simplePosts.Any())
+            {
+                <div class="ui tab active" data-tab="tab-simple-posts">
+                    <div class="container no-padding">
+
+                        @foreach (var item in simplePosts)
+                        {
+                            <div class="ui items">
+                                <div class="item border-bottom">
+                                    <a href="/posts/@item.Id"
+                                       class="ui small image">
+                                        <img src="@item.CoverImg" alt="">
+                                    </a>
+                                    <div class="content">
+                                        <a href="/posts/@item.Id"
+                                           class="header title-post left">
+                                            @item.Title
+                                        </a>
+                                        @if (!string.IsNullOrEmpty(item.Tags))
+                                        {
+                                            <div class="ui labels tags right">
+                                                @foreach (var tag in item.Tags.Split(','))
+                                                {
+                                                    <a href="/search/all?q=@tag"
+                                                       class="ui label">
+                                                        @tag
+                                                    </a>
+                                                }
+                                            </div>
+                                        }
+
+                                        <div class="description full-width padding-bottom-base left">
+                                            <p>@item.HeadContent<span>...</span></p>
+                                        </div>
+                                        <div class="container infor full-width no-padding padding-top-base left">
+                                            <a href="/user/@item.OwnerUserId"
+                                               class="ui basic image label">
+                                                <img src="@item?.UserAvatar">
+                                                @item.UserDisplayName
+                                            </a>
+                                            <span class="create-time caption-text"><i class="clock icon"></i>@String.Format("{0:M/d/yyyy HH:mm}", @item.CreationDate)</span>
+                                            <span class="book-mark-num pointer right"><i class="bookmark icon"></i></span>
+                                            <span class="comment-num pointer right"><i class="comment icon"></i>@item.CommentCount</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="hide hide container view-more center"><span class="action-text center normal">Xem thêm ...<i class="angle double right icon"></i></span></div>
+                    </div>
+                </div>
+            }
+
+            <!-- Tab test -->
+            @if (questions != null && questions.Any())
+            {
+                <div class="ui tab" data-tab="tab-questions">
+                    <div class="container no-padding">
+
+                        @foreach (var item in questions)
+                        {
+                            <div class="ui items">
+                                <div class="item border-bottom">
+                                    <a href="/posts/@item.Id"
+                                       class="ui small image">
+                                        <img src="@item.CoverImg" alt="">
+                                    </a>
+                                    <div class="content">
+                                        <a href="/posts/@item.Id"
+                                           class="header title-post left">
+                                            @item.Title
+                                        </a>
+                                        @if (!string.IsNullOrEmpty(item.Tags))
+                                        {
+                                            <div class="ui labels tags right">
+                                                @foreach (var tag in item.Tags.Split(','))
+                                                {
+                                                    <a href="/search/all?q=@tag"
+                                                       class="ui label">
+                                                        @tag
+                                                    </a>
+                                                }
+                                            </div>
+                                        }
+
+                                        <div class="description full-width padding-bottom-base left">
+                                            <p>@item.HeadContent<span>...</span></p>
+                                        </div>
+                                        <div class="container infor full-width no-padding padding-top-base left">
+                                            <a href="/user/@item.OwnerUserId"
+                                               class="ui basic image label">
+                                                <img src="@item?.UserAvatar">
+                                                @item.UserDisplayName
+                                            </a>
+                                            <span class="create-time caption-text"><i class="clock icon"></i>@String.Format("{0:M/d/yyyy HH:mm}", @item.CreationDate)</span>
+                                            <span class="book-mark-num pointer right"><i class="bookmark icon"></i></span>
+                                            <span class="comment-num pointer right"><i class="comment icon"></i>@item.CommentCount</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="hide hide container view-more center"><span class="action-text center normal">Xem thêm ...<i class="angle double right icon"></i></span></div>
+                    </div>
+                </div>
+            }
+
+            <!-- Tab question -->
+            @if (tutorials != null && tutorials.Any())
+            {
+                <div class="ui tab" data-tab="tab-tutorials">
+                    <div class="container no-padding">
+
+                        @foreach (var item in tutorials)
+                        {
+                            <div class="ui items">
+                                <div class="item border-bottom">
+                                    <a href="/posts/@item.Id"
+                                       class="ui small image">
+                                        <img src="@item.CoverImg" alt="">
+                                    </a>
+                                    <div class="content">
+                                        <a href="/posts/@item.Id"
+                                           class="header title-post left">
+                                            @item.Title
+                                        </a>
+                                        @if (!string.IsNullOrEmpty(item.Tags))
+                                        {
+                                            <div class="ui labels tags right">
+                                                @foreach (var tag in item.Tags.Split(','))
+                                                {
+                                                    <a href="/search/all?q=@tag"
+                                                       class="ui label">
+                                                        @tag
+                                                    </a>
+                                                }
+                                            </div>
+                                        }
+
+                                        <div class="description full-width padding-bottom-base left">
+                                            <p>@item.HeadContent<span>...</span></p>
+                                        </div>
+                                        <div class="container infor full-width no-padding padding-top-base left">
+                                            <a href="/user/@item.OwnerUserId"
+                                               class="ui basic image label">
+                                                <img src="@item?.UserAvatar">
+                                                @item.UserDisplayName
+                                            </a>
+                                            <span class="create-time caption-text"><i class="clock icon"></i>@String.Format("{0:M/d/yyyy HH:mm}", @item.CreationDate)</span>
+                                            <span class="book-mark-num pointer right"><i class="bookmark icon"></i></span>
+                                            <span class="comment-num pointer right"><i class="comment icon"></i>@item.CommentCount</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="hide hide container view-more center"><span class="action-text center normal">Xem thêm ...<i class="angle double right icon"></i></span></div>
+                    </div>
+                </div>
+            }
+
+            <!-- Tab tag -->
+            @if (tags != null && tags.Any())
+            {
+                <div class="ui tab" data-tab="tab-tag">
+                    <div id="tab-tag-menu">
+                        <div id="container no-padding">
+                            <div class="ui items">
+                                @foreach (var item in tags)
+                                {
+                                    <div class="item border-bottom">
+                                        <div class="container no-padding no-margin">
+                                            <div class="col-lg-6 col-md-6 col-xs-6 col-sm-6 no-padding">
+                                                <!--title-->
+                                                <a href="/search/all?q=@item.Name"
+                                                   class="header ui label left">
+                                                    @item.Name
+                                                </a>
+                                                <!--description-->
+                                                <div class="description full-width padding-bottom-base left">
+                                                    <p>@item.Description</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 col-md-6 col-xs-6 col-sm-6 no-padding">
+                                                <div class="ui mini statistics">
+                                                    <div class="ui statistic">
+                                                        <div class="value tiny">
+                                                            @item.Count
+                                                        </div>
+                                                        <div class="label" style="font-size:0.8rem!important">
+                                                            Bài viết
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                <div class="hide hide container view-more center"><span class="action-text center normal">Xem thêm ...<i class="angle double right icon"></i></span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Tab user-->
+            @if (users != null && users.Any())
+            {
+                <div class="ui tab" data-tab="tab-user">
+                    <div id="tab-users">
+                        @foreach (var user in users)
+                        {
+                            <div class="container full-width no-padding">
+                                <div class="col-lg-5 col-md-5 col-xs-5 col-sm-5 no-padding">
+                                    <a href="/user/@user.Id"
+                                       class="ui basic image label">
+                                        <img src="@user?.Avatar">
+                                        @user?.DisplayName
+                                    </a>
+                                </div>
+                                <div class="col-lg-7 col-md-7 col-xs-7 col-sm-7 no-padding">
+                                    <div class="description">
+                                        <p>@user?.AboutMe</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="right-nav col-lg-2 col-md-2">
+        <!--statistic-->
+        <div class="ui statistic">
+            <div class="value">
+                @Model.Count
+            </div>
+            <div class="label">
+                Kết quả
+            </div>
+        </div>
+
+
+
+    </div>
+
+</div>
+}

@@ -1,0 +1,132 @@
+﻿@{
+    ViewBag.Title = "";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
+    <script>
+        //tnny mce init
+        tinymce.init({
+            selector: '.main-editor textarea',
+            //language_url: '/Libs/TinnyMCE/language/vi_VN.js',
+            theme: 'modern',
+            menubar: false,
+            statusbar: false,
+            theme: 'modern',
+            skin: "lightgray",
+            min_height: 100,
+            max_width: 720,
+            //content_css: '/Content/myTinnyMCE.css',
+            plugins: [
+               'advlist autolink lists link image charmap print preview anchor',
+               'searchreplace visualblocks code fullscreen',
+               'insertdatetime media table contextmenu paste code'
+            ],
+            toolbar: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image',
+            content_css: '//www.tinymce.com/css/codepen.min.css',
+            menubar: false,
+
+            //custom button
+        });
+
+        //tnny mce init
+        tinymce.init({
+            selector: '.simple-editor textarea',
+            //language_url: '/Libs/TinnyMCE/language/vi_VN.js',
+            theme: 'modern',
+            menubar: false,
+            statusbar: false,
+            theme: 'modern',
+            skin: "lightgray",
+            min_height: 50,
+            max_width: 720,
+            //content_css: '/Content/myTinnyMCE.css',
+            plugins: [
+               'advlist autolink lists link image',
+               'code',
+               'insertdatetime media table contextmenu paste code'
+            ],
+            toolbar: 'insertfile link image',
+            content_css: '//www.tinymce.com/css/codepen.min.css',
+            menubar: false,
+
+            //custom button
+        });
+        //ready function
+        $(document).ready(function () {
+            //tags
+            $('.tag.dropdown').dropdown({ allowAdditions: true });
+        });
+
+        //check box
+        $('.ui.checkbox').checkbox({
+           
+        });
+    </script>
+}
+
+@using (Html.BeginForm())
+{
+    <div class="container">
+        <div class="container">
+            <div class="col-lg-8 col-md-8 col-sx-8 col-sm-12">
+                <!--title-->
+                <span class="header-text">Câu hỏi</span>
+                <!--editor content-->
+                <div id="" class="main-editor padding-top-base" style="margin-top:30px; margin-bottom:15px;">
+                    <textarea></textarea>
+                </div>
+                <span class="header-text">Thêm và lựa chọn câu trả lời</span>
+                <div class="answers">
+                    <div class="container">
+                        <!--editor content-->
+                        <div class="col-lg-1 col-md-1 col-xs-1">
+                            <p class="order">A</p>                         
+                        </div>
+                        <div class="simple-editor col-lg-11 col-md-11 col-xs-11">
+                            <textarea></textarea>
+                        </div>
+                        <div class="ui toggle checkbox right">
+                            <input name="public" type="checkbox">
+                            <label>Câu trả lời sai</label>
+                        </div>
+                    </div>
+                    <div class="container">
+                        <!--editor content-->
+                        <div class="col-lg-1 col-md-1 col-xs-1">
+                            <p class="order">B</p>
+                        </div>
+                        <div class="simple-editor col-lg-11 col-md-11 col-xs-11">
+                            <textarea></textarea>
+                        </div>
+                        <div class="ui toggle checkbox right">
+                            <input name="public" type="checkbox">
+                            <label>Câu trả lời sai</label>
+                        </div>
+                    </div>
+                    <div class="container">
+                        <!--editor content-->
+                        <div class="col-lg-1 col-md-1 col-xs-1">
+                            <p class="order">C</p>
+                        </div>
+                        <div class="simple-editor col-lg-11 col-md-11 col-xs-11">
+                            <textarea></textarea>
+                        </div>
+                        <div class="ui toggle checkbox right">
+                            <input name="public" type="checkbox">
+                            <label>Câu trả lời sai</label>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div class="ui green tiny button padding-base right">
+                    <i class="add icon"></i>
+                    Thêm câu trả lời
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-xs-4">
+
+            </div>
+        </div>
+    </div>
+}

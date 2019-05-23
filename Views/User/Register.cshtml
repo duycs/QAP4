@@ -1,0 +1,125 @@
+﻿
+@{
+    ViewBag.Title = "Đăng ký";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model RegisterView
+@using QAP4.ViewModels
+<style type="text/css">
+    body { overflow: hidden; }
+    .body-content .body { margin-left: 0px; }
+    .posts-manager .list-post { display: none }
+</style>
+
+
+    <form id="registerForm" asp-action="" method="post" class="form-horizontal" role="form">
+        <div class="container register">
+            <div class="container full-width">
+                <h1 class="title ui-header center">Posts Study</h1>
+            </div>
+            <div class="col-lg-8 col-md-8 col-xs-12 col-sm-12 center">
+                <div class="ui middle aligned center aligned grid">
+                    <div class="column">
+                        <h2 class="ui teal image header">
+                            @*<img src="assets/images/logo.png" class="image">*@
+                            <div class="content padding-base">
+                                <h4>Học tập và chia sẻ cùng nhau dễ dàng hơn</h4>
+                            </div>
+                        </h2>
+
+                        <div class="ui large form">
+                            <div class="ui segment">
+                                <div class="field">
+                                    <div class="ui large left icon input">
+                                        <i class="user icon"></i>
+                                        <input asp-for="FirstName" type="text" name="firstname" placeholder="Họ">
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="ui large left icon input">
+                                        <i class="user icon"></i>
+                                        <input asp-for="LastName" type="text" name="lastname" placeholder="Tên">
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="ui large left icon input">
+                                        <i class="user icon"></i>
+                                        <input asp-for="DisplayName" type="text" name="displayname" placeholder="Bí danh">
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="ui large left icon input">
+                                        <i class="user icon"></i>
+                                        <input asp-for="EmailOrPhone" type="text" name="EmailOrPhone" placeholder="E-mail hoặc số điện thoại">
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="ui large left icon input">
+                                        <i class="lock icon"></i>
+                                        <input asp-for="Password" type="password" id="password" name="password" placeholder="Mật khẩu">
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="ui large left icon input">
+                                        <i class="repeat icon"></i>
+                                        <input asp-for="PasswordConfirm" type="password" id="PasswordConfirm" name="PasswordConfirm" placeholder="Xác nhận mật khẩu">
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <button asp-action="Create"
+                                            asp-controller="User"
+                                            class="ui fluid large teal submit button">
+                                        ĐĂNG KÝ
+                                    </button>
+                                </div>
+                                <div class="ui horizontal divider">
+                                    Hoặc
+                                </div>
+                                <div class="ui big blue labeled icon button hide" style="margin-top:0px!important">
+                                    <i class="facebook icon"></i>
+                                    Facebook
+                                </div>
+                                <div class="ui big red labeled icon button hide" style="margin-top:0px!important">
+                                    <i class="google icon"></i>
+                                    Google
+                                </div>
+                            </div>
+                            <div class="ui error message"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+
+    <script>
+
+        //TODO: check validate??
+        $("#registerForm").validate({
+            rules: {
+                password: {
+                    required: true,
+                    minlength: 6,
+                    maxlength: 20
+                },
+
+                repassword: {
+                    equalTo: "#password",
+                    minlength: 6,
+                    maxlength: 20
+                }
+            },
+            messages: {
+                password: {
+                    required: "the password is required"
+
+                }
+            }
+
+        });
+
+        var error = $("#registerForm").val();
+        console.log(error);
+    </script>

@@ -1,0 +1,249 @@
+﻿
+@{
+    ViewBag.Title = "Viết bài";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
+    @*<script src="~/Scripts/check-mark.js"></script>*@
+    <script>
+        //tnny mce init
+        tinymce.init({
+            selector: 'textarea',
+            //language_url: '/wwwroot/lib/TinnyMCE/language/vi_VN.js',
+            theme: 'modern',
+            menubar: false,
+            statusbar: true,
+            theme: 'modern',
+            skin: "lightgray",
+            min_height: 380,
+            max_width: 720,
+            auto_focus: 'element1',
+            //content_css: '/wwwroot/css/myTinnyMCE.css',
+            visual: false,
+            //add plugins
+            plugins: ['advlist autolink lists link image charmap print preview hr anchor pagebreak',
+                        'searchreplace wordcount visualblocks visualchars code fullscreen',
+                        'insertdatetime media nonbreaking save table contextmenu directionality',
+                        'emoticons template paste textcolor colorpicker textpattern imagetools'],
+            //toolbar
+            toolbar: 'tag|movePost|insertfile undo redo |forecolor backcolor| bold italic | alignleft aligncenter alignjustify | bullist | link image |print media',
+
+
+            block_formats: 'Paragraph=p;Header 1=h1;Header 2=h2;Header 3=h3',
+            font_formats: 'Arial=arial,helvetica,sans-serif;Courier New=courier new,courier,monospace;AkrutiKndPadmini=Akpdmi-n',
+            fontsize_formats: '8pt 10pt 12pt 14pt 18pt 24pt 36pt',
+            block_formats: 'Paragraph=p;Header 1=h1;Header 2=h2;Header 3=h3',
+            font_formats: 'Arial=arial,helvetica,sans-serif;Courier New=courier new,courier,monospace;AkrutiKndPadmini=Akpdmi-n',
+            browser_spellcheck: false,
+
+            menubar: false,
+
+            //custom button
+            setup: function (editor) {
+                editor.addButton('tag', {
+                    text: 'Gắn thẻ',
+                    icon: false,
+                    onclick: function () {
+                        editor.insertContent('&nbsp;<b>It\'s my button!</b>&nbsp;');
+                    }
+                });
+                editor.addButton('movePost', {
+                    text: 'Di chuyển',
+                    icon: false,
+                    onclick: function () {
+                        editor.insertContent('&nbsp;<b>It\'s my button!</b>&nbsp;');
+                    }
+                });
+            },
+        });
+
+        var $titlePost = "<div class='tile-post'><input class='input-title' placeholder='Tiêu đề gây ấn tượng cho người đọc'><span class='message-info transition'><i class='ui notched circle loading icon green'></i>Đã lưu</span></div>";
+
+        //sort list
+        var options = {
+            valueNames: ['title', 'publish', 'update-time', 'created-time', 'view', 'like', 'comment']
+        };
+        //var listPosts = new List('noteList', options);
+        //sortList();
+
+        var $tinnyMCE = $('#tinnyMCE');
+
+        //ready function
+        $(document).ready(function () {
+            //tags
+            $('.tag.dropdown').dropdown({ allowAdditions: true });
+
+            //popup
+            var $options = $('.write-post .options');
+            $options.popup({
+                inline: true,
+                hoverable: true,
+                position: 'bottom right',
+            })
+            setTimeout(function () {
+
+                //var $mceBody = $('#mceu_13-body');
+                var $mceMenu = $('#tinnyMCE').find('#mceu_12');
+                $mceMenu.after($titlePost);
+
+                //enter title down mouse to editor body
+                $(".tile-post .input-title").keyup(function (e) {
+                    if (e.keyCode == 13) {
+                        console.log("enter");
+                        tinymce.execCommand('mceFocus', false, 'id_of_textarea');
+                    }
+                });
+            }, 500);
+        });
+    </script>
+}
+
+
+@using (Html.BeginForm())
+{
+    <div class="container write-post">
+        <div class="container menu-nav">
+            @*<div class="head"><i class="ui home pointer big icon"></i></div>*@
+            <div class="body">
+                <i id="NewPost" class="ui add green circular icon pointer large"></i>
+                <i id="SreachMyPost" class="ui green search circular icon pointer big"></i>
+                <i id="MyTag" class="ui tag circular green icon pointer large"></i>
+                <i id="MyBook" class="ui book circular green icon pointer large"></i>
+            </div>
+            <div class="bottom"><i class="help circle outline icon pointer big"></i></div>
+        </div>
+        <div class="container full-width no-padding contents">
+            <div class="list-post col-lg-3 col-xs-3 border-left no-padding">
+                <div class="container head padding-base">
+                    <div class="col-lg-6 col-xs-6 col-md-6 no-padding">
+                        <p class="number">50 bài viết</p>
+                    </div>
+                    <div class="col-lg-6 col-xs-6 col-md-6 no-padding">
+                        <span class="options">Tùy chọn</span>
+                        <div class='ui flowing popup left transition hidden popup-options' style="width: 200px;">
+                            <div class='wr-popup all-left'>
+                                <div class='wrap-options'>
+                                    <div class="ui form">
+                                        <div class="grouped fields group-choose">
+                                            <p class="caption">Sắp xếp theo</p>
+                                            <div class="field">
+                                                <div class="ui radio checkbox  updated-time sort" data-sort="update-time">
+                                                    <input type="radio" name="example2" checked="checked" />
+                                                    <label>Ngày cập nhật</label>
+                                                </div>
+                                            </div>
+                                            <div class="field">
+                                                <div class="ui radio checkbox created-time sort" data-sort="created-time">
+                                                    <input type="radio" name="example2" />
+                                                    <label>Ngày tạo</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="field">
+                                                <div class="ui radio checkbox title sort" data-sort="title">
+                                                    <input type="radio" name="example2" />
+                                                    <label>Tiêu đề</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="field">
+                                                <div class="ui radio checkbox publish sort" data-sort="publish">
+                                                    <input type="radio" name="example2" />
+                                                    <label>Xuất bản</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="field">
+                                                <div class="ui radio checkbox share sort" data-sort="share">
+                                                    <input type="radio" name="example2" />
+                                                    <label>Đã chia sẻ</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="field">
+                                                <div class="ui radio checkbox like sort" data-sort="like">
+                                                    <input type="radio" name="example2" />
+                                                    <label>Lượt yêu thích</label>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="ui relaxed divided list full-width full-height">
+                    @for (int i = 0; i < 50; ++i)
+                    {
+                        <div class="item padding-base">
+                            <div class="content">
+                                <a class="header">Tiêu đề bài viết</a>
+                                <div class="description">Nội dung bài viết</div>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+            <div class="editor col-lg-9 col-xs-9 col-md-12 col-sm-12 no-padding">
+                <!--variable input-->
+                <div class="container actions field ui input full-width no-padding ">
+                    <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12 no-padding">
+                        <div class="ui tag fluid multiple search selection dropdown full-width none-border">
+                            <i class="ui tags icon pointer"></i>
+                            <input name="tags" type="hidden">
+                            <i class="dropdown icon"></i>
+                            <input class="search" autocomplete="off" tabindex="0"><span class="sizer"></span><div class="default text" style="left:26px">Tag gợi nhớ giúp bài viết dễ tìm thấy hơn</div>
+                            <div class="menu" tabindex="-1">
+                                <div class="item" data-value="angular">Angular</div>
+                                <div class="item" data-value="css">CSS</div>
+                                <div class="item" data-value="design">Graphic Design</div>
+                                <div class="item" data-value="ember">Ember</div>
+                                <div class="item" data-value="html">HTML</div>
+                                <div class="item" data-value="ia">Information Architecture</div>
+                                <div class="item" data-value="javascript">Javascript</div>
+                                <div class="item" data-value="mech">Mechanical Engineering</div>
+                                <div class="item" data-value="meteor">Meteor</div>
+                                <div class="item" data-value="node">NodeJS</div>
+                                <div class="item" data-value="plumbing">Plumbing</div>
+                                <div class="item" data-value="python">Python</div>
+                                <div class="item" data-value="rails">Rails</div>
+                                <div class="item" data-value="react">React</div>
+                                <div class="item" data-value="repair">Kitchen Repair</div>
+                                <div class="item" data-value="ruby">Ruby</div>
+                                <div class="item" data-value="ui">UI Design</div>
+                                <div class="item" data-value="ux">User Experience</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="gr-post-action col-lg-4 col-md-4 col-xs-12 col-sm-12 no-padding">
+                        <p class="ui green tiny button action-post right">Đăng bài</p>
+                        @*<p class="ui black basic button right">Lưu nháp</p>*@
+                        @*<i class="expand pointer icon right"></i>*@
+                        <i class="history pointer icon right"></i>
+                        <i class="trash pointer icon right"></i>
+                        <i class="empty star pointer icon right"></i>
+                        <i class="facebook pointer icon right"></i>
+                        <i class="lock icon pointer right" data-content="Khóa bài viết"></i>
+                    </div>
+                </div>
+                <div id="tinnyMCE" class="padding-top-base">
+                    <textarea></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<script src="~/js/post.js"></script>
+
+<style type="text/css">
+    body {
+        overflow: hidden;
+    }
+    /*.navbar{display:none}*/
+</style>
+
+

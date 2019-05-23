@@ -1,0 +1,35 @@
+﻿
+@{
+    ViewBag.Title = "";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using (Html.BeginForm())
+{
+<div class="container">
+    <div class="col-lg-2 col-md-2"></div>
+    <!--doing-->
+    <div class="col-lg-9 col-md-9 col-xs-9">
+        <div class="ui grid">
+            <div class="four wide column">
+                <div class="ui vertical fluid tabular menu">
+                    @for (int i = 0; i < 50; ++i)
+                    {
+                        <a class="item">
+                            @(i + 1)
+                        </a>
+                    }
+                </div>
+            </div>
+            <div class="twelve wide stretched column">
+                <div class="ui segment">
+                    This is an stretched grid column. This segment will always match the tab height
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--statistic-->
+    <div class="col-lg-2 col-md-2">
+
+    </div>
+</div>
+}

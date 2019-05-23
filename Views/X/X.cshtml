@@ -1,0 +1,76 @@
+﻿
+
+@model IEnumerable<Tags>
+@using QAP4.Models
+
+@{var tags = Model;}
+
+<div class="container post-list background-white">
+    <div class="ui tabular menu">
+        <div class="item active" data-tab="tab-tag">Bài viết</div>
+
+        <!-- Tab tag -->
+        @if (tags.Count() > 0)
+        {
+            <div class="ui tab" data-tab="tab-tag">
+
+                <div id="tab-tag-menu">
+                    <div id="container no-padding">
+                        @foreach (var item in tags)
+                        {
+                            <div class="ui items">
+                                <div class="item border-bottom">
+
+                                    <div class="ui tiny statistics">
+                                        <div class="statistic">
+                                            <div class="value">
+                                                @item.Count
+                                            </div>
+                                            <div class="label" style="font-size:0.8rem!important">
+                                                Bài viết
+                                            </div>
+                                        </div>
+
+                                        <div class="statistic">
+                                            <div class="value">
+                                                @item.Count
+                                            </div>
+                                            <div class="label" style="font-size:0.8rem!important">
+                                                Hỏi đáp
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="content">
+                                        <!--title-->
+                                        <a href="/search/@item.Name"
+                                           class="header ui label left">
+                                            @item.Name
+                                        </a>
+                                        <!--description-->
+                                        <div class="description full-width padding-bottom-base left">
+                                            <p>@item.Description</p>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        <div class="hide container view-more center"><span class="action-text center normal">Xem thêm ...<i class="angle double right icon"></i></span></div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    var q = window.getParameterByName('q');
+    $(document).ready(function () {
+
+        //tab
+        $('.menu .item').tab();
+    });
+
+</script>

@@ -1,0 +1,32 @@
+{
+  "name": "loadie.js",
+  "homepage": "https://github.com/9elements/loadie.js",
+  "description": "Loadie.js is a lightweight jQuery plugin to create a preloader that doesn't suck and that is used by big firms.",
+  "main": [
+    "./css/loadie.css",
+    "./js/jquery.loadie.js"
+  ],
+  "keywords": [
+    "preloader",
+    "lightweight",
+    "loading",
+    "load"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "a883debe39",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "a883debe39e99c84f36cb453eaab2273f0c0604d"
+  },
+  "_source": "https://github.com/9elements/loadie.js.git",
+  "_target": "*",
+  "_originalSource": "loadie.js"
+}

@@ -1,0 +1,418 @@
+﻿
+@{
+    ViewBag.Title = "Viết bài";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jstree/3.0.9/themes/default/style.min.css" />
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jstree/3.0.9/jstree.min.js"></script>
+    <script>
+        //tnny mce init
+        tinymce.init({
+            selector: 'textarea',
+            language_url: '/Libs/TinnyMCE/language/vi_VN.js',
+            theme: 'modern',
+            menubar: false,
+            statusbar: true,
+            theme: 'modern',
+            skin: "lightgray",
+            min_height: 465,
+            max_width: 720,
+            content_css: '/Content/myTinnyMCE.css',
+            visual: false,
+            //add plugins
+            plugins: ['advlist autolink lists link image charmap print preview hr anchor pagebreak',
+                        'searchreplace wordcount visualblocks visualchars code fullscreen',
+                        'insertdatetime media nonbreaking save table contextmenu directionality',
+                        'emoticons template paste textcolor colorpicker textpattern imagetools'],
+            //toolbar
+            toolbar: 'tag|movePost|insertfile undo redo |forecolor backcolor| bold italic | alignleft aligncenter alignjustify | bullist | link image |print media',
+
+
+            block_formats: 'Paragraph=p;Header 1=h1;Header 2=h2;Header 3=h3',
+            font_formats: 'Arial=arial,helvetica,sans-serif;Courier New=courier new,courier,monospace;AkrutiKndPadmini=Akpdmi-n',
+            fontsize_formats: '8pt 10pt 12pt 14pt 18pt 24pt 36pt',
+            block_formats: 'Paragraph=p;Header 1=h1;Header 2=h2;Header 3=h3',
+            font_formats: 'Arial=arial,helvetica,sans-serif;Courier New=courier new,courier,monospace;AkrutiKndPadmini=Akpdmi-n',
+            browser_spellcheck: false,
+
+            menubar: false,
+
+            //custom button
+            setup: function (editor) {
+                editor.addButton('tag', {
+                    text: 'Gắn thẻ',
+                    icon: false,
+                    onclick: function () {
+                        editor.insertContent('&nbsp;<b>It\'s my button!</b>&nbsp;');
+                    }
+                });
+                editor.addButton('movePost', {
+                    text: 'Di chuyển',
+                    icon: false,
+                    onclick: function () {
+                        editor.insertContent('&nbsp;<b>It\'s my button!</b>&nbsp;');
+                    }
+                });
+            },
+        });
+
+        var $titlePost = "<div class='tile-post'><input class='input-title' placeholder='Tiêu đề gây ấn tượng cho người đọc'><span class='message-info transition'><i class='ui notched circle loading icon green'></i>Đã lưu</span></div>";
+
+        //sort list
+        var options = {
+            valueNames: ['title', 'publish', 'update-time', 'created-time', 'view', 'like', 'comment']
+        };
+        //var listPosts = new List('noteList', options);
+        //sortList();
+
+
+        var $tinnyMCE = $('#tinnyMCE');
+
+        //ready function
+        $(document).ready(function () {
+            //tags
+            $('.tag.dropdown').dropdown({ allowAdditions: true });
+
+            //popup
+            var $options = $('.write-post .options');
+            $options.popup({
+                inline: true,
+                hoverable: true,
+                position: 'bottom right',
+            })
+            setTimeout(function () {
+
+                //var $mceBody = $('#mceu_13-body');
+                var $mceMenu = $('#tinnyMCE').find('#mceu_12');
+                $mceMenu.after($titlePost);
+
+                //enter title down mouse to editor body
+                $(".tile-post .input-title").keyup(function (e) {
+                    if (e.keyCode == 13) {
+                        console.log("enter");
+                        tinymce.execCommand('mceFocus', false, 'id_of_textarea');
+                    }
+                });
+            }, 500);
+        });
+
+
+
+    </script>
+
+}
+
+
+@using (Html.BeginForm())
+{
+    <div class="container write-post">
+        <!--nav bar action-->
+        <div class="container menu-nav">
+            @*<div class="head"><i class="ui home pointer big icon"></i></div>*@
+            <div class="body">
+                <i id="NewPost" class="ui add circular icon pointer large"></i>
+                <i id="SreachMyPost" class="ui search circular icon pointer big"></i>
+                <i id="MyTag" class="ui tag circular icon pointer large"></i>
+                <i id="MyBook" class="ui book circular icon pointer large"></i>
+            </div>
+            <div class="bottom"><i class="help circle outline icon pointer big"></i></div>
+        </div>      
+        <!--manager views-->
+        <div class="container contents">
+            <!--course list-->
+            <div class="list-post col-lg-3 col-xs-3 border-left no-padding">
+                <!--head-->
+                <div class="container head padding-base">
+                    <div class="col-lg-6 col-xs-6 col-md-6 no-padding">
+                        <p class="number">10 Khóa học</p>
+                    </div>
+                    <div class="col-lg-6 col-xs-6 col-md-6 no-padding">
+                        <span class="options">Tùy chọn</span>
+                        <!--sort by-->
+                        <div class='ui flowing popup left transition hidden popup-options' style="width: 200px;">
+                            <div class='wr-popup all-left'>
+                                <div class='wrap-options'>
+                                    <div class="ui form">
+                                        <div class="grouped fields group-choose">
+                                            <p class="caption">Sắp xếp theo</p>
+                                            <div class="field">
+                                                <div class="ui radio checkbox  updated-time sort" data-sort="update-time">
+                                                    <input type="radio" name="example2" checked="checked" />
+                                                    <label>Ngày cập nhật</label>
+                                                </div>
+                                            </div>
+                                            <div class="field">
+                                                <div class="ui radio checkbox created-time sort" data-sort="created-time">
+                                                    <input type="radio" name="example2" />
+                                                    <label>Ngày tạo</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="field">
+                                                <div class="ui radio checkbox title sort" data-sort="title">
+                                                    <input type="radio" name="example2" />
+                                                    <label>Tiêu đề</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="field">
+                                                <div class="ui radio checkbox publish sort" data-sort="publish">
+                                                    <input type="radio" name="example2" />
+                                                    <label>Xuất bản</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="field">
+                                                <div class="ui radio checkbox share sort" data-sort="share">
+                                                    <input type="radio" name="example2" />
+                                                    <label>Đã chia sẻ</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="field">
+                                                <div class="ui radio checkbox like sort" data-sort="like">
+                                                    <input type="radio" name="example2" />
+                                                    <label>Lượt yêu thích</label>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--courses-->
+                <div class="ui relaxed divided list full-width full-height">
+                    @for (int i = 0; i < 10; ++i)
+                    {
+                        <div class="item padding-base">
+                            <div class="content">
+                                <a class="header">Khóa học thứ @(1 + 1) </a>
+                                <div class="description">Mô tả khóa học thứ @(i + 1)</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <!--create post-->
+            <div class="list-post col-lg-3 col-xs-3 border-left no-padding">
+                <!--head-->
+                <div class="container head padding-base">
+                    <p class="header">Đại số ôn thi lên 10</p>
+                    <span class="caption">(Hãy kéo thả bài vào cây để tạo kháo học)</span>
+                </div>
+                <div class="container head padding-base">
+                    <div id="treeView"></div>
+                </div>
+            </div>
+            <!--post list-->
+            <div class="list-post col-lg-3 col-xs-3 border-left no-padding">
+                <!--head-->
+                <div class="container head padding-base">
+                    <div class="col-lg-6 col-xs-6 col-md-6 no-padding">
+                        <p class="number">50 bài viết</p>
+                    </div>
+                    <!--sort by-->
+                    <div class="col-lg-6 col-xs-6 col-md-6 no-padding">
+                        <span class="options">Tùy chọn</span>
+                        <div class='ui flowing popup left transition hidden popup-options' style="width: 200px;">
+                            <div class='wr-popup all-left'>
+                                <div class='wrap-options'>
+                                    <div class="ui form">
+                                        <div class="grouped fields group-choose">
+                                            <p class="caption">Sắp xếp theo</p>
+                                            <div class="field">
+                                                <div class="ui radio checkbox  updated-time sort" data-sort="update-time">
+                                                    <input type="radio" name="example2" checked="checked" />
+                                                    <label>Ngày cập nhật</label>
+                                                </div>
+                                            </div>
+                                            <div class="field">
+                                                <div class="ui radio checkbox created-time sort" data-sort="created-time">
+                                                    <input type="radio" name="example2" />
+                                                    <label>Ngày tạo</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="field">
+                                                <div class="ui radio checkbox title sort" data-sort="title">
+                                                    <input type="radio" name="example2" />
+                                                    <label>Tiêu đề</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="field">
+                                                <div class="ui radio checkbox publish sort" data-sort="publish">
+                                                    <input type="radio" name="example2" />
+                                                    <label>Xuất bản</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="field">
+                                                <div class="ui radio checkbox share sort" data-sort="share">
+                                                    <input type="radio" name="example2" />
+                                                    <label>Đã chia sẻ</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="field">
+                                                <div class="ui radio checkbox like sort" data-sort="like">
+                                                    <input type="radio" name="example2" />
+                                                    <label>Lượt yêu thích</label>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="ui relaxed divided list full-width full-height">
+                    @for (int i = 0; i < 50; ++i)
+                    {
+                        <div class="item padding-base">
+                            <div class="content">
+                                <a class="header">Tiêu đề bài viết</a>
+                                <div class="description"><p class="">@(i + 1)/9/2016</p></div>
+                                <p class="caption statistic right">Hữu ích đến @(80 + i)%</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+            </div>
+            <!--test list-->
+            <div class="list-post col-lg-3 col-xs-3 border-left no-padding">
+                <!--head-->
+                <div class="container head padding-base">
+                    <div class="col-lg-6 col-xs-6 col-md-6 no-padding">
+                        <p class="number">50 bài thi</p>
+                    </div>
+                    <!--sort by-->
+                    <div class="col-lg-6 col-xs-6 col-md-6 no-padding">
+                        <span class="options">Tùy chọn</span>
+                        <div class='ui flowing popup left transition hidden popup-options' style="width: 200px;">
+                            <div class='wr-popup all-left'>
+                                <div class='wrap-options'>
+                                    <div class="ui form">
+                                        <div class="grouped fields group-choose">
+                                            <p class="caption">Sắp xếp theo</p>
+                                            <div class="field">
+                                                <div class="ui radio checkbox  updated-time sort" data-sort="update-time">
+                                                    <input type="radio" name="example2" checked="checked" />
+                                                    <label>Ngày cập nhật</label>
+                                                </div>
+                                            </div>
+                                            <div class="field">
+                                                <div class="ui radio checkbox created-time sort" data-sort="created-time">
+                                                    <input type="radio" name="example2" />
+                                                    <label>Ngày tạo</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="field">
+                                                <div class="ui radio checkbox title sort" data-sort="title">
+                                                    <input type="radio" name="example2" />
+                                                    <label>Tiêu đề</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="field">
+                                                <div class="ui radio checkbox publish sort" data-sort="publish">
+                                                    <input type="radio" name="example2" />
+                                                    <label>Xuất bản</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="field">
+                                                <div class="ui radio checkbox share sort" data-sort="share">
+                                                    <input type="radio" name="example2" />
+                                                    <label>Đã chia sẻ</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="field">
+                                                <div class="ui radio checkbox like sort" data-sort="like">
+                                                    <input type="radio" name="example2" />
+                                                    <label>Lượt yêu thích</label>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="ui relaxed divided list full-width full-height">
+                    @for (int i = 0; i < 50; ++i)
+                    {
+                        <div class="item padding-base">
+                            <div class="content">
+                                <a class="header">Tiêu đề bài viết</a>
+                                <div class="description">@(i + 1)/9/2016</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
+<style type="text/css">
+    body { overflow: hidden;  }
+    /*.navbar .menu, .navbar .navbar-inner{ background:#2c4762; }
+     .navbar .menu a,.navbar .menu i{color:#ddd!important}
+      .navbar .menu a .active{color:#fff!important}*/
+</style>
+
+<script>
+    //TreeView menu of course
+    var $treeView = $('#treeView');
+    $(function () {
+        $treeView.jstree({
+            'core': {
+                'data': [
+                  {
+                      "text": "Đại số ôn thi lên 10", "children": [
+                        { "text": "Biểu thức đại số" },
+                        { "text": "Phương trình bậc 2" },
+                        { "text": "Hệ phương trình" },
+                        { "text": "Giải toán bằng cách lập phương trình" },
+                        { "text": "Giá trị lớn nhất hoặc nhỏ nhất" },
+                      ]
+                  }
+                ]
+            },
+            "plugins": ["wholerow"]
+            ,
+            //"checkbox": {
+            //    "keep_selected_style": false
+            //},
+
+        })
+          .bind("loaded.jstree", function (event, data) {
+              // you get two params - event & data - check the core docs for a detailed description
+              $(this).jstree("open_all");
+          });
+
+        $treeView.on("changed.jstree", function (e, data) {
+            console.log("The selected nodes are:");
+            console.log(data.selected);
+        });
+    });
+</script>
+
+

@@ -1,0 +1,373 @@
+﻿@{
+    ViewBag.Title = "Các câu hỏi";
+}
+@model QuestionsView
+@using QAP4.ViewModels
+
+@{ var postsWaitAnswer = Model.PostsWaitAnswer;}
+@{ var postsAnswer = Model.PostsAnswer;}
+@{ var tagsFeature = Model.TagsFeature;}
+@{ var usersFeature = Model.UsersFeature;}
+
+<div id="Questions" class="container index-page">
+    <div class="col-lg-2 col-md-2"></div>
+    <div class="col-lg-8 col-md-8 col-xs-12 col-sm-12 post-list background-white  no-padding">
+        <!--list item-->
+        <div class="ui tabular menu">
+            @if (postsWaitAnswer.Any())
+            {
+                <div class="item tab active tab-1" data-tab="tab-wait-answer">Đang yêu cầu</div>
+            }
+            @if (postsAnswer.Any())
+            {
+                <div class="item tab tab-2" data-tab="tab-newest-answer">Giải đáp mới nhất</div>
+            }
+        </div>
+
+        <!--wait answer tab-->
+        @if (postsWaitAnswer.Any())
+        {
+            <div class="ui tab tab-1 active" data-tab="tab-wait-answer">
+                <div class="container no-padding">
+
+                    @foreach (var item in postsWaitAnswer)
+                    {
+                        <div class="item border-bottom container no-padding">
+                            <div class="container no-padding content">
+                                <!--user create-->
+                                <div class="full-width padding-top-base head">
+                                    <a href="/user/@item.OwnerUserId"
+                                       class="ui basic image label">
+                                        <img src="@item?.UserAvatar">
+                                        @item.UserDisplayName
+                                    </a>
+                                    <!--created time-->
+                                    <span class="create-time caption-text padding-left-base grey">@String.Format("{0:M/d/yyyy HH:mm}", @item.CreationDate)</span>
+                                </div>
+
+
+                                <div class="container full-width no-padding">
+                                    <!--title-->
+                                    <a href="/posts/@item.Id"
+                                       class="header title-post left">
+                                        @item.Title
+                                    </a>
+
+                                    <!--tags-->
+                                    <div class="tags right">
+                                        @if (!string.IsNullOrEmpty(item.Tags))
+                                        {
+                                            foreach (var tag in item.Tags.Split(','))
+                                            {
+                                                <div class="ui labels tags right">
+                                                    <a href="/search/@tag"
+                                                       class="ui label">@tag</a>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+
+                                <!--description-->
+                                <div class="description full-width padding-bottom-base left">
+                                    <p class="grey">@item.HeadContent</p>
+                                </div>
+
+                                @if (item.PostTypeId == 2)
+                                {
+                                    <a href="/posts/@item.Id"
+                                       class="left ui green tiny button">
+                                        Trả lời
+                                    </a>
+                                }
+                                else if (item.PostTypeId == 6)
+                                {
+                                    <a href="/posts/manager/?u_i=@item.OwnerUserId&pg=0&or_d=cr_d&po_i=@item.Id&po_t=@item.PostTypeId&po_lst_t=6&pr_i=0&ans=0"
+                                       class="left ui green tiny button">
+                                        Tạo bài hướng dẫn
+                                    </a>
+                                }
+
+                                <div class="statistics right">
+                                    <div class="ui mini horizontal statistic right">
+                                        <div class="value">
+                                            @item.VoteCount
+                                        </div>
+                                        <div class="label">
+                                            Vote
+                                        </div>
+                                    </div>
+
+                                    <div class="ui mini horizontal statistic right padding-right-base">
+                                        <div class="value">
+                                            @item.AnswerCount
+                                        </div>
+                                        <div class="label">
+                                            Trả lời
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        <!--answer tab-->
+        @if (postsAnswer.Any())
+        {
+            <div class="ui tab tab-2" data-tab="tab-newest-answer">
+                <div class="container no-padding">
+                    @foreach (var item in postsAnswer)
+                    {
+                        <div class="item border-bottom container no-padding">
+                            <div class="container no-padding content">
+                                <!--user create-->
+                                <div class="full-width padding-top-base head">
+                                    <a href="/user/@item.OwnerUserId"
+                                       class="ui basic image label">
+                                        <img src="@item?.UserAvatar">
+                                        @item.UserDisplayName
+                                    </a>
+                                    <!--created time-->
+                                    <span class="create-time caption-text padding-left-base grey">@String.Format("{0:M/d/yyyy HH:mm}", @item.CreationDate)</span>
+                                </div>
+
+
+                                <div class="container no-padding full-width">
+                                    <!--title-->
+                                    <a href="/posts/@item.Id"
+                                       class="header title-post left">
+                                        @item.Title
+                                    </a>
+
+                                    <!--tags-->
+                                    <div class="tags right">
+                                        @if (!string.IsNullOrEmpty(item.Tags))
+                                        {
+                                            foreach (var tag in item.Tags.Split(','))
+                                            {
+                                                <div class="ui labels tags right">
+                                                    <a href="/search/@tag"
+                                                       class="ui label">@tag</a>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+
+                                <!--description-->
+                                <div class="description full-width padding-bottom-base left">
+                                    <p class="grey">@item.HeadContent</p>
+                                </div>
+
+
+                                @if (item.PostTypeId == 2)
+                                {
+                                    <a href="/posts/@item.Id"
+                                       class="left ui green  tiny button">
+                                        Thêm trả lời
+                                    </a>
+                                }
+                                else if (item.PostTypeId == 6)
+                                {
+                                    <a href="/posts/manager/?u_i=@item.OwnerUserId&pg=0&or_d=cr_d&po_i=@item.Id&po_t=@item.PostTypeId&po_lst_t=6&pr_i=0&ans=0"
+                                       class="left ui green  tiny button">
+                                        Bổ sung hướng dẫn
+                                    </a>
+                                }
+
+                                <div class="statistics right">
+                                    <div class="ui mini horizontal statistic right">
+                                        <div class="value">
+                                            @item.VoteCount
+                                        </div>
+                                        <div class="label">
+                                            Vote
+                                        </div>
+                                    </div>
+
+                                    <div class="ui mini horizontal statistic right padding-right-base">
+                                        <div class="value">
+                                            @item.AnswerCount
+                                        </div>
+                                        <div class="label">
+                                            Trả lời
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    }
+                    <div class="hide container view-more center"><span class="action-text center normal">Xem thêm ...<i class="angle double right icon"></i></span></div>
+                </div>
+            </div>
+        }
+    </div>
+    <a href="/posts/questions?p=2">
+        <div class="hide container view-more center"><span class="action-text center normal">Xem thêm ...<i class="angle double right icon"></i></span></div>
+    </a>
+    <div class="right-nav col-lg-2 col-md-2">
+        <!--statistic-->
+        <div class="ui statistic">
+            <div class="value">
+                @Model.Count
+            </div>
+            <div class="label">
+                Câu hỏi
+            </div>
+        </div>
+        <!--make ask-->
+        <div class="container quote padding-base">
+            <a href="\posts\ask?u_i=@Html.Raw(ViewBag.UserId)">
+                <div class="ui green tiny button">
+                    <i class="question icon"></i>
+                    Hỏi một câu
+                </div>
+            </a>
+        </div>
+        <!-- Hot tags -->
+        @if (tagsFeature.Count() > 0)
+        {
+            <div class="container meta-hot-tags padding-base">
+                <span class="header-text"><i class="tag icon"></i>Chủ đề nổi bật</span>
+                <div class="ui labels">
+                    @foreach (var tag in tagsFeature)
+                    {
+                        <a href="\search\@tag.Name"
+                           class="ui label">
+                            @tag.Name
+                            <div class="detail">@tag.Count</div>
+                        </a>
+                    }
+                </div>
+            </div>
+        }
+        <!-- User ranking -->
+        @if (usersFeature.Count() > 0)
+        {
+            <div class="container user-ranking padding-base">
+                <span class="header-text"><i class="user icon"></i>Thành viên hỏi đáp tích cực</span>
+                <div class="ui labels">
+                    @foreach (var user in usersFeature)
+                    {
+                        <a href="\users\@user.Id"
+                           class="ui basic image label">
+                            <img src="@user.ProfileImageUrl">
+                            @user.DisplayName
+                        </a>
+                    }
+                </div>
+            </div>
+        }
+
+
+    </div>
+</div>
+
+<script>
+
+    //TODO: can make page when click tab and load more?
+
+    var title = document.title;
+    var selectorTab1 = $('.tabular.menu .tab-1');
+    var selectorTab2 = $('.tabular.menu .tab-2');
+    var selectorContentTab1 = $('.tab-1 .items');
+    var selectorContentTab2 = $('.tab-2 .items');
+    var page1 = 2;
+    var page2 = 2;
+    //var page1 = ~~window.getParameterByName('pg');
+    //var page2 = ~~window.getParameterByName('pg');
+
+    $(document).ready(function () {
+        loadMore(selectorContentTab1, page1, 'cr_d', 1);
+        loadMore(selectorContentTab2, page2, 'vo_c', 2);
+    });
+
+    // scroll to load more
+    $(window).scroll(function (ev) {
+        let or_b = window.getParameterByName('or_b');
+        let po_t = ~~window.getParameterByName('po_t');
+        //let pg = ~~window.getParameterByName('pg');
+        if ($(window).scrollTop() + $(window).height() == $(document).height()) {
+            let page = ~~window.getParameterByName('pg');
+            let targetUrl;
+            page++;
+            if (po_t === 1) {
+                page1++;
+                targetUrl = window.location.protocol + "//" + window.location.host + "/posts?pg=" + page1 + "&or_b=" + or_b + "&po_t=" + po_t;
+                loadMore(selectorContentTab1, page1, or_b, po_t);
+            } else if (po_t === 2) {
+                page2++;
+                targetUrl = window.location.protocol + "//" + window.location.host + "/posts?pg=" + page2 + "&or_b=" + or_b + "&po_t=" + po_t;
+                loadMore(selectorContentTab2, page2, or_b, po_t);
+            };
+
+            //replace state
+            //page++;
+            //let targetUrl = window.location.protocol + "//" + window.location.host + "/posts?pg=" + page + "&or_b=" + or_b + "&po_t=" + po_t;
+            //replaceState(ev, targetUrl, title);
+        }
+    });
+
+
+    // replace state
+    selectorTab1.click(function (ev) {
+        let targetUrl = window.location.protocol + "//" + window.location.host + "/posts?pg=" + page1 + "&or_b=cd_d&po_t=1";
+        //replaceState(ev, targetUrl, title);
+    });
+
+    selectorTab2.click(function (ev) {
+        let targetUrl = window.location.protocol + "//" + window.location.host + "/posts?pg=" + page2 + "&or_b=vo_c&po_t=1";
+        //replaceState(ev, targetUrl, title);
+    });
+
+
+    function loadMore(selector, page, order, type) {
+        $.ajax({
+            url: "/api/posts?pg=" + page + "&or_d=" + order + "&po_t=" + type,
+            crossDomain: true,
+            type: 'GET',
+            contentType: "application/json",
+            dataType: "json",
+            async: false,
+            success: function (result) {
+                appendToList(selector, result);
+                window.loadProgress();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(textStatus)
+            }
+        });
+    }
+
+    function appendToList(selector, data) {
+        //console.log(data);
+        var lastItem = selector.last();
+        var items = "";
+        $.each(data, function (i, v) {
+            let tags = v.tags;
+            let tagsList;
+            let tagsBind;
+            if (tags !== "" && tags != undefined) {
+                tagsList = v.tags.split(',');
+                tagsBind = "";
+            }
+            $.each(tagsList, function (i2, v2) {
+                tagsBind += "<a class='ui label'>" + v2 + "</a>";
+            });
+            items += "<div class='ui items'><div class='item border-bottom'><a href='/posts/" + v.id + "' class='ui small image'><img src='' alt=''></a><div class='content'><a class='header title-post left' href='/post/" + v.id + "'>" + v.title + "</a><div class='ui labels tags right'>" + tagsBind + "</div><div class='description full-width padding-bottom-base left'><p>" + v.headContent + "<span>...</span></p></div><div class='container infor full-width no-padding left'><a class='ui basic image label'><img src='" + v.Avatar + "'>" + v.userDisplayName + "</a><span class='create-time caption-text'><i class='clock icon'></i>" + v.creationDate + "</span><span class='book-mark-num pointer right'><i class='bookmark icon'></i></span><span class='comment-num pointer right'><i class='comment icon'></i></span></div></div></div></div>";
+        });
+        lastItem.append(items).fadeIn('slow');
+    }
+
+    function replaceState(ev, targetUrl, targetTitle) {
+        ev.preventDefault()
+        window.history.replaceState({ url: "" + targetUrl + "" }, targetTitle, targetUrl);
+    }
+</script>

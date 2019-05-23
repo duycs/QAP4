@@ -1,0 +1,398 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Posts Study</title>
+
+    <!--CSS-->
+    <environment names="Development,Staging,Production">
+        <link rel="stylesheet" href="~/css/site.css" />
+        <link rel="stylesheet" href="~/lib/semantic/dist/semantic.css" />
+        <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+        <link href="~/lib/font-awesome/css/font-awesome.css" rel="stylesheet" />
+        <link href="~/lib/input-tag/inputTags.css" rel="stylesheet" />
+        <link href="~/lib/izitoast/dist/css/iziToast.css" rel="stylesheet" />
+        <link href="~/lib/loadie.js/css/loadie.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.2/semantic.min.css"
+              asp-fallback-href="~/lib/semantic/dist/semantic.min.css"
+              asp-fallback-test-class="transition" asp-fallback-test-property="animation-iteration-count" asp-fallback-test-value="1" />
+    </environment>
+
+    <!--JS-->
+    <environment names="Development,Staging,Production">
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+        <script src="~/lib/semantic/dist/semantic.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+        <script src="~/lib/izitoast/dist/js/iziToast.js"></script>
+        <script src="~/lib/loadie.js/js/jquery.loadie.js"></script>
+        @*<script src="~/js/chat.js"></script>*@
+    </environment>
+
+    <script>
+
+        var objType = "";
+        $(document).ready(function () {
+
+            //init loadie.js
+            window.loadProgress();
+
+            $('.search-field').on('keypress', function (e) {
+                if (e.keyCode == 13) {
+                    var q = $(this).val();
+                    doSearch(objType, q);
+                }
+            });
+
+            $('.search.icon').bind('click', function (e) {
+                var q = $(this).parent().find('input').val();
+                console.log(q);
+                doSearch(objType, q);
+            });
+
+            function doSearch(obj, q) {
+                let action = "search";
+
+                //default order=top
+                let order = "top";
+
+                obj = obj || "all";
+
+                //search all object
+                let url = window.location.protocol + "//" + window.location.host + "/" + action + "/" + obj + "?q=" + q;
+                window.location = url;
+            };
+
+            var verticalMenuItems = $('.vertical.menu a');
+            $.each(verticalMenuItems, function (i, v) {
+                let uri = (window.location.pathname + window.location.search).replace('/', '');
+                let item = $(v);
+                let href = item.attr('href');
+                if (href)
+                    href = href.replace('\\', '');
+                if (href === uri) {
+                    item.addClass('active');
+                }
+            });
+
+            var secondaryMenuItems = $('.navbar .secondary.menu a');
+            $.each(secondaryMenuItems, function (i, v) {
+                let uri = window.location.pathname;
+                let item = $(v);
+                let href = item.attr('href').replace(/\\/g, '/');
+                href = href.substring(0, href.indexOf('?'));
+                if (href === uri) {
+                    item.addClass('active');
+                }
+            });
+
+
+
+            var screeWidth = $(window).width();
+            var screenHeight = $(window).height();
+            var itemHome = "<a href='\\' class='home-menu'>PostStudy</a>";
+            var homeNvarBarTop = $('.navbar-fixed-top .home');
+
+            if (screeWidth <= 767) {
+                itemHome = "<a class='home-menu launch icon'><i class='content large icon'></i></a>";
+            }
+
+            homeNvarBarTop.append(itemHome);
+
+            //slide bar menu
+            $('.home-menu.launch').click(function () {
+                console.log("home");
+                $('.demo.sidebar')
+                    .sidebar('setting', 'transition', 'overlay')
+                    .sidebar('toggle')
+                    ;
+            });
+        });
+
+    </script>
+</head>
+
+<body>
+    <div class="ui green vertical demo sidebar menu" style="z-index:100000">
+        <!--reading group-->
+        <!--have posts as newest-->
+        <a class="item" href="\">
+            <i class="icon th list"></i>
+            Bảng tin
+        </a>
+        <!--have simple posts, tutorials-->
+        <a class="item" href="\posts?type=read">
+            <i class="icon newspaper"></i>
+            Đọc
+        </a>
+        <!--make an ask or require lession-->
+        <a class="item" href="\posts\ask?u_i=@ViewBag.UserId">
+            <i class=" icon question"></i>
+            Hỏi
+        </a>
+        <!--answer an ask, write simple answer or make tutorial-->
+        <a class="item" href="\posts?type=answer">
+            <i class="icon quote right"></i>
+            Đáp
+        </a>
+        <!--write a post which useful-->
+        <a class="item" href="\posts\manager?u_i=@ViewBag.UserId&pg=0&or_d=cr_d&po_i=0&po_t=1&po_lst_t=1&pr_i=0&ans=0">
+            <i class="pencil icon"></i>
+            Viết
+        </a>
+
+        <!--tutorials group-->
+        @*<div class="hide ui section divider none-border"></div>
+        <a class="item" href="\posts?pg=0&or_d=cr_d&po_t=6">
+            <i class=" icon"></i>
+            Bài hướng dẫn
+        </a>*@
+
+        <!--testing group-->
+        @*<div class="ui section divider none-border"></div>
+        <a class="item not-active" href="\tests">
+            <i class=" icon"></i>
+            Bài tập
+        </a>
+        <a class="item not-active" href="\Test\RequestTest">
+            <i class=" icon"></i>
+            Yêu cầu bài
+        </a>
+        <a class="item not-active" href="\posts\manager?u_i=@ViewBag.UserId&pg=0&or_d=cr_d&po_i=0&po_t=4&po_lst_t=1&pr_i=0&ans=0">
+            <i class=" icon"></i>
+            Tạo bài
+        </a>*@
+
+        <!--tools group-->
+        <div class="ui section divider none-border"></div>
+        <a class="item" href="https://ludwigz.herokuapp.com/">
+            <i class=" icon"></i>
+            To English
+        </a>
+
+        <!--actions user group-->
+        <div class="ui section divider none-border"></div>
+
+        <div class="item">
+            @if (@ViewBag.UserId != null)
+            {
+                <b>
+                    <a id="UserInfo"
+                       data-user-id="@Html.Raw(ViewBag.UserId)"
+                       class="blue"
+                       href="\user\@ViewBag.UserId">
+                        @ViewBag.UserName
+                    </a>
+                </b>
+            }
+                <div class="menu">
+
+                    @if (@ViewBag.UserId != null)
+                    {
+
+                        <a href="\posts\list?u_i=@ViewBag.UserId&pg=0&or_d=cr_d&po_i=0&po_t=2&po_lst_t=1&pr_i=0&ans=0" class="item">
+                            <i class="icon"></i>
+                            Câu hỏi
+                        </a>
+                        <a href="\posts\list?u_i=@ViewBag.UserId&pg=0&or_d=cr_d&po_i=0&po_t=1&po_lst_t=1&pr_i=0&ans=0" class="item">
+                            <i class="icon"></i>
+                            Bài viết
+                        </a>
+                        <a href="\posts\list?u_i=@ViewBag.UserId&pg=0&or_d=cr_d&po_i=0&po_t=6&po_lst_t=1&pr_i=0&ans=0" class="item">
+                            <i class="icon"></i>
+                            Hướng dẫn
+                        </a>
+
+
+                        <a class="item"
+                           asp-controller="User"
+                           asp-action="Logout"
+                           asp-protocol="http">
+                            <i class="icon power off"></i>
+                            Đăng Xuất
+                        </a>
+                    }
+                    else
+                    {
+                        <a class="item"
+                           asp-controller="User"
+                           asp-action="Register"
+                           asp-protocol="http">
+                            Đăng ký
+                        </a>
+                        <a class="item"
+                           asp-controller="User"
+                           asp-action="Login"
+                           asp-protocol="http">
+                            Đăng nhập
+                        </a>
+                    }
+
+                    <a href="\about-us" class="hide item">
+                        <i class="icon"></i>
+                        Về chúng tôi
+                    </a>
+
+                </div>
+        </div>
+
+
+    </div>
+
+
+    <div class="navbar navbar-fixed-top" style="z-index:9999">
+        <div class="navbar-inner">
+            <div class="container teal no-padding">
+                <div class="ui teal secondary pointing menu">
+
+                    <!--home-->
+                    <div class="home item">
+                        <!--insert menu home-->
+                    </div>
+
+                    <!--search-->
+                    <div class="search-all ui item transparent icon input">
+                        <input class="search-field" autocomplete="off" placeholder="Tìm kiếm những câu hỏi, bài viết và nội dung học tập..." type="text">
+                        <i class="ui icon search"></i>
+                    </div>
+
+
+                    <div class="hide right menu">
+                        <!--write and compile-->
+                        @*<a href="\posts\manager?u_i=@ViewBag.UserId&pg=0&or_d=cr_d&po_i=0&po_t=1&po_lst_t=1&pr_i=0&ans=0" class="ui item">Viết</a>*@
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="container error-message"></div>
+    <div class="container body-content">
+        <!--nav left-->
+        <div class="menu left fixed padding-left-base">
+            <!--category-->
+            <div class="ui vertical secondary menu">
+
+                <!--reading group-->
+                <a href="\" class="header item">BẢNG TIN</a>
+                <a href="\posts?type=read" class="item">Đọc</a>
+                <a href="\posts\ask?u_i=@ViewBag.UserId" class="item">Hỏi</a>
+                <a href="\posts?type=answer" class="item">Đáp</a>
+                <a href="\posts\manager?u_i=@ViewBag.UserId&pg=0&or_d=cr_d&po_i=0&po_t=1&po_lst_t=1&pr_i=0&ans=0" class="ui item">Viết</a>
+
+                <!--tutorial group-->
+                @*<div class="ui section divider"></div>
+        <a href="\posts?pg=0&or_d=cr_d&po_t=6" class="item hide">Bài hướng dẫn</a>*@
+
+                <!--testing group-->
+                @*<div class="ui section divider"></div>
+        <a href="\tests" class="item not-active">Bài tập</a>
+        <a href="\Test\RequestTest" class="item not-active">Yêu cầu bài</a>
+        <a href="\posts\manager?u_i=@ViewBag.UserId&pg=0&or_d=cr_d&po_i=0&po_t=4&po_lst_t=1&pr_i=0&ans=0" class="item not-active">Tạo bài</a>*@
+
+
+                <!--alway show-->
+                <div class="ui section divider"></div>
+                <a href="https://ludwigz.herokuapp.com/" target="_blank" class="item">To English</a>
+
+
+                <!--actions user group-->
+                <div class="ui section divider"></div>
+                @if (@ViewBag.UserId != null)
+                {
+                    <a id="UserInfo"
+                       data-user-id="@Html.Raw(ViewBag.UserId)"
+                       class="item blue"
+                       href="\user\@ViewBag.UserId">
+                        @ViewBag.UserName
+                    </a>
+                }
+                @if (@ViewBag.UserId != null)
+                {
+                    <a href="\posts\list?u_i=@ViewBag.UserId&pg=0&or_d=cr_d&po_i=0&po_t=2&po_lst_t=1&pr_i=0&ans=0" class="item">
+                        <i class="icon"></i>
+                        Câu hỏi
+                    </a>
+                    <a href="\posts\list?u_i=@ViewBag.UserId&pg=0&or_d=cr_d&po_i=0&po_t=1&po_lst_t=1&pr_i=0&ans=0" class="item">
+                        <i class="icon"></i>
+                        Bài viết
+                    </a>
+                    <a href="\posts\list?u_i=@ViewBag.UserId&pg=0&or_d=cr_d&po_i=0&po_t=6&po_lst_t=1&pr_i=0&ans=0" class="item">
+                        <i class="icon"></i>
+                        Hướng dẫn
+                    </a>
+
+                    <a class="item"
+                       asp-controller="User"
+                       asp-action="Logout"
+                       asp-protocol="http">
+                        Đăng Xuất
+                    </a>
+                }
+                else
+                {
+
+                    <a class="item"
+                       asp-controller="User"
+                       asp-action="Register"
+                       asp-protocol="http">
+                        Đăng ký
+                    </a>
+                    <a class="item"
+                       asp-controller="User"
+                       asp-action="Login"
+                       asp-protocol="http">
+                        Đăng nhập
+                    </a>
+                    <a href="\about-us" class="hide item">
+                        <i class="icon"></i>
+                        Về chúng tôi
+                    </a>
+                }
+
+            </div>
+
+            <!--chat session-->
+            <div class="chat-box bottom fixed hidden">
+                <div class="msg">
+                    <div class="msgs" id="msgs"></div>
+                </div>
+
+                <div class="input-msg">
+                    <input type="text" id="MessageField"
+                           placeholder="Nhập hội thoại và gõ enter" />
+                </div>
+            </div>
+        </div>
+
+
+        @RenderBody()
+    </div>
+    <hr />
+    <footer>
+        <p class="navbar-brand">@Html.ActionLink("Về chúng tôi", "AboutUs")</p>
+        <p class="navbar-brand">&copy; @DateTime.Now.Year - Posts Study</p>
+    </footer>
+
+</body>
+</html>
+
+
+<style>
+    .ui.vertical.menu { width: 17rem; }
+
+    .chat-box { margin-bottom: 50px; }
+
+    .chat-box .msg { width: 15vh; height: 30vh; position: relative; bottom: 0; bottom: 30px; margin-bottom: auto; display: block; white-space: nowrap; }
+
+    .chat-box .msg .msgs { width: 15vh; height: 30vh; position: absolute; bottom: 0; overflow: hidden }
+
+    .chat-box .input-msg { position: absolute; height: 20px; bottom: 10px; left: 0; display: block; width: 100% }
+
+    .chat-box .input-msg input { border-top: 1px solid #ddd; line-height: 25px; max-width: unset; width: 100%; max-width: 100% }
+</style>

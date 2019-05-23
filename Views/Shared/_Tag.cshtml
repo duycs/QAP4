@@ -1,0 +1,85 @@
+﻿
+<div id="WrapTag" class="ui tag fluid multiple search selection dropdown full-width none-border">
+    <i class="ui tags icon pointer"></i>
+    <input name="tags" type="hidden">
+    <i class="dropdown icon"></i>
+    <input class="search" autocomplete="off" tabindex="0"><span class="sizer"></span><div class="default text" style="left:26px">Tag gợi nhớ giúp bài viết dễ tìm thấy hơn</div>
+    <div class="menu" tabindex="-1">
+
+    </div>
+</div>
+
+<script>
+
+    //tags
+    $('.ui.dropdown')
+        .dropdown({
+            allowAdditions: true,
+            //apiSettings: {
+            //    url: '/Tag/GetTagsByName?'+'văn'
+            //}
+        })
+        ;
+
+    $('#WrapTag input.search').on('keyup', function (e) {
+        //let self = $(this);
+        let key = $(this).val();
+        let wrapTag = $('#WrapTag');
+        if (key !== "") {
+            //enter to add tag
+            if (e.keyCode == 13) {
+                let lastItem = wrapTag.find('a').last();
+                let itemsVal = wrapTag.find('a');
+                let checkDuplicate = 0;
+
+                //check if is first tag
+                if (lastItem.length === 0) {
+                    lastItem = wrapTag.find('.dropdown.icon');
+                }
+                let item = "<a class='ui label transition visible' data-value='" + key + "' style='display: inline-block !important;'>" + key + "<i class='delete icon'></i></a>";
+
+                //check duplicate tag
+                $.each(itemsVal, function (i, v) {
+                    let dataValue = $(v).attr('data-value');
+                    if (key === dataValue)
+                        checkDuplicate++;
+                });
+                if (checkDuplicate === 0) {
+                    lastItem.after(item);
+                    wrapTag.find('input.search').val("");
+                    //post tag: server check new tag or not
+                }
+                //if duplicate tag
+                else
+                    console.log("đã lặp lại thẻ");
+
+            } else {
+                //search tag
+                var params = $.extend({}, self.doAjax_params_default);
+                $.ajax({
+                    url: "/tag/" + key,
+                    crossDomain: true,
+                    type: 'GET',
+                    contentType: params['requestType'],
+                    dataType: params['dataType'],
+                    success: function (result, textStatus, jqXHR) {
+                        self.bindMenuTag(result);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        //self.errorCallback(errorThrown);
+                    }
+                });
+            }
+        }
+    });
+
+    function bindMenuTag(data) {
+        let menu = $('#WrapTag .menu');
+        let items = "";
+        $.each(data, function (i, v) {
+            items += "<div class='item' data-id='" + v.id + "' data-value='" + v.name + "'>" + v.name + "</div>";
+
+        });
+        menu.empty().append(items);
+    };
+</script>
