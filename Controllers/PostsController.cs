@@ -326,6 +326,24 @@ namespace QAP4.Controllers
             return PostsRepo.GetPosts(pg, or_b, u_i, po_t, pr_i);
         }
 
+        [HttpGet]
+        [Route("/api/exportBook")]
+        public IEnumerable<Book> ExportBook()
+        {
+            return PostsRepo.GetAll().Where(w => w.DeletionDate == null).Select(s => new Book
+            {
+                Uid = s.Id,
+                Id = 0,
+                Isbn = 0,
+                CoverImage = s.CoverImg,
+                Description = s.HeadContent,
+                Title = s.Title,
+                Subject = null,
+                Publisher = null,
+                Language = null,
+                PageNumber = 0,
+            }).ToList();
+        }
 
         // GET: /posts/7?t=1
         [HttpGet]
@@ -724,5 +742,19 @@ namespace QAP4.Controllers
             return String.Join(",", tableOfContent);
         }
 
+    }
+
+    public class Book
+    {
+        public int Uid { get; set; }
+        public int Id { get; set; }
+        public int Isbn { get; set; }
+        public string CoverImage { get; set; }
+        public string Description { get; set; }
+        public string Title { get; set; }
+        public string Subject { get; set; }
+        public string Publisher { get; set; }
+        public string Language { get; set; }
+        public int PageNumber { get; set; }
     }
 }

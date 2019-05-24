@@ -427,5 +427,10 @@ namespace QAP4.Repository
                 throw ex;
             }
         }
+
+        public IEnumerable<Posts> GetAll()
+        {
+            return postsEntity.ToList();
+        }
     }
 }

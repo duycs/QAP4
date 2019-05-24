@@ -14,3 +14,6 @@ FROM microsoft/dotnet:1.1.0-runtime
 WORKDIR /app
 COPY --from=build-env /app/out .
 CMD ["dotnet", "qap4.dll"]
+
+EXPOSE 80/tcp
+EXPOSE 80/udp

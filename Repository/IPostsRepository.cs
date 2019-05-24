@@ -8,6 +8,7 @@ namespace QAP4.Repository
 {
     public interface IPostsRepository
     {
+        IEnumerable<Posts> GetAll();
         Posts GetPosts(int? id);
         IEnumerable<Posts> GetPostsFeature(int page, int postsTypeId);
         IEnumerable<Posts> GetPostsNewest(int page, int postsTypeId);
