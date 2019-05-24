@@ -330,7 +330,7 @@ namespace QAP4.Controllers
         [Route("/api/exportBook")]
         public IEnumerable<Book> ExportBook()
         {
-            return PostsRepo.GetAll().Where(w => w.DeletionDate == null).Select(s => new Book
+            return PostsRepo.GetAll().Where(w => w.DeletionDate == null && w.PostTypeId != 2 && w.PostTypeId != 3).Select(s => new Book
             {
                 Uid = s.Id,
                 Id = 0,

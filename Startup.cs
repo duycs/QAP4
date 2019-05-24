@@ -23,12 +23,26 @@ namespace QAP4
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
         }
-
+        readonly string AppAllowSpecificOrigins = "_appAllowSpecificOrigins";
         public IConfigurationRoot Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Cors rules
+            services.AddCors(options =>
+            {
+                options.AddPolicy(AppAllowSpecificOrigins, builder =>
+                {
+                    builder
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                    //.AllowCredentials();
+                });
+            });
+
+
             // Add framework services.
             services.AddMvc();
 
@@ -63,14 +77,17 @@ namespace QAP4
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
+            // Add cors befor add MVC
+            app.UseCors(AppAllowSpecificOrigins);
+
             //session
             app.UseSession();
 
             //route
             //if (env.IsDevelopment())
             //{
-                app.UseDeveloperExceptionPage();
-                app.UseBrowserLink();
+            app.UseDeveloperExceptionPage();
+            app.UseBrowserLink();
             //}
             //else
             //{
