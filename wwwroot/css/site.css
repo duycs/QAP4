@@ -179,7 +179,10 @@ span iframe{width: 100%!important; height: auto}
             .post-view .post .info ul li { list-style: none; display: inline-block; }
 
 article { padding-bottom: 50px; }
-
+article .body * {font-style: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif; 
+    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif; 
+    line-height: 30px;
+    font-size: 22px;}
     article img { max-width: 100%; height: auto }
     /* article .body * { text-align: justify; font-family: font-family !important; font-size: 1.2em; line-height: 1.8em; } */
     article .info { padding: 12px 0; }
