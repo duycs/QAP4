@@ -1,4 +1,16 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http;
+@using QAP4.Extensions;
+
+@{int userId = 0;
+if(Context.Session != null && Context.Session.GetInt32(AppConstants.Session.USER_ID) != null){
+    userId = (int)Context.Session.GetInt32(AppConstants.Session.USER_ID);
+}}
+@{var userName = string.Empty;
+if(Context.Session !=null && Context.Session.GetString(AppConstants.Session.USER_NAME) != null){
+    userName = Context.Session.GetString(AppConstants.Session.USER_NAME);
+}}
+
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -123,22 +135,22 @@
             Bảng tin
         </a>
         <!--have simple posts, tutorials-->
-        <a class="item" href="\posts?type=read">
+        <a class="item" href="\reads">
             <i class="icon newspaper"></i>
             Đọc
         </a>
         <!--make an ask or require lession-->
-        <a class="item" href="\posts\ask?u_i=@ViewBag.UserId">
+        <a class="item" href="\ask?u_i=@userId">
             <i class=" icon question"></i>
             Hỏi
         </a>
         <!--answer an ask, write simple answer or make tutorial-->
-        <a class="item" href="\posts?type=answer">
+        <a class="item" href="\answers">
             <i class="icon quote right"></i>
             Đáp
         </a>
         <!--write a post which useful-->
-        <a class="item" href="\posts\manager?u_i=@ViewBag.UserId&pg=0&or_d=cr_d&po_i=0&po_t=1&po_lst_t=1&pr_i=0&ans=0">
+        <a class="item" href="\editors?u_i=@userId&pg=0&or_d=cr_d&po_i=0&po_t=1&po_lst_t=1&pr_i=0&ans=0">
             <i class="pencil icon"></i>
             Viết
         </a>
@@ -160,7 +172,7 @@
             <i class=" icon"></i>
             Yêu cầu bài
         </a>
-        <a class="item not-active" href="\posts\manager?u_i=@ViewBag.UserId&pg=0&or_d=cr_d&po_i=0&po_t=4&po_lst_t=1&pr_i=0&ans=0">
+        <a class="item not-active" href="\posts\manager?u_i=@userId&pg=0&or_d=cr_d&po_i=0&po_t=4&po_lst_t=1&pr_i=0&ans=0">
             <i class=" icon"></i>
             Tạo bài
         </a>*@
@@ -180,31 +192,31 @@
         <div class="ui section divider none-border"></div>
 
         <div class="item">
-            @if (@ViewBag.UserId != null)
+            @if (@userId > 0)
             {
                 <b>
                     <a id="UserInfo"
-                       data-user-id="@Html.Raw(ViewBag.UserId)"
+                       data-user-id="@Html.Raw(userId)"
                        class="blue"
-                       href="\user\@ViewBag.UserId">
-                        @ViewBag.UserName
+                       href="\user\@userId">
+                        @userName
                     </a>
                 </b>
             }
                 <div class="menu">
 
-                    @if (@ViewBag.UserId != null)
+                    @if (@userId > 0)
                     {
 
-                        <a href="\posts\list?u_i=@ViewBag.UserId&pg=0&or_d=cr_d&po_i=0&po_t=2&po_lst_t=1&pr_i=0&ans=0" class="item">
+                        <a href="\posts\list?u_i=@userId&pg=0&or_d=cr_d&po_i=0&po_t=2&po_lst_t=1&pr_i=0&ans=0" class="item">
                             <i class="icon"></i>
                             Câu hỏi
                         </a>
-                        <a href="\posts\list?u_i=@ViewBag.UserId&pg=0&or_d=cr_d&po_i=0&po_t=1&po_lst_t=1&pr_i=0&ans=0" class="item">
+                        <a href="\posts\list?u_i=@userId&pg=0&or_d=cr_d&po_i=0&po_t=1&po_lst_t=1&pr_i=0&ans=0" class="item">
                             <i class="icon"></i>
                             Bài viết
                         </a>
-                        <a href="\posts\list?u_i=@ViewBag.UserId&pg=0&or_d=cr_d&po_i=0&po_t=6&po_lst_t=1&pr_i=0&ans=0" class="item">
+                        <a href="\posts\list?u_i=@userId&pg=0&or_d=cr_d&po_i=0&po_t=6&po_lst_t=1&pr_i=0&ans=0" class="item">
                             <i class="icon"></i>
                             Hướng dẫn
                         </a>
@@ -234,7 +246,7 @@
                         </a>
                     }
 
-                    <a href="\about-us" class="hide item">
+                    <a href="\about" class="hide item">
                         <i class="icon"></i>
                         Về chúng tôi
                     </a>
@@ -265,7 +277,7 @@
 
                     <div class="hide right menu">
                         <!--write and compile-->
-                        @*<a href="\posts\manager?u_i=@ViewBag.UserId&pg=0&or_d=cr_d&po_i=0&po_t=1&po_lst_t=1&pr_i=0&ans=0" class="ui item">Viết</a>*@
+                        @*<a href="\editors?u_i=@userId&pg=0&or_d=cr_d&po_i=0&po_t=1&po_lst_t=1&pr_i=0&ans=0" class="ui item">Viết</a>*@
                     </div>
 
                 </div>
@@ -284,10 +296,10 @@
 
                 <!--reading group-->
                 <a href="\" class="header item">BẢNG TIN</a>
-                <a href="\posts?type=read" class="item">Đọc</a>
-                <a href="\posts\ask?u_i=@ViewBag.UserId" class="item">Hỏi</a>
-                <a href="\posts?type=answer" class="item">Đáp</a>
-                <a href="\posts\manager?u_i=@ViewBag.UserId&pg=0&or_d=cr_d&po_i=0&po_t=1&po_lst_t=1&pr_i=0&ans=0" class="ui item">Viết</a>
+                <a href="\reads" class="item">Đọc</a>
+                <a href="\ask?u_i=@userId" class="item">Hỏi</a>
+                <a href="\answers" class="item">Đáp</a>
+                <a href="\editors?u_i=@userId&pg=0&or_d=cr_d&po_i=0&po_t=1&po_lst_t=1&pr_i=0&ans=0" class="ui item">Viết</a>
 
                 <!--tutorial group-->
                 @*<div class="ui section divider"></div>
@@ -297,7 +309,7 @@
                 @*<div class="ui section divider"></div>
         <a href="\tests" class="item not-active">Bài tập</a>
         <a href="\Test\RequestTest" class="item not-active">Yêu cầu bài</a>
-        <a href="\posts\manager?u_i=@ViewBag.UserId&pg=0&or_d=cr_d&po_i=0&po_t=4&po_lst_t=1&pr_i=0&ans=0" class="item not-active">Tạo bài</a>*@
+        <a href="\editors?u_i=@userId&pg=0&or_d=cr_d&po_i=0&po_t=4&po_lst_t=1&pr_i=0&ans=0" class="item not-active">Tạo bài</a>*@
 
 
                 <!--alway show-->
@@ -308,26 +320,26 @@
 
                 <!--actions user group-->
                 <div class="ui section divider"></div>
-                @if (@ViewBag.UserId != null)
+                @if (@userId > 0)
                 {
                     <a id="UserInfo"
-                       data-user-id="@Html.Raw(ViewBag.UserId)"
+                       data-user-id="@Html.Raw(userId)"
                        class="item blue"
-                       href="\user\@ViewBag.UserId">
-                        @ViewBag.UserName
+                       href="\user\@userId">
+                        @userName
                     </a>
                 }
-                @if (@ViewBag.UserId != null)
+                @if (@userId > 0)
                 {
-                    <a href="\posts\list?u_i=@ViewBag.UserId&pg=0&or_d=cr_d&po_i=0&po_t=2&po_lst_t=1&pr_i=0&ans=0" class="item">
+                    <a href="\posts\list?u_i=@userId&pg=0&or_d=cr_d&po_i=0&po_t=2&po_lst_t=1&pr_i=0&ans=0" class="item">
                         <i class="icon"></i>
                         Câu hỏi
                     </a>
-                    <a href="\posts\list?u_i=@ViewBag.UserId&pg=0&or_d=cr_d&po_i=0&po_t=1&po_lst_t=1&pr_i=0&ans=0" class="item">
+                    <a href="\posts\list?u_i=@userId&pg=0&or_d=cr_d&po_i=0&po_t=1&po_lst_t=1&pr_i=0&ans=0" class="item">
                         <i class="icon"></i>
                         Bài viết
                     </a>
-                    <a href="\posts\list?u_i=@ViewBag.UserId&pg=0&or_d=cr_d&po_i=0&po_t=6&po_lst_t=1&pr_i=0&ans=0" class="item">
+                    <a href="\posts\list?u_i=@userId&pg=0&or_d=cr_d&po_i=0&po_t=6&po_lst_t=1&pr_i=0&ans=0" class="item">
                         <i class="icon"></i>
                         Hướng dẫn
                     </a>
@@ -354,7 +366,7 @@
                        asp-protocol="http">
                         Đăng nhập
                     </a>
-                    <a href="\about-us" class="hide item">
+                    <a href="\about" class="hide item">
                         <i class="icon"></i>
                         Về chúng tôi
                     </a>

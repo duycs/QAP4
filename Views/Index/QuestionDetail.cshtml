@@ -1,0 +1,208 @@
+﻿
+@{
+    ViewBag.Title = "Bài viết";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    <script src="~/lib/tinymce/tinymce.js"></script>
+    <script src="~/js/tinnymce_setting.js"></script>
+    <link href="~/lib/jquery-comment/css/jquery-comments.css" rel="stylesheet" />
+    <script src="~/lib/jquery-comment/js/jquery-comments.js"></script>
+
+    <style>
+        .body-content { padding-top: 45px !important; }
+        .body-content .body { margin-left: 0px; }
+    </style>
+}
+
+@model QuestionDetailView
+@using QAP4.ViewModels
+
+@{ var posts = Model.Posts;}
+@{ var answers = Model.Answers;}
+@{ var sameQuestions = Model.SameQuestions;}
+
+<div class="container answer-form">
+    <div class="col-lg-2 col-md-2"></div>
+
+    <div class="post col-lg-8 col-md-8 col-xs-12 col-sm-12 no-padding">
+        <!--post content-->
+        <article class="article border-bottom question">
+            <h1 class="title-post-in-detail full-width padding-top-base">@posts.Title</h1>
+
+            <div class="body demo-section wide k-content">
+                <div id="ArticalBody" class="inner inner-width">
+                    @Html.Raw(posts.HtmlContent)
+                </div>
+            </div>
+
+            <div class="full-width padding-top-base">
+                <!--vote-->
+                <div class="ui labeled tiny button up-vote" tabindex="0">
+                    <div class="ui green mini button">
+                        <i class="pointing up icon"></i>Hay
+                    </div>
+                    <a class="ui basic green left pointing label value">
+                        @posts.VoteCount
+                    </a>
+                </div>
+                <div class="ui labeled tiny button down-vote" tabindex="0">
+                    <div class="ui">
+                        <i class="pointing down icon"></i>Chán
+                    </div>
+                </div>
+
+
+                @if (!string.IsNullOrEmpty(posts.Tags))
+                {
+                    <div class="ui labels tags left">
+                        @foreach (var tag in posts.Tags.Split(','))
+                        {
+                            <a href="/search/@tag?pg=1"
+                               class="ui label">@tag</a>
+                        }
+                    </div>
+                }
+                <div class="right">
+                    <a href="/user/@posts.OwnerUserId"
+                       class="ui basic image label">
+                        <img src="@posts?.UserAvatar">
+                        @posts.UserDisplayName
+                    </a>
+                    <span class="create-time caption-text padding-left-base grey">
+                        @String.Format("{0:M/d/yyyy HH:mm}", posts.CreationDate)
+                    </span>
+                </div>
+            </div>
+        </article>
+
+        @if (posts != null)
+        {
+            <!-- help edit -->
+            <div class="container help-edit border-bottom padding-base hide">
+                <p class="italic bold green italic left">Bạn có thể viết nháp để giúp tác giả chỉnh sửa câu hỏi được chính xác hơn. &emsp; </p>
+                <a href="/editors?u_i=@Model?.User?.Id&po_i=@posts.Id&po_t=@posts?.PostTypeId&po_lst_t=@posts?.PostTypeId">
+                    <div class="ui green tiny button left">
+                        <i class="edit icon"></i>
+                        Chỉnh giúp
+                    </div>
+                </a>
+            </div>
+        }
+
+        <!--answers-->
+        @if (answers.Count() > 0)
+        {
+            <span class="header-text"><i class="comments icon"></i>@answers.Count() câu trả lời</span>
+
+            <div class="container no-padding answers">
+                @foreach (var item in answers)
+                {
+                    <div class="item border-bottom padding-bottom-base">
+                        <div class="full-width left padding-top-base user-info">
+                            <a href="/user/@item.OwnerUserId"
+                               class="ui basic image label">
+                                <img src="@item?.UserAvatar">
+                                @item.UserDisplayName
+                            </a>
+                            <span class="right grey">
+                                @String.Format("{0:M/d/yyyy HH:mm}", item.CreationDate)
+                            </span>
+                        </div>
+                        <div class="container answer padding-bottom-base">
+                            @Html.Raw(item.HtmlContent)
+                        </div>
+                        <div data-id="@item.Id" class="ui labeled tiny button up-vote" tabindex="0">
+                            <div class="ui green mini button">
+                                <i class="pointing up icon"></i>Hay
+                            </div>
+                            <a class="ui basic green left pointing label value">
+                                @item.VoteCount
+                            </a>
+                        </div>
+                        <div data-id="@item.Id" class="ui labeled tiny button down-vote" tabindex="0">
+                            <div class="ui">
+                                <i class="pointing down icon"></i>Chán
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        @*<div class="container comment padding-base border-bottom"></div>*@
+
+        <!--your answer-->
+        <span class="header-text"><i class="comments icon"></i>Trả lời của bạn</span>
+        <div id="tinnyMCE" class="padding-top-base" style="margin-top:30px; margin-bottom:15px;">
+            <textarea></textarea>
+        </div>
+
+        <!--submit-->
+        <div class="container padding-top-base">
+            <!--check send update via email-->
+            <div class="ui checkbox hidden">
+                <input type="checkbox" name="example">
+                <label>Gửi cập nhật cho tôi qua email</label>
+            </div>
+
+            <div class="tiny button-post ui green button padding-base right">
+                Đăng câu trả lời
+            </div>
+
+            <div class="tiny button-cancel ui button padding-base right">
+                Hủy bỏ
+            </div>
+        </div>
+    </div>
+
+    <div class="right-nav col-lg-2 col-md-2">
+        <!--make ask-->
+        <div class="container quote padding-base">
+            <a href="/ask?u_i=@ViewBag.UserId">
+                <div class="ui green tiny button">
+                    <i class="write icon"></i>
+                    Hỏi một câu
+                </div>
+            </a>
+        </div>
+
+        <!-- related questions -->
+        @if (sameQuestions.Count() > 0)
+        {
+            <div class="container meta-hot-tags padding-base">
+                <span class="header-text"><i class="talk outline icon"></i>Một số câu hỏi liên quan</span>
+                <div class="ui relaxed divided list related-question">
+                    @foreach (var item in sameQuestions)
+                    {
+                        <div class="item">
+                            <i></i><div class="content">
+                                <a href="/posts/@item.Id?po_t=2&amp;u_i=3" class="header">@item.Title</a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+</div>
+
+<script src="~/js/answer.js"></script>
+
+<script>
+    $(function () {
+
+        //init action from answer.js
+        $(this).postsAnswer({
+            postAnswer: function (data, success, error) {
+                success(data);
+            },
+            cancel: function (success, error) {
+                success();
+            },
+            voteUpAnswer: function (success, error) {
+                success();
+            },
+        });
+
+    });
+</script>

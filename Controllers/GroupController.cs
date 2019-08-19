@@ -10,13 +10,5 @@ namespace QAP4.Controllers
 {
     public class GroupController : Controller
     {
-
-
-        public ActionResult Group()
-        {
-            ViewBag.UserName = HttpContext.Session.GetString(AppConstants.Session.USER_NAME);
-            ViewBag.UserId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
-            return View();
-        }
     }
 }

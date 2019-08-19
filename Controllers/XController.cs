@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using QAP4.Repository;
+using QAP4.Infrastructure.Repositories;
 using QAP4.Models;
 
 namespace QAP4.Controllers
@@ -27,7 +27,7 @@ namespace QAP4.Controllers
             UserRepo = _userRepo;
         }
 
-        // GET: /x/sách
+        // GET: /x/sï¿½ch
         [HttpGet]
         [Route("{name}")]
         public ActionResult SearchInTags(string name)

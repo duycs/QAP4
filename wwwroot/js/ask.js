@@ -141,7 +141,7 @@
                         dataType: 'json',
                         data: data,
                         success: function (result) {
-                            let url = window.location.protocol + "//" + window.location.host + "/posts?po_t=" + postsTypeId;
+                            let url = window.location.protocol + "//" + window.location.host + "/answers?po_t=" + postsTypeId;
                             window.location = url;
                             window.showToast(result.type, result.message);
                         },

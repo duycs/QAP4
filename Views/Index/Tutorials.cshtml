@@ -1,0 +1,245 @@
+﻿@{
+    ViewBag.Title = "Bài hướng dẫn";
+}
+
+@model TutorialsView
+@using QAP4.ViewModels
+
+@{ var tutorialsNewest = Model.TutorialsNewest;}
+@{ var tutorialsFeature = Model.TutorialsFeature;}
+@{ var tagsFeature = Model.TagsFeature;}
+@{ var usersFeature = Model.UsersFeature;}
+@{ var tutorialsRequired = Model.TutorialsRequired; }
+
+<div class="container tutorials-page">
+    <div class="col-lg-2 col-md-2"></div>
+    <div class="col-lg-8 col-md-8 col-xs-12 col-sm-12  post-list background-white no-padding">
+        <!--list item-->
+        <div class="ui tabular menu">
+            <div class="item tab-1 active" data-tab="tab-quenue">Hướng dẫn</div>
+            <div class="item tab-2" data-tab="tab-required">Đang được yêu cầu</div>
+        </div>
+
+        @if (tutorialsNewest.Count() > 0)
+        {
+            <!-- Tab  !-->
+            <div class="ui tab active" data-tab="tab-quenue">
+                <div class="container no-padding">
+
+                    @foreach (var item in tutorialsNewest)
+                    {
+                        <div class="item border-bottom container no-padding">
+                            <div class="container no-padding content">
+                                <!--user create-->
+                                <div class="full-width padding-top-base head">
+                                    <a href="/user/@item.OwnerUserId"
+                                       class="ui basic image label">
+                                        <img src="@item?.UserAvatar">
+                                        @item.UserDisplayName
+                                    </a>
+                                    <!--created time-->
+                                    <span class="create-time caption-text padding-left-base grey">@String.Format("{0:M/d/yyyy HH:mm}", @item.CreationDate)</span>
+                                </div>
+
+
+                                <div class="container no-padding left">
+                                    <!--title-->
+                                    <a href="/posts/@item.Id"
+                                       class="header title-post">
+                                        @item.Title
+                                    </a>
+
+                                    <!--tags-->
+                                    <div class="tags right">
+                                        @if (!string.IsNullOrEmpty(item.Tags))
+                                        {
+                                            foreach (var tag in item.Tags.Split(','))
+                                            {
+                                                <div class="ui labels tags right">
+                                                    <a href="/search/@tag"
+                                                       class="ui label">@tag</a>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+
+                                <!--description-->
+                                <div class="description full-width padding-bottom-base left">
+                                    <p class="grey">@item.HeadContent</p>
+                                </div>
+
+                                <a href="/posts/@item.Id"
+                                   class="left ui green tiny button">
+                                    Học theo
+                                </a>
+
+                                <div class="statistics right">
+                                    <div class="ui mini horizontal statistic right">
+                                        <div class="value">
+                                            @item.VoteCount
+                                        </div>
+                                        <div class="label">
+                                            Vote
+                                        </div>
+                                    </div>
+
+                                    <div class="ui mini horizontal statistic right padding-right-base">
+                                        <div class="value">
+                                            @item.AnswerCount
+                                        </div>
+                                        <div class="label">
+                                            Cũng mong
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <a href="/answers?p=2">
+                    <div class="hide container view-more center"><span class="action-text center normal">Xem thêm ...<i class="angle double right icon"></i></span></div>
+                </a>
+            </div>
+        }
+
+        <div class="ui tab tab-2" data-tab="tab-required">
+            <!-- Tab new !-->
+            <div class="container no-padding">
+                @foreach (var item in tutorialsRequired)
+                {
+                    <div class="item border-bottom container no-padding">
+                        <div class="container no-padding content">
+                            <!--user create-->
+                            <div class="full-width padding-top-base head">
+                                <a href="/user/@item.OwnerUserId"
+                                   class="ui basic image label">
+                                    <img src="@item?.UserAvatar">
+                                    @item.UserDisplayName
+                                </a>
+                                <!--created time-->
+                                <span class="create-time caption-text padding-left-base grey">@String.Format("{0:M/d/yyyy HH:mm}", @item.CreationDate)</span>
+                            </div>
+
+
+                            <div class="container no-padding left">
+                                <!--title-->
+                                <a href="/posts/@item.Id"
+                                   class="header title-post">
+                                    @item.Title
+                                </a>
+
+                                <!--tags-->
+                                <div class="tags right">
+                                    @if (!string.IsNullOrEmpty(item.Tags))
+                                    {
+                                        foreach (var tag in item.Tags.Split(','))
+                                        {
+                                            <div class="ui labels tags right">
+                                                <a href="/search/@tag"
+                                                   class="ui label">@tag</a>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+
+                            <!--description-->
+                            <div class="description full-width padding-bottom-base left">
+                                <p class="grey">@item.HeadContent</p>
+                            </div>
+
+                            <a href="/posts/@item.Id"
+                               class="left ui green tiny button">
+                                Học theo
+                            </a>
+
+                            <div class="statistics right">
+                                <div class="ui mini horizontal statistic right">
+                                    <div class="value">
+                                        @item.VoteCount
+                                    </div>
+                                    <div class="label">
+                                        Vote
+                                    </div>
+                                </div>
+
+                                <div class="ui mini horizontal statistic right padding-right-base">
+                                    <div class="value">
+                                        @item.AnswerCount
+                                    </div>
+                                    <div class="label">
+                                        Cũng mong
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                }
+                <div class="hide container view-more center"><span class="action-text center normal">Xem thêm ...<i class="angle double right icon"></i></span></div>
+            </div>
+        </div>
+
+    </div>
+    <div class="right-nav col-lg-2 col-md-2">
+        <!--statistic-->
+        <div class="ui statistic">
+            <div class="value">
+                @Model.Total
+            </div>
+            <div class="label">
+                Bài hướng dẫn
+            </div>
+        </div>
+        <!--make ask-->
+        <div class="container quote padding-base">
+            <a href="\posts\request?po_t=6">
+                <div class="ui green tiny button">
+                    <i class="question icon"></i>
+                    Yêu cầu bài
+                </div>
+            </a>
+        </div>
+        <!-- Hot tags -->
+        @if (tagsFeature.Count() > 0)
+        {
+            <div class="container meta-hot-tags padding-base">
+                <span class="header-text"><i class="tag icon"></i>Chủ đề nổi bật</span>
+                <div class="ui labels">
+                    @foreach (var tag in tagsFeature)
+                    {
+                        <a href="\search\@tag.Name"
+                           class="ui label">
+                            @tag.Name
+                            <div class="detail">@tag.Count</div>
+                        </a>
+                    }
+                </div>
+            </div>
+        }
+        <!-- User ranking -->
+        @if (usersFeature.Count() > 0)
+        {
+            <div class="container user-ranking padding-base">
+                <span class="header-text"><i class="user icon"></i>Thành viên hỏi đáp tích cực</span>
+                <div class="ui labels">
+                    @foreach (var user in usersFeature)
+                    {
+                        <a href="\users\@user.Id"
+                           class="ui basic image label">
+                            <img src="@user.ProfileImageUrl">
+                            @user.DisplayName
+                        </a>
+                    }
+                </div>
+            </div>
+        }
+
+
+    </div>
+</div>

@@ -1149,6 +1149,7 @@
 
             //store image
             getImgCover: function (htmlContent) {
+                var self = this;
                 document.getElementById("contentTemp").innerHTML = htmlContent;
                 //let $coverImgs = $("#coverImgs");
                 let images = document.getElementById("contentTemp").getElementsByTagName('img');
@@ -1163,6 +1164,11 @@
                     var src = img.src;
                     if (src.indexOf(localHostStr) != -1) {
                         console.log('image error');
+                        isError = true;
+                    }
+                    var isImage = this.isFileImage(src);
+                    if(!self.isFileImage(src)){
+                        console.log('is not image');
                         isError = true;
                     }
                     if (!isError) {
@@ -1244,6 +1250,9 @@
                 }
             },
 
+            isFileImage: function(file) {
+                return file && file['type'].split('/')[0] === 'image';
+            },
 
             // search post
             searchPosts: function () {

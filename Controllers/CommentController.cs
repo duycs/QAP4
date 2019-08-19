@@ -5,86 +5,76 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QAP4.Models;
-using QAP4.Repository;
 using QAP4.ViewModels;
 using QAP4.Extensions;
+using QAP4.Infrastructure.Repositories;
+using MediatR;
+using QAP4.Domain.Core.Commands;
+using QAP4.Domain.Core.Notifications;
+using QAP4.Application.Services;
 
 namespace QAP4.Controllers
 {
-    [Produces("application/json")]
-    [Route("[controller]")]
-    public class CommentController : Controller
+    /// <summary>
+    /// Comment controller
+    /// </summary>
+    [Route("api/[controller]")]
+    public class CommentController : ApiController
     {
-        private ICommentRepository CommentRepo { get; set; }
-        private IPostsRepository PostsRepo { get; set; }
-        private ITagRepository TagRepo { get; set; }
-        private IUserRepository UserRepo { get; set; }
+        private readonly INotificationHandler<DomainNotification> _notificationHandler;
+        private readonly ICommandDispatcher _commandBusHandler;
+        private readonly ICommentService _commentService;
 
-        public CommentController(ICommentRepository _commentRepo, IPostsRepository _postsRepo, ITagRepository _tagRepo, IUserRepository _userRepo)
+        public CommentController(
+             INotificationHandler<DomainNotification> notificationHandler,
+             ICommandDispatcher commandBusHandler,
+             ICommentService commentService)
+        : base(notificationHandler, commandBusHandler)
         {
-            CommentRepo = _commentRepo;
-            PostsRepo = _postsRepo;
-            TagRepo = _tagRepo;
-            UserRepo = _userRepo;
+            _notificationHandler = notificationHandler;
+            _commandBusHandler = commandBusHandler;
+            _commentService = commentService;
         }
-
-        // methods for MVC
-
-
-
-        // methods for API
+        
+        /// <summary>
+        /// Post comment
+        /// </summary>
+        /// <param name="comment"></param>
+        /// <returns></returns>
         [HttpPost]
-        [Route("/api/comments")]
-        public ActionResult Create(Comments model)
+        [Route("comments")]
+        public ActionResult Create(Comments comment)
         {
-            if (string.IsNullOrEmpty(model.Content))
-            {
+            if (comment == null || string.IsNullOrEmpty(comment.Content))
                 return BadRequest();
-            }
-            //try
-            //{
-            if (model.UserDisplayName != null) { 
-                var userComment = UserRepo.GetById(model.UserId);
-                var time = DateTime.Now;
-                model.UserDisplayName = userComment.DisplayName;
-                model.CreationDate = model.CreationDate == null ? time : model.CreationDate;
-                model.ModificationDate = time;
-                model.ParentId = model.ParentId == 0 ? null : model.ParentId;
-                model.UpvoteCount = model.UpvoteCount == null ? 0 : model.UpvoteCount;
 
-                CommentRepo.Create(model);
-
-                //update posts
-                var posts = PostsRepo.GetPosts(model.PostsId);
-                var commentCount = posts.CommentCount;
-                commentCount++;
-                posts.CommentCount = commentCount;
-                PostsRepo.Update(posts);
-            }else { 
-            //catch (Exception)
-            //{
-                //return Json(e.Message);
+            //redirect to login
+            if (comment.UserId == null || comment.UserId == 0)
                 return RedirectToAction("login", "user", new MessageView(AppConstants.Warning.WAR_2003, AppConstants.Screen.POSTS_DETAIL));
-                //return View("login");
-            }
-            return Json(new MessageView(model.Id, AppConstants.Message.MSG_1000));
+
+            int result = _commentService.AddComment(comment);
+
+            return Ok(new MessageView(result, AppConstants.Message.MSG_1000));
         }
 
-
-        // GET: /commnets?po_i=1
-        // po: postsId
+        /// <summary>
+        /// Get comment by id
+        /// </summary>
+        /// <param name="po_i"></param>
+        /// <returns></returns>
         [HttpGet]
-        [Route("/api/comments")]
+        [Route("comments")]
         public IActionResult Get([FromQuery]int po_i)
         {
-
             if (po_i == 0)
-            {
                 return BadRequest();
-            }
-            var comments = CommentRepo.GetCommentsByPosts(po_i);
 
-            return Json(comments);
+            var comments = _commentService.FindCommentsByPostId(po_i);
+
+            if (comments == null || !comments.Any())
+                return NoContent();
+
+            return Ok(comments);
         }
     }
 }

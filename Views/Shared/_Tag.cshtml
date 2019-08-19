@@ -57,7 +57,7 @@
                 //search tag
                 var params = $.extend({}, self.doAjax_params_default);
                 $.ajax({
-                    url: "/tag/" + key,
+                    url: "/api/tags/" + key,
                     crossDomain: true,
                     type: 'GET',
                     contentType: params['requestType'],

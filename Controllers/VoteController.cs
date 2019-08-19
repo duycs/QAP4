@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using QAP4.Repository;
+using QAP4.Infrastructure.Repositories;
 using QAP4.Models;
 using QAP4.ViewModels;
 using QAP4.Extensions;

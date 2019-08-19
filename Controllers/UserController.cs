@@ -4,12 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using QAP4.Models;
-using QAP4.Repository;
+using QAP4.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Http;
 using QAP4.Extensions;
-using Microsoft.AspNetCore.Mvc.Routing;
-using QAP4.ViewModels;
 using Microsoft.Extensions.Configuration;
+using QAP4.Infrastructure.Extensions;
+using QAP4.ViewModels;
+using QAP4.Infrastructure.Extensions.File;
 
 namespace QAP4.Controllers
 {
@@ -79,7 +80,7 @@ namespace QAP4.Controllers
 
                     //if (AppConstants.Screen.POSTS_MANAGER.Equals(sc))
                     //{
-                    //    // GET: /posts/manager?t=1&u=6&sc=manager
+                    //    // GET: /editors?t=1&u=6&sc=manager
                     //    return RedirectToAction("manager", "posts", new { pg = 1, or_b = "cr_d", u_i = userId, po_t = 1 });
                     //}
                     //else if (AppConstants.Screen.POSTS_ASK.Equals(sc))
