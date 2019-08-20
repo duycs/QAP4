@@ -10,6 +10,9 @@ using QAP4.Extensions;
 
 namespace QAP4.Controllers
 {
+    /// <summary>
+    /// Webpage base
+    /// </summary>
     [Produces("application/json")]
     public class WebPageController : Controller
     {

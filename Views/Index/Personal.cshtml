@@ -187,7 +187,7 @@
                                         <p>@item.HeadContent<span>...</span></p>
                                     </div>
                                     <div class="container infor full-width no-padding left">
-                                        <a href="/user/@item.OwnerUserId"
+                                        <a href="/users/@item.OwnerUserId"
                                            class="ui basic image label">
                                             <img src="@item?.UserAvatar">
                                             @item.UserDisplayName
@@ -405,7 +405,7 @@ function uploadAvatarFile(input) {
       var formData = new FormData();
     formData.set("file", file, file.name);
         $.ajax({
-            url: '/api/user/@user.Id/avatar',
+            url: '/api/users/@user.Id/avatar',
             type: 'post',
             data: formData,
             contentType: false,
@@ -436,7 +436,7 @@ function uploadAvatarFile(input) {
       var formData = new FormData();
     formData.set("file", file, file.name);
         $.ajax({
-            url: '/api/user/@user.Id/banner',
+            url: '/api/users/@user.Id/banner',
             type: 'post',
             data: formData,
             contentType: false,

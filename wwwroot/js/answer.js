@@ -180,7 +180,7 @@
                 let answers = self.getElementVal('answers');
                 let items = "";
                 $.each(data, function (i, v) {
-                    items += "<div class='full-width item border-bottom padding-bottom-base padding-top-base'><div class='full-width left user-info'><a href='/user/" + v.ownerUserId + "' class='ui basic image label'> <img src='"+v.Avatar+"'>" + v.userDisplayName + "</a></div><div class='container answer'>" + v.htmlContent + "</div></div>";
+                    items += "<div class='full-width item border-bottom padding-bottom-base padding-top-base'><div class='full-width left user-info'><a href='/users/" + v.ownerUserId + "' class='ui basic image label'> <img src='"+v.Avatar+"'>" + v.userDisplayName + "</a></div><div class='container answer'>" + v.htmlContent + "</div></div>";
                 });
                 answers.empty().append(items);
             },
@@ -188,7 +188,7 @@
             appendAnswer(v) {
                 let self = this;
                 let answersItem = self.getElementVal('answersItem');
-                var item = "<div class='full-width item border-bottom padding-bottom-base padding-top-base'><div class='full-width left user-info'><a href='/user/" + v.ownerUserId + "' class='ui basic image label'> <img src='"+v.Avatar+"'>" + v.userDisplayName + "</a></div><div class='container answer'>" + v.htmlContent + "</div></div>";
+                var item = "<div class='full-width item border-bottom padding-bottom-base padding-top-base'><div class='full-width left user-info'><a href='/users/" + v.ownerUserId + "' class='ui basic image label'> <img src='"+v.Avatar+"'>" + v.userDisplayName + "</a></div><div class='container answer'>" + v.htmlContent + "</div></div>";
                 answersItem.last().after(item);
             },
 
@@ -325,7 +325,7 @@
                 data["IsOn"] = isOn;
 
                 $.ajax({
-                    url: "/api/vote",
+                    url: "/api/votes",
                     type: 'POST',
                     //contentType: "application/json; charset=utf-8",
                     dataType: 'json',

@@ -13,7 +13,7 @@ namespace QAP4.Controllers
 {
 
     [Route("api/v1/[controller]")]
-    public class UploadController: Controller
+    public class UploadController : Controller
     {
         private readonly IAmazonS3Service _amazonS3Service;
         private readonly IConfiguration _configuration;
@@ -23,13 +23,18 @@ namespace QAP4.Controllers
           IAmazonS3Service amazonS3Service,
            IConfiguration configuration,
            IMapper mapper
-            ) 
+            )
         {
             _amazonS3Service = amazonS3Service;
             _configuration = configuration;
             _mapper = mapper;
         }
 
+
+        /// <summary>
+        /// POST: /api/UploadImageToS3
+        /// </summary>
+        /// <returns></returns>
         [HttpPost("UploadImageToS3")]
         public async Task<IActionResult> UploadImageFileToS3()
         {
@@ -58,7 +63,10 @@ namespace QAP4.Controllers
             }
         }
 
-
+        /// <summary>
+        /// POST: /api/UploadEbookToS3
+        /// </summary>
+        /// <returns></returns>
         [HttpPost("UploadEbookToS3")]
         public async Task<IActionResult> UploadEbookFileToS3()
         {
@@ -87,20 +95,33 @@ namespace QAP4.Controllers
             }
         }
 
+        /// <summary>
+        /// UploadFileToS3
+        /// </summary>
+        /// <param name="bucketName"></param>
+        /// <param name="file"></param>
+        /// <returns></returns>
         private async Task<FileDto> UploadFileToS3(string bucketName, IFormFile file)
         {
-            var response = await _amazonS3Service.UploadObject(bucketName, file);
-            if (!response.Success)
+            try
             {
-                return null;
+                var response = await _amazonS3Service.UploadObject(bucketName, file);
+                if (!response.Success)
+                {
+                    return null;
+                }
+
+                var fileDto = _mapper.Map<FileDto>(response);
+
+                if (fileDto == null)
+                    return null;
+
+                return fileDto;
             }
-
-            var fileDto = _mapper.Map<FileDto>(response);
-
-            if (fileDto == null)
-                return null;
-
-            return fileDto;
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

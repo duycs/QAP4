@@ -8,6 +8,9 @@ using QAP4.ViewModels;
 using QAP4.Infrastructure.Repositories;
 using System.Collections.Generic;
 using QAP4.Domain.AggreatesModels.Posts.Models;
+using System.Threading.Tasks;
+using QAP4.Infrastructure.Extensions.File;
+using Microsoft.Extensions.Configuration;
 
 namespace QAP4.Controllers
 {
@@ -20,13 +23,21 @@ namespace QAP4.Controllers
         private readonly IUserRepository _userRepository;
         private readonly IPostLinkRepository _postLinkRepository;
 
+        private readonly IConfiguration _configuration;
+        private readonly IAmazonS3Service _amazonS3Service;
+
         public PostsController(
+             IConfiguration configuration,
+             IAmazonS3Service amazonS3Service,
              IPostsRepository postsRepository,
              ITagRepository tagRepository,
              IPostsTagRepository postsTagRepository,
              IUserRepository userRepository,
              IPostLinkRepository postLinkRepository)
         {
+            _configuration = configuration;
+            _amazonS3Service = amazonS3Service;
+
             _postsRepository = postsRepository;
             _tagRepository = tagRepository;
             _postsTagRepository = postsTagRepository;
@@ -587,6 +598,63 @@ namespace QAP4.Controllers
         }
 
 
+        /// <summary>
+        /// POST: /image
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost("api/images/posts/{id:int}/coverimg")]
+        public async Task<IActionResult> UploadCoverPosts(int id)
+        {
+            try
+            {
+                var file = this.Request.Form.Files[0];
+                var imageUrl = string.Empty;
+
+                // File type validation
+                if (!file.ContentType.Contains("image"))
+                {
+                    return StatusCode(500, "image file not found");
+                }
+
+                var bucket = _configuration.GetSection("AWSS3:BucketPostStudy").Value;
+                var imageResponse = await _amazonS3Service.UploadObject(bucket, file);
+
+                if (!imageResponse.Success)
+                {
+                    return StatusCode(500, "can not upload image to S3");
+                }
+                else
+                {
+                    //imageUrl = AmazonS3Service.GeneratePreSignedURL(bucket, imageResponse.FileName);
+                    imageUrl = "https://s3-ap-southeast-1.amazonaws.com" + "/" + bucket + "/" + imageResponse.FileName;
+                }
+
+                if (string.IsNullOrEmpty(imageUrl))
+                {
+                    return BadRequest();
+                }
+
+                var posts = _postsRepository.GetPosts(id);
+                if (posts == null)
+                {
+                    return NotFound();
+                }
+                posts.CoverImg = imageUrl;
+                _postsRepository.Update(posts);
+
+                var response = new
+                {
+                    Success = true,
+                    ImageUrl = imageUrl
+                };
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
 
         #region Private methods
 

@@ -44,7 +44,7 @@
             <div class="padding-bottom-base border-bottom margin-bottom-base">
                 <div class="container no-padding">
                     <div class="col-lg-1 col-md-1 col-xs-2 col-sm-2 no-padding">
-                        <a href="/user/@user.Id">
+                        <a href="/users/@user.Id">
                             <img src="@user.Avatar" class="ui mini image bordered">
                             @*@user.DisplayName*@
                         </a>
@@ -95,7 +95,7 @@
                                     </div>
 
                                     <div class="container infor full-width no-padding left">
-                                        <a href="/user/@item.OwnerUserId"
+                                        <a href="/users/@item.OwnerUserId"
                                            class="ui basic image label">
                                             <img src="@item?.UserAvatar">
                                             @item.UserDisplayName
@@ -136,7 +136,7 @@
                             <div class="container no-padding content">
                                 <!--user create-->
                                 <div class="full-width padding-top-base head">
-                                    <a href="/user/@item.OwnerUserId"
+                                    <a href="/users/@item.OwnerUserId"
                                        class="ui basic image label">
                                         <img src="@item?.UserAvatar">
                                         @item.UserDisplayName
@@ -217,7 +217,7 @@
                         //tutorials
                         <div class="item border-bottom container no-padding">
                             <div class="infor full-width padding-top-base left">
-                                <a href="/user/@item.OwnerUserId"
+                                <a href="/users/@item.OwnerUserId"
                                    class="ui basic image label">
                                     <img src="@item?.UserAvatar">
                                     @item.UserDisplayName
@@ -318,7 +318,7 @@
 
                                 <!--user create-->
                                 <div class="full-width padding-top-base head">
-                                    <a href="/user/@item.OwnerUserId"
+                                    <a href="/users/@item.OwnerUserId"
                                        class="ui basic image label">
                                         <img src="@item?.UserAvatar">
                                         @item.UserDisplayName
@@ -397,7 +397,7 @@
                 <div class="ui labels">
                     @foreach (var item in usersFeature)
                     {
-                        <a href="/user/@item.Id"
+                        <a href="/users/@item.Id"
                            class="ui basic image label">
                             <img src="@item?.Avatar">
                             @item.DisplayName

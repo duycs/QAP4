@@ -30,13 +30,13 @@ namespace QAP4.Application.Services
             _quoteRepository = quoteRepository;
         }
 
-        List<Posts> FindPosts(string query, int postsType, int page, int size)
+        public List<Posts> FindPosts(string query, int postsType, int page, int size)
         {
             var posts = _postsRepository.SearchInPosts(page, query, postsType).ToList();
             return posts;
         }
 
-        SearchView FindAll(string obj, string query, int postType, int page, int size)
+        public SearchView FindAll(string obj, string query, int postType, int page, int size)
         {
             var SearchView = new SearchView();
 

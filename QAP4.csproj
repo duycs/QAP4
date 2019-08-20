@@ -102,7 +102,7 @@
     <None Update="Views\Posts\Tutorials2.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Views\Search\Search.cshtml">
+    <None Update="Views\Index\Search.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Views\Shared\Error.cshtml">
@@ -141,13 +141,13 @@
     <None Update="Views\Tutorial\TutorialsManager.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Views\User\Login.cshtml">
+    <None Update="Views\Index\Login.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Views\User\Personal.cshtml">
+    <None Update="Views\Index\Personal.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Views\User\Register.cshtml">
+    <None Update="Views\Index\Register.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Views\_ViewImports.cshtml">
@@ -165,9 +165,6 @@
     <None Update="wwwroot\images\grips\vertical.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Views\Question\" />
   </ItemGroup>
 
 </Project>

@@ -39,7 +39,7 @@
                 <h1 class="title-post-in-detail center">@posts.Title</h1>
                 <div class="info">
                     <div class="title center">
-                        <a href="/user/@posts.OwnerUserId"
+                        <a href="/users/@posts.OwnerUserId"
                            class="">
                             @posts.UserDisplayName
                         </a>
@@ -54,7 +54,7 @@
 
                 <div class="right">
                     <div class="title full-width">
-                        <a href="/user/@posts.OwnerUserId"
+                        <a href="/users/@posts.OwnerUserId"
                            class="link">
                             @posts.UserDisplayName
                         </a>
@@ -129,7 +129,7 @@
                                     <p>@item.HeadContent</p>
                                 </div>
                                 <div class="container infor full-width no-padding left">
-                                    <a href="/user/@item.Id"
+                                    <a href="/users/@item.Id"
                                        class="ui basic image label">
                                         <img src="@Model.User?.Avatar">
                                         @item.UserDisplayName
@@ -179,7 +179,7 @@
                                     <p>@item.HeadContent</p>
                                 </div>
                                 <div class="container infor full-width no-padding left">
-                                    <a href="/user/@item.Id"
+                                    <a href="/users/@item.Id"
                                        class="ui basic image label">
                                         <img src="@Model.User?.Avatar">
                                         @item.UserDisplayName
@@ -207,7 +207,7 @@
                 <!--author-->
                 <div class="container author padding-base scroll-show" style="display:none">
                     <span class="header-text"><i class="user icon"></i>Tác giả</span>
-                    <a href="/user/@posts.OwnerUserId"
+                    <a href="/users/@posts.OwnerUserId"
                        class="ui basic image label">
                         <img src="@posts?.UserAvatar">
                         @posts.UserDisplayName

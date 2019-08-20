@@ -49,7 +49,7 @@ namespace QAP4.Infrastructure.Repositories
         }
 
         //remove
-        public void Delete(string id)
+        public void Delete(int id)
         {
             var item = userEntity.SingleOrDefault(o => o.Id.Equals(id));
             if (item != null)

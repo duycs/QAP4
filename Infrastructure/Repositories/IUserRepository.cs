@@ -14,7 +14,7 @@ namespace QAP4.Infrastructure.Repositories
         Users GetByEmailOrPhone(string key);
         Users GetByName(string key);
         Users CheckLogin(string emailOrPhone, string password);
-        void Delete(string id);
+        void Delete(int id);
         void Update(Users item);
         IEnumerable<Users> GetUsersFeature();
         IEnumerable<Users> SearchInUsers(string key);

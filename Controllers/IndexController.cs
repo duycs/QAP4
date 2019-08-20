@@ -40,9 +40,10 @@ namespace QAP4.Controllers
             _postsTagRepository = postsTagRepository;
             _userRepository = userRepository;
             _quoteRepository = quoteRepository;
-            _searchService = searchService
+            _searchService = searchService;
         }
 
+        #region Views of Index page
         /// <summary>
         /// route: /
         /// Home page
@@ -65,6 +66,9 @@ namespace QAP4.Controllers
             return View(homeView);
         }
 
+        #endregion Views of Index page
+
+        #region Views of common pages
 
         /// <summary>
         /// route: /contact
@@ -101,6 +105,9 @@ namespace QAP4.Controllers
             return View();
         }
 
+        #endregion Views of common pages
+
+        #region Views of editor
         /// <summary>
         /// route: /editors
         /// Posts manager page with an editor and posts list by user
@@ -138,6 +145,28 @@ namespace QAP4.Controllers
 
             return View("PostsManager");
         }
+
+        /// <summary>
+        /// route: /posts/list
+        /// Get posts list view
+        /// </summary>
+        /// <param name="pg">page</param>
+        /// <param name="or_b">orderBy</param>
+        /// <param name="u_i">userId</param>
+        /// <param name="po_t">postTypeId</param>
+        /// <param name="pr_i">postParentId</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("/posts/list")]
+        public IActionResult PostsList([FromQuery]int pg, [FromQuery]string or_b, [FromQuery]int u_i, [FromQuery]int po_t, [FromQuery]int pr_i)
+        {
+            var postsList = _postsRepository.GetPosts(pg, or_b, u_i, po_t, pr_i);
+            return View("PostsList", postsList);
+        }
+
+        #endregion Views of Editor
+
+        #region Views of Posts and by Category
 
         /// <summary>
         /// route: /reads
@@ -373,26 +402,12 @@ namespace QAP4.Controllers
             return NotFound();
         }
 
-        /// <summary>
-        /// route: /posts/list
-        /// Get posts list view
-        /// </summary>
-        /// <param name="pg">page</param>
-        /// <param name="or_b">orderBy</param>
-        /// <param name="u_i">userId</param>
-        /// <param name="po_t">postTypeId</param>
-        /// <param name="pr_i">postParentId</param>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("/posts/list")]
-        public IActionResult PostsList([FromQuery]int pg, [FromQuery]string or_b, [FromQuery]int u_i, [FromQuery]int po_t, [FromQuery]int pr_i)
-        {
-            var postsList = _postsRepository.GetPosts(pg, or_b, u_i, po_t, pr_i);
-            return View("PostsList", postsList);
-        }
+        #endregion Views of Posts and by Category
 
+
+        #region Views of Group
         /// <summary>
-        /// route: /groups/
+        /// route: /groups/{groupId}
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -403,7 +418,10 @@ namespace QAP4.Controllers
             //return View("Group", );
             return NotFound();
         }
+        #endregion Views of Group
 
+
+        #region Views of Searching
         /// <summary>
         /// Get Search view
         /// 
@@ -419,24 +437,207 @@ namespace QAP4.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("/search/{obj}")]
-        public IActionResult SearchView(string obj, [FromQuery]string q, [FromQuery]int po_t, [FromQuery]int pg)
+        public IActionResult SearchView(string obj, [FromQuery]string q, [FromQuery]int po_t, [FromQuery]int pg, [FromQuery]int size)
         {
             try
             {
+                // Validate
                 if (string.IsNullOrEmpty(obj) || string.IsNullOrEmpty(q))
-                {
                     return BadRequest();
-                }
 
-                var viewModel = _searchService.FindAll(obj, q, po_t, pg, 10);
+                var viewModel = _searchService.FindAll(obj, q, po_t, pg, size);
 
                 return View("Search", viewModel);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return View("Search");
+                return StatusCode(500, ex.Message);
             }
         }
+        #endregion Views of Searching
+
+
+        #region Views of User
+
+        /// <summary>
+        /// Register view
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("register")]
+        public IActionResult Register()
+        {
+            return View("Register");
+        }
+
+        /// <summary>
+        /// Login view
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="sc"></param>
+        /// <returns></returns>
+        [HttpGet("login")]
+        public ActionResult Login(UsersView viewModel, [FromQuery]string sc)
+        {
+            ViewBag.Screen = sc;
+            return View();
+        }
+
+
+        /// <summary>
+        /// POST: CheckLogin action in login view
+        /// </summary>
+        /// <param name="item">item</param>
+        /// <param name="sc">screen</param>
+        /// <returns></returns>
+        [HttpPost("checklogin")]
+        public ActionResult CheckLogin(LoginView viewModel, [FromQuery]string sc)
+        {
+            try
+            {
+                // If invalidate
+                if (viewModel == null || string.IsNullOrEmpty(viewModel.EmailOrPhone) || string.IsNullOrEmpty(viewModel.Password))
+                {
+                    return RedirectToAction("login", "user", new MessageView(AppConstants.Warning.WAR_2001));
+                }
+
+                // Set current url to check redirect
+                var thisUrl = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.Path}";
+                var thatUrl = HttpContext.Session.GetString("thisUrl");
+
+                // If user is null then redirect to login
+                var user = _userRepository.CheckLogin(viewModel.EmailOrPhone.Trim(), viewModel.Password.Trim());
+                if (user == null)
+                    return RedirectToAction("login", "user", new MessageView(AppConstants.Warning.WAR_2001));
+
+                // Set user info to session
+                var userId = user.Id;
+                HttpContext.Session.SetInt32(AppConstants.Session.USER_ID, user.Id);
+                HttpContext.Session.SetString(AppConstants.Session.USER_NAME, user.DisplayName.EmptyIfNull());
+                HttpContext.Session.SetString(AppConstants.Session.FIRST_NAME, user.FirstName.EmptyIfNull());
+                HttpContext.Session.SetString(AppConstants.Session.LAST_NAME, user.LastName.EmptyIfNull());
+                HttpContext.Session.SetString(AppConstants.Session.EMAIL, user.Email.EmptyIfNull());
+                HttpContext.Session.SetString(AppConstants.Session.AVARTAR, user.Avatar.EmptyIfNull());
+
+                // Redirect to before url
+                if (!string.IsNullOrEmpty(thatUrl) && thisUrl != thatUrl)
+                {
+                    return Redirect(thatUrl);
+                }
+
+                // Default redirect to home
+                return RedirectToAction("", "Home", new MessageView(AppConstants.Message.MSG_1004));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Get Logout action
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("logout")]
+        public IActionResult Logout()
+        {
+            // TODO: update method Get to Post
+            // Remove session
+            HttpContext.Session.Clear();
+            return RedirectToAction("", "Home", new MessageView(0, AppConstants.Message.MSG_1005, ""));
+        }
+
+        /// <summary>
+        /// Post Register View
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public IActionResult Create(RegisterView viewModel)
+        {
+            if (viewModel == null)
+                return BadRequest();
+
+            //check confirm password
+            if (viewModel.Password != viewModel.PasswordConfirm)
+                return RedirectToAction("Register", "User", new MessageView(AppConstants.Error.ERR_3000));
+
+            // Check phone or email
+            var emailOrPhone = viewModel.EmailOrPhone;
+            if (ValidateExtensions.IsValidPhone(emailOrPhone))
+                viewModel.Phone = emailOrPhone;
+            else if (ValidateExtensions.IsValidEmail(emailOrPhone))
+                viewModel.Email = emailOrPhone;
+
+            // Get user 
+            Users newUser = new Users();
+            newUser.FirstName = viewModel.FirstName;
+            newUser.LastName = viewModel.LastName;
+            newUser.DisplayName = viewModel.DisplayName;
+            newUser.Email = viewModel.Email;
+            newUser.Phone = viewModel.Phone;
+            newUser.Password = viewModel.Password;
+
+            // Add new user
+            bool success = _userRepository.Add(newUser);
+
+            // If not success redirect to Register again
+            if (!success)
+                return Register();
+
+            // Get user inserted
+            var key = "";
+            if (string.IsNullOrEmpty(newUser.Email))
+            {
+                key = newUser.Phone;
+            }
+            else
+                key = newUser.Email;
+
+            var user = _userRepository.GetByEmailOrPhone(key);
+
+            if (user == null)
+                return View();
+
+            // Set user to session
+            HttpContext.Session.SetString(AppConstants.Session.USER_NAME, user.DisplayName.EmptyIfNull());
+            HttpContext.Session.SetString(AppConstants.Session.FIRST_NAME, user.FirstName.EmptyIfNull());
+            HttpContext.Session.SetString(AppConstants.Session.LAST_NAME, user.LastName.EmptyIfNull());
+            HttpContext.Session.SetString(AppConstants.Session.EMAIL, user.Email.EmptyIfNull());
+            HttpContext.Session.SetString(AppConstants.Session.AVARTAR, user.Avatar.EmptyIfNull());
+            HttpContext.Session.SetInt32(AppConstants.Session.USER_ID, user.Id);
+
+            // Redirect to index page
+            return RedirectToAction("Index", "Home", new { message = "Hello" });
+        }
+
+        /// <summary>
+        /// TODO: Return view user by username or email as /{email or username}
+        /// route: /{userId}
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("{id}")]
+        public IActionResult Personal(int id)
+        {
+            try
+            {
+                var userView = new UsersView();
+                userView.User = _userRepository.GetById(id);
+                userView.TagsFeature = _tagRepository.GetTagsFeature();
+                userView.PostsNewest = _postsRepository.GetPostsSameAuthor(0, id, 1);
+                userView.QuestionsNewest = _postsRepository.GetPostsSameAuthor(0, id, 2);
+                userView.UsersFollowing = _userRepository.GetUsersFollowing(id);
+
+                return View("Personal", userView);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        #endregion Views of User
+
 
         private TutorialDetailView GetTutorialDetail(Users user, Posts posts, int postsParentId, int po_br_i)
         {
