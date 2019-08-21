@@ -5,11 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using QAP4.Infrastructure.Repositories;
 using QAP4.Models;
-using QAP4.Middleware;
-using QAP4.Extensions;
-using QAP4.Infrastructure.Extensions;
 using AutoMapper;
 using QAP4.Infrastructure.CrossCutting;
 
@@ -80,19 +76,18 @@ namespace QAP4
             // Add cors befor add MVC
             app.UseCors(AppAllowSpecificOrigins);
 
-            //session
+            // Session
             app.UseSession();
 
-            //route
-            //if (env.IsDevelopment())
-            //{
-            app.UseDeveloperExceptionPage();
-            app.UseBrowserLink();
-            //}
-            //else
-            //{
-            //    app.UseExceptionHandler("/Home/Error");
-            //}
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+                app.UseBrowserLink();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Error");
+            }
 
             app.UseStaticFiles();
 
@@ -100,81 +95,9 @@ namespace QAP4
             //app.UseWebSockets();
             //app.UseMiddleware<ChatWebSocketMiddleware>();
 
-            // app.UseMvc(routes =>
-            // {
-            //     routes.MapRoute(
-            //         name: "default",
-            //         template: "{controller=Home}/{action=Index}/{id?}");
-            // });
-
-            // app.UseMvc(routes =>
-            // {
-            //     routes.MapRoute(
-            //         name: "default",
-            //         template: "{controller=User}/{action=Index}/{id?}");
-            // });
-
-            // app.UseMvc(routes =>
-            // {
-            //     routes.MapRoute(
-            //         name: "default",
-            //         template: "{controller=Group}/{action=Index}/{id?}");
-            // });
-
-            // app.UseMvc(routes =>
-            // {
-            //     routes.MapRoute(
-            //         name: "default",
-            //         template: "{controller=Posts}");
-            // });
-
-            // app.UseMvc(routes =>
-            // {
-            //     routes.MapRoute(
-            //         name: "default",
-            //         template: "{controller=Question}/{action=Index}/{id?}");
-            // });
-
-            // app.UseMvc(routes =>
-            // {
-            //     routes.MapRoute(
-            //         name: "default",
-            //         template: "{controller=Tutorial}/{action=Index}/{id?}");
-            // });
-
-            // app.UseMvc(routes =>
-            // {
-            //     routes.MapRoute(
-            //         name: "default",
-            //         template: "{controller=Test}/{action=Index}/{id?}");
-            // });
-
-            // app.UseMvc(routes =>
-            // {
-            //     routes.MapRoute(
-            //         name: "default",
-            //         template: "{controller=Tag}/{action=Index}/{id?}");
-            // });
-
-            // app.UseMvc(routes =>
-            // {
-            //     routes.MapRoute(
-            //         name: "default",
-            //         template: "{controller=Search}/{action=Index}/{id?}");
-            // });
-
-
-            // app.UseMvc(routes =>
-            // {
-            //     routes.MapRoute(
-            //         name: "default",
-            //         template: "{controller=x}/{action=Index}/{id?}");
-            // });
-
             //error handler
             //app.UseMiddleware(typeof(ErrorHandlingMiddleware));
 
-            //mvc route
             app.UseMvcWithDefaultRoute();
         }
     }

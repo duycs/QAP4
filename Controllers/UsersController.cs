@@ -89,7 +89,7 @@ namespace QAP4.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost("{id:int}/avatar")]
-        public async Task<IActionResult> UpdateAvatar(int id)
+        public async Task<IActionResult> UpdateUserAvatar(int id)
         {
             try
             {
@@ -150,7 +150,7 @@ namespace QAP4.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost("{id:int}/banner")]
-        public async Task<IActionResult> UpdateBanner(int id)
+        public async Task<IActionResult> UpdateUserBanner(int id)
         {
             try
             {

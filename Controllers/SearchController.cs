@@ -10,20 +10,19 @@ using QAP4.Application.Services;
 
 namespace QAP4.Controllers
 {
-    [Route("/api/[controller]")]
+    [Route("api/[controller]")]
     public class SearchController : Controller
     {
-        private readonly IPostsRepository _postsRepository;
+        //private readonly IPostsRepository _postsRepository;
         private readonly ISearchService _searchService;
 
-        public SearchController(IPostsRepository postsRepository,
+        public SearchController(
+            //IPostsRepository postsRepository,
              ISearchService searchService)
         {
-            _postsRepository = postsRepository;
+            //_postsRepository = postsRepository;
             _searchService = searchService;
         }
-
-        // GET: api/search/posts?pg=1&q=abc&po_t=2
 
         /// <summary>
         /// route: /api/search/posts
@@ -34,7 +33,7 @@ namespace QAP4.Controllers
         /// <param name="po_t"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("/search/posts")]
+        [Route("posts")]
         public IActionResult SearchPosts(
             [FromQuery]int pg,
             [FromQuery]string q,
@@ -42,15 +41,22 @@ namespace QAP4.Controllers
             [FromQuery]int page = 1,
             [FromQuery]int size = 10)
         {
-            if (string.IsNullOrEmpty(q))
-                return BadRequest();
+            try
+            {
+                if (string.IsNullOrEmpty(q))
+                    return BadRequest();
 
-            var posts = _searchService.FindPosts(q, po_t, page, size);
+                var posts = _searchService.FindPosts(q, po_t, page, size);
 
-            if (posts == null || !posts.Any())
-                return NoContent();
+                if (posts == null || !posts.Any())
+                    return NoContent();
 
-            return Ok(posts);
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
 

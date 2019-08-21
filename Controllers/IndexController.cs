@@ -405,6 +405,80 @@ namespace QAP4.Controllers
         #endregion Views of Posts and by Category
 
 
+        #region Views of Tutorials
+        /// <summary>
+        /// route: /tutorialsManager
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult TutorialsManager()
+        {
+            return View("TutorialsManager");
+        }
+
+        /// <summary>
+        /// route: /tutorials
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("tutorials")]
+        public IActionResult Tutorials()
+        {
+            return View("Tutorials");
+        }
+
+        /// <summary>
+        /// route: /tutorial/{id}
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("tutorials/{id}")]
+        public IActionResult TutorialDetail()
+        {
+            return View("TutorialDetail");
+        }
+
+        /// <summary>
+        /// route: requestTutorial
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("requestTutorial")]
+        public IActionResult RequestTutorial()
+        {
+            return View("RequestTutorial");
+        }
+
+        #endregion Views of Tutorials
+
+        #region Views of Test
+        [HttpGet("tests")]
+        public IActionResult Tests()
+        {
+            return View("Tests");
+        }
+
+        [HttpGet("CreateQuizTest")]
+        public IActionResult CreateQuizTest()
+        {
+            return View("CreateQuizTest");
+        }
+
+        [HttpGet("CreateWritingTest")]
+        public IActionResult CreateWritingTest()
+        {
+            return View("CreateWritingTest");
+        }
+
+        [HttpGet("DoTest")]
+        public IActionResult DoTest()
+        {
+            return View("DoTest");
+        }
+
+        [HttpGet("RequestTest")]
+        public IActionResult RequestTest()
+        {
+            return View("RequestTest");
+        }
+        #endregion Views of Test
+
         #region Views of Group
         /// <summary>
         /// route: /groups/{groupId}

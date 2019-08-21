@@ -6,10 +6,10 @@ using QAP4.Models;
 
 namespace QAP4.Infrastructure.Repositories
 {
-    public interface ICommentRepository
+    public interface ICommentRepository : EFRepository<Comments>
     {
 
-        IEnumerable<Comments> GetComment(int? id);
+        IEnumerable<Comments> GetCommentById(int? id);
         IEnumerable<Comments> GetCommentsByPosts(int? postsId);
         void Create(Comments model);
         void Update(Comments model);

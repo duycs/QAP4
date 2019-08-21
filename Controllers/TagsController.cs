@@ -12,7 +12,7 @@ namespace QAP4.Controllers
     [Route("api/[controller]")]
     public class TagsController : Controller
     {
-        private ITagRepository _tagRepository { get; set; }
+        private readonly ITagRepository _tagRepository;
 
         public TagsController(ITagRepository tagRepository)
         {
@@ -20,7 +20,7 @@ namespace QAP4.Controllers
         }
 
         /// <summary>
-        /// route: /api/tags/{id}
+        /// GET: /api/tags/{id}
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -28,12 +28,26 @@ namespace QAP4.Controllers
         [Route("{id:int}")]
         public IActionResult GetTagById(int id)
         {
-            var tag = _tagRepository.GetTag(id);
-            return Ok(tag);
+            try
+            {
+                if (id < 1)
+                    return BadRequest();
+
+                var tag = _tagRepository.GetTag(id);
+                if (tag == null)
+                    return NoContent();
+
+                return Ok(tag);
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         /// <summary>
-        /// route: /api/tags/{name}
+        /// GET: /api/tags/{name}
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
@@ -41,16 +55,26 @@ namespace QAP4.Controllers
         [Route("{name}")]
         public IActionResult GetTagsByName(string name)
         {
-            var tags = _tagRepository.GetTagsByName(name);
+            try
+            {
+                if (string.IsNullOrEmpty(name))
+                    return BadRequest();
 
-            if (tags == null || !tags.Any())
-                return NoContent();
+                var tags = _tagRepository.GetTagsByName(name);
 
-            return Ok(tags);
+                if (tags == null || !tags.Any())
+                    return NoContent();
+
+                return Ok(tags);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         /// <summary>
-        /// route: /api/tags
+        /// GET: /api/tags
         /// </summary>
         /// <param name="po_i"></param>
         /// <returns></returns>
@@ -58,15 +82,26 @@ namespace QAP4.Controllers
         [Route("")]
         public IActionResult GetTagsByPostsId([FromQuery]int po_i)
         {
-            var tags = _tagRepository.GetTagsByPosts(po_i);
-            if (tags == null || !tags.Any())
-                return NoContent();
+            try
+            {
+                if (po_i < 1)
+                    return BadRequest();
 
-            return Ok(tags);
+                var tags = _tagRepository.GetTagsByPosts(po_i);
+
+                if (tags == null || !tags.Any())
+                    return NoContent();
+
+                return Ok(tags);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         /// <summary>
-        /// route: /api/tags
+        /// POST: /api/tags
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -84,20 +119,19 @@ namespace QAP4.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500);
+                return StatusCode(500, ex.Message);
             }
         }
 
         /// <summary>
-        /// route: /api/tags/{id}
-        /// Update Tag
+        /// PUT: /api/tags/{id}
         /// </summary>
         /// <param name="id"></param>
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPut]
         [Route("{id:int}")]
-        public IActionResult UpdateTag(int id, [FromBody]Tags viewModel)
+        public IActionResult UpdateTagById(int id, [FromBody]Tags viewModel)
         {
             try
             {
@@ -113,19 +147,19 @@ namespace QAP4.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500);
+                return StatusCode(500, ex.Message);
             }
         }
 
         /// <summary>
-        /// route: /api/tags/{name}
+        /// PUT: /api/tags/{name}
         /// </summary>
         /// <param name="name"></param>
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPut]
         [Route("{name}")]
-        public IActionResult UpdateTagByName(string name, [FromBody]Tags viewModel)
+        public IActionResult UpdateTagsByName(string name, [FromBody]Tags viewModel)
         {
             try
             {
@@ -136,11 +170,11 @@ namespace QAP4.Controllers
                 tag = (Tags)ReflectionExtensions.CopyObjectValue(viewModel, tag);
                 _tagRepository.UpdateTag(tag);
 
-                return Ok(Json(new MessageView(tag.Id, AppConstants.Message.MSG_1000)));
+                return Ok(new MessageView(tag.Id, AppConstants.Message.MSG_1000));
             }
             catch (Exception ex)
             {
-                return StatusCode(500);
+                return StatusCode(500, ex.Message);
             }
         }
 
@@ -151,20 +185,20 @@ namespace QAP4.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id:int}")]
-        public IActionResult DeleteTag(int id)
+        public IActionResult DeleteTagById(int id)
         {
             try
             {
-                if (0 == id)
+                if (id < 1)
                     return BadRequest();
 
                 _tagRepository.DeleteTag(id);
 
-                return Ok(Json(new MessageView(id, AppConstants.Message.MSG_1000)));
+                return Ok(new MessageView(id, AppConstants.Message.MSG_1000));
             }
             catch (Exception ex)
             {
-                return StatusCode(500);
+                return StatusCode(500, ex.Message);
             }
         }
 
@@ -174,15 +208,22 @@ namespace QAP4.Controllers
         /// <param name="name"></param>
         /// <returns></returns>
         [HttpDelete("{name}")]
-        public IActionResult DeleteTagByName(string name)
+        public IActionResult DeleteTagsByName(string name)
         {
-            var tag = _tagRepository.GetTagByName(name);
-            if (null == tag)
-                return BadRequest();
+            try
+            {
+                var tag = _tagRepository.GetTagByName(name);
+                if (null == tag)
+                    return BadRequest();
 
-            _tagRepository.DeleteTagByName(name);
+                _tagRepository.DeleteTagByName(name);
 
-            return Ok(Json(new MessageView(tag.Id, AppConstants.Message.MSG_1000)));
+                return Ok(new MessageView(tag.Id, AppConstants.Message.MSG_1000));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
     }

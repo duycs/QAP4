@@ -41,7 +41,7 @@ namespace QAP4.Controllers
         }
 
         /// <summary>
-        /// route: /api/votes
+        /// GET: /api/votes
         /// </summary>
         /// <param name="po_i">postsId</param>
         /// <param name="vo_t">voteTypeId</param>

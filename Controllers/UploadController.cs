@@ -12,7 +12,7 @@ using QAP4.Infrastructure.Extensions.File;
 namespace QAP4.Controllers
 {
 
-    [Route("api/v1/[controller]")]
+    [Route("api/[controller]")]
     public class UploadController : Controller
     {
         private readonly IAmazonS3Service _amazonS3Service;
