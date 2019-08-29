@@ -321,9 +321,15 @@ namespace QAP4.Controllers
         // posts can be a posts normal (1), a question (2) or an answer (postType=3)
         [HttpGet]
         [Route("/api/posts")]
-        public IEnumerable<Posts> Posts([FromQuery]int pg, [FromQuery]string or_b, [FromQuery]int u_i, [FromQuery]int po_t, [FromQuery]int pr_i)
+        public IActionResult Posts([FromQuery]int pg, [FromQuery]string or_b, [FromQuery]int u_i, [FromQuery]int po_t, [FromQuery]int pr_i)
         {
-            return PostsRepo.GetPosts(pg, or_b, u_i, po_t, pr_i);
+            var userId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
+            if(userId != u_i)
+                return Unauthorized();
+
+            var posts = PostsRepo.GetPosts(pg, or_b, u_i, po_t, pr_i);
+            
+            return Ok(posts);
         }
 
         [HttpGet]

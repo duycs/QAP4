@@ -229,6 +229,10 @@ namespace QAP4.Controllers
         {
             try
             {
+                var userId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
+                if(userId != id)
+                    return Unauthorized();
+
                 var file = this.Request.Form.Files[0];
                 var imageUrl = string.Empty;
 
@@ -285,6 +289,7 @@ namespace QAP4.Controllers
         {
             try
             {
+
                 var file = this.Request.Form.Files[0];
                 var imageUrl = string.Empty;
 
@@ -339,6 +344,10 @@ namespace QAP4.Controllers
         {
             try
             {
+                var userId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
+                if(userId != id)
+                    return Unauthorized();
+
                 var file = this.Request.Form.Files[0];
                 var imageUrl = string.Empty;
 

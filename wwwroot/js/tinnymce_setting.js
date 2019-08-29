@@ -2,10 +2,10 @@
 var screeWidth = $(window).width();
 var screenHeight = $(window).height();
 //var mToolbar = 'tag|movePost|insertfile undo redo | styleselect |forecolor backcolor| bold italic | alignleft aligncenter alignjustify | bullist | link image |print media';
-var mToolbar = 'fontsizeselect fontselect image code link styleselect';
+var mToolbar = 'fontsizeselect fontselect image codesample mathSymbols code link styleselect';
 
 if (screeWidth <= 767) {
-    mToolbar = 'fontsizeselect image code link styleselect';
+    mToolbar = 'fontsizeselect image codesample  mathSymbols code link styleselect';
 }
 
 //init
@@ -21,7 +21,7 @@ tinymce.init({
     //content_css: '/wwwroot/css/myTinnyMCE.css',
     visual: false,
     //add plugins
-    plugins: ['link image code wordcount'],
+    plugins: ['link image  wordcount codesample mathSymbols code'],
     //toolbar
     toolbar: mToolbar,
 
@@ -46,6 +46,21 @@ tinymce.init({
         "Verdana=verdana,geneva;" +
         "Webdings=webdings;" +
         "Wingdings=wingdings,zapf dingbats",
+    codesample_dialog_width: '400',
+    codesample_dialog_height: '400',
+    codesample_languages: [
+        {text: 'HTML/XML', value: 'markup'},
+        {text: 'JavaScript', value: 'javascript'},
+        {text: 'CSS', value: 'css'},
+        {text: 'PHP', value: 'php'},
+        {text: 'Ruby', value: 'ruby'},
+        {text: 'Python', value: 'python'},
+        {text: 'Java', value: 'java'},
+        {text: 'C', value: 'c'},
+        {text: 'C#', value: 'csharp'},
+        {text: 'C++', value: 'cpp'}
+    ],
+    external_plugins: {'mathSymbols': '/lib/tinymce/plugins/mathsymbols/plugin.js'}, // Add plugin to Tinymce
 
     //set defaut font size, font type
     setup: function (ed) {

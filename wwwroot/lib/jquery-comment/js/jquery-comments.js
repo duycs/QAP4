@@ -1201,7 +1201,8 @@
                 });
             } else {
                 var profilePicture = $('<i/>', {
-                    'class': 'fa fa-user'
+                    // 'class': 'fa fa-user'
+                    'class': ''
                 });
             }
             profilePicture.addClass('profile-picture');

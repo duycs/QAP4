@@ -1149,6 +1149,7 @@
 
             //store image
             getImgCover: function (htmlContent) {
+                var self = this;
                 document.getElementById("contentTemp").innerHTML = htmlContent;
                 //let $coverImgs = $("#coverImgs");
                 let images = document.getElementById("contentTemp").getElementsByTagName('img');
@@ -1161,11 +1162,21 @@
                     console.log(img);
                     let isError = false;
                     var src = img.src;
-                    if (src.indexOf(localHostStr) != -1) {
-                        console.log('image error');
+
+                    if(src.includes("blob:http")){
                         isError = true;
                     }
+
+                    if (src.indexOf(localHostStr) != -1) {
+                        isError = true;
+                    }
+
+                    if(!self.isFileImage(src)){
+                        isError = true;
+                    }
+
                     if (!isError) {
+                        console.log("image",src);
                         srcList.push(src);
                         $imgs += "<img class='coverThumb' src='" + src + "' onclick=\"chooseImg($(this),'" + src + "')\"/>";
                     }
@@ -1173,6 +1184,10 @@
                 //$coverImgs.empty().append($imgs);
                 img0 = srcList[0];
                 return img0;
+            },
+
+            isFileImage : function(file){
+                return file && file['type'] && file['type'].split('/')[0] === 'image';
             },
 
             b64toBlob: function (b64Data, contentType, sliceSize) {
