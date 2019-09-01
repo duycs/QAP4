@@ -16,7 +16,7 @@
         .menu.left{display: none}
         .menu.left { display: none }
 
-        #WrapContent { <!-- overflow: hidden --> }
+        #WrapContent { overflow-y: hidden}
         /*.posts-manager .list-post { display: none }*/
         .body-content { padding-left: 0px !important; padding-right: 0px !important; padding-top: 45px; }
         footer {display: none}
@@ -27,7 +27,7 @@
 @model IEnumerable<Posts>
 @using QAP4.Models
 <input name="image" type="file" id="upload" class="hidden" onchange="">
-<div class="container posts-manager">
+<div class="posts-manager">
     <div class="container guide hide">
         <p class="header-text black">Hướng dẫn: <span class="caption" style="color:green">Bạn hãy chọn lựa viết bài đơn hoặc biên tập và chú ý đến dòng dướng dẫn này</span></p>
     </div>
@@ -141,18 +141,21 @@
                     </div>
                 </div>
 
-                <div id="WrapDescription" class="split split-vertical content">
+                <div id="WrapDescription" class="split split-vertical content left full-width">
                     <div class="wrap-description" style='width: 100%; border-top: 1px solid #ddd;'>
                         <span class="header-text"><i class='icon pencil'></i>Miêu tả cho bài viết</span>
                         <div id='DescriptionPost'>
-                            <textarea class='col-xs-12' placeholder='Viết miêu tả' spellcheck="false"></textarea>
+                            <textarea class='full-width' placeholder='Viết miêu tả' spellcheck="false"></textarea>
                         </div>
 
-                        <div id='CoverImg' class="hide">
+                        <div id='CoverImg' class="">
                             <input type="file" onchange="uploadImg()" style="display: none" />
-                            <span class="caption"><i class="fa fa-picture-o"></i>Ảnh bìa bài viết</span>
+                            <div class='btn-load-cover-images'>
+                                <span class="header-text pointer">
+                                    <i class="icon fa-picture-o"></i>Tải ảnh bìa bài viết</span>
+                            </div>
                             <div id="coverImgs" class="col-xs-12">
-                                <%--<img src="" height="200" alt="ảnh bìa bài viết" />--%>
+                                <!-- <img src="" height="200" alt="ảnh bìa bài viết" /> -->
                             </div>
                         </div>
 
@@ -178,7 +181,7 @@
 
                     <!--post preview-->
 
-                    <div class="container post-preview">
+                    <div class="container post-preview hide">
                         <span class="header-text"><i class="icon list layout"></i>Xem trước</span>
                         <span class="head grey">Câu hỏi</span>
                         <div class="container question"></div>

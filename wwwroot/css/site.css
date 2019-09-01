@@ -231,6 +231,9 @@ input.search { margin-left: 0px !important; }
 #UserInfo { color: blue !important }
 .margin-bottom-base{margin-bottom:12px;}
 
+.is-choosed {opacity: 1!important; border: solid 1px #21BA45!important}
+.is-not-choosed {opacity: 0.5; border: none}
+
 /* Custom, iPhone Retina */
 @media only screen and (max-width : 320px) { 
      /* tinny modal */
@@ -308,6 +311,7 @@ input.search { margin-left: 0px !important; }
 
     .courses .actions { position: fixed; bottom: 0px; left: 0px; z-index: 1000; border-top: 1px solid #cacaca; background-color: #fafafa; border: 1px solid #d4d4d4; }
     footer { display: none!important }
+
 }
 
 /* Small Devices, Tablets */

@@ -83,6 +83,7 @@
         </div>
 
         <!--add profile info-->
+        @if(Model.IsCurrentUser){
         <div class="container add-info no-padding">
             <input class='hide input-avatar-file' type="file" id="avatar-file" name="file" multiple />
             <input class='hide input-banner-file' type="file" id="banner-file" name="file" multiple />
@@ -120,6 +121,7 @@
             <img class='temp-avatar' src='' />
             <img class='temp-banner' src='' />
         </div>
+        }
 
         <!--tags-->
         @if (tagsFeature.Count() > 0)
@@ -361,6 +363,8 @@
     </div>
 </div>
 
+
+@if(Model.IsCurrentUser){
 <script type="text/javascript">
 
 //global
@@ -456,3 +460,5 @@ function uploadAvatarFile(input) {
 }
 
 </script>
+
+}

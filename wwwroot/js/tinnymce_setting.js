@@ -2,10 +2,10 @@
 var screeWidth = $(window).width();
 var screenHeight = $(window).height();
 //var mToolbar = 'tag|movePost|insertfile undo redo | styleselect |forecolor backcolor| bold italic | alignleft aligncenter alignjustify | bullist | link image |print media';
-var mToolbar = 'fontsizeselect fontselect image codesample mathSymbols code link styleselect';
+var mToolbar = 'styleselect fontsizeselect fontselect image codesample mathSymbols code link';
 
 if (screeWidth <= 767) {
-    mToolbar = 'fontsizeselect image codesample  mathSymbols code link styleselect';
+    mToolbar = 'styleselect fontsizeselect image codesample  mathSymbols code link';
 }
 
 //init

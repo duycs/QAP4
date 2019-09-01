@@ -192,6 +192,14 @@ namespace QAP4.Controllers
         public IActionResult Personal(int id)
         {
             var userView = new UsersView();
+
+            // Check if current user or other user view profile
+            var currentUserId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
+                if(currentUserId == id)
+                    userView.IsCurrentUser = true;
+                else
+                    userView.IsCurrentUser = false;    
+
             userView.User = UserRepo.GetById(id);
             userView.TagsFeature = TagRepo.GetTagsFeature();
             userView.PostsNewest = PostsRepo.GetPostsSameAuthor(0, id, 1);

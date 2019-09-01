@@ -69,6 +69,10 @@
 
                 showManager: function (success, error) { },
 
+                clickLoadCoverImages: function(){},
+                clickChooseImageCover: function(ev){},
+
+
                 //setSelectedOption: function (success, error) { success(); }
 
                 //create, add element 
@@ -97,12 +101,14 @@
                 //'click .posts-manager .list .ui.checkbox': 'clickCheckboxInList',
                 'click .posts-manager .choose-items-checked': 'clickChooseItemsChecked',
                 //'click .posts-manager .tabular.menu .tab.active .menu .item.selected': 'setSelectedOption'
-                'click .posts-manager .actions .edit': 'clickEditQuestion'
-
+                'click .posts-manager .actions .edit': 'clickEditQuestion',
+                'click .posts-manager .btn-load-cover-images': 'clickLoadCoverImages',
+                'click .posts-manager .btn-choose-image': 'clickChooseImageCover'
             },
 
             elms: {
                 'editor': '#Editor',
+                'coverImages': '#coverImgs',
                 'iframeEditor': '#tinnyMCE',
                 'mceToolbarGroup': '.mce-toolbar-grp',
                 //'iframeEditor': '#mceu_18',
@@ -617,6 +623,13 @@
                 //postPosts(ev);
             },
 
+            clickLoadCoverImages: function (ev){
+                let self = this;
+                console.log('click load cover images to set choose images cover');
+                var htmlContent = tinyMCE.activeEditor.getContent({ format: 'raw' }) || '';
+                self.setChooseImagesCover(htmlContent);
+            },
+
             //selected option post type in tab
             //setSelectedOption: function (ev) {
             //    let self = this;
@@ -701,7 +714,7 @@
                         htmlContent = tinyMCE.activeEditor.getContent({ format: 'raw' }) || '';
                         listTag = self.getElementVal('listTag');
                         tags = self.getArrVal(listTag, 'data-value').toString();
-                        coverImg = self.getImgCover(htmlContent);
+                        //coverImg = self.getRandomImageCover(htmlContent);
 
                         break;
                     case 2:
@@ -714,7 +727,8 @@
                         htmlContent = tinyMCE.activeEditor.getContent({ format: 'raw' }) || '';
                         listTag = self.getElementVal('listTag');
                         tags = self.getArrVal(listTag, 'data-value').toString();
-                        coverImg = self.getImgCover(htmlContent);
+                        //coverImg = self.getRandomImageCover(htmlContent);
+
                         let itemInPreviewAnswers = self.getElementVal('itemInPreviewAnswers');
                         //
                         $.each($(itemInPreviewAnswers), function (i, v) {
@@ -740,7 +754,7 @@
                         description = self.getElementVal('description').val();
                         listTag = self.getElementVal('listTag');
                         tags = self.getArrVal(listTag, 'data-value').toString();
-                        coverImg = self.getImgCover(htmlContent);
+                        //coverImg = self.getRandomImageCover(htmlContent);
                         //
                         $.each($(itemInPreviewAnswers), function (i, v) {
                             let dataOrder = ~~$(v).attr('data-order');
@@ -794,7 +808,7 @@
                 data['HtmlContent'] = htmlContent;
                 data['Description'] = description;
                 data['Tags'] = tags;
-                data['CoverImg'] = coverImg;
+                //data['CoverImg'] = coverImg;
                 data['RelatedPosts'] = relatedPosts;
                 data['Answer2'] = answer2;
                 data['Answer3'] = answer3;
@@ -835,8 +849,27 @@
                                 window.showToast(result.type, result.message);
                             }
                             console.log(data);
-                            self.uploadImageFile("coverImage", data.CoverImg, data.Id);
-                            //postImgCover(postsId); //store img
+                            // Get cover image
+                            let coverImages = self.getElementVal('coverImages').find('img');
+                            let isChoosedCoverImage = false;
+                            if(coverImages && coverImages.length > 0){
+                                let imageChoosed = null;
+                                coverImages.filter(function(index, value){
+                                    if($(value).hasClass('is-choosed'))
+                                        imageChoosed = value;
+                                });
+                                if(imageChoosed){
+                                    isChoosedCoverImage = true;
+                                    let src = imageChoosed.src;
+                                    self.uploadImageFile("coverImage", src, data.Id);
+                                }
+                            }
+
+                            // If not choose then set random image in images cover
+                            if(!isChoosedCoverImage){
+                                let htmlContent = self.getRandomImageCover(htmlContent);
+                                self.uploadImageFile("coverImage", htmlContent, data.Id);
+                            }
                         },
                         error: function (jqXHR, textStatus, errorThrown) {
                             self.errorCallback("postPosts " + errorThrown);
@@ -866,6 +899,8 @@
                         //self.bindPostsToList(result);
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
+                        // TODO: Cant check status code with unauthor
+                        console.log(jqXHR, textStatus, errorThrown);
                         self.errorCallback("getPosts " + errorThrown);
                     }
                 });
@@ -1039,6 +1074,9 @@
                         title.val(post.title);
                         htmlContent.empty().append(post.htmlContent);
                         description.val(post.description);
+
+                        // click to get coverImage
+                        self.clickLoadCoverImages();
                     }
                 } else {
                     //$(editor).attr('data-id', '');
@@ -1129,7 +1167,7 @@
             // post image
             postImgCover: function (imgId) {
                 let htmlContent = tinyMCE.activeEditor.getContent({ format: 'raw' }) || '';
-                let data = getImgCover(htmlContent);
+                let data = getRandomImageCover(htmlContent);
                 $.ajax({
                     url: "/api/images/" + imgId,
                     type: 'POST',
@@ -1147,14 +1185,12 @@
                 });
             },
 
-            //store image
-            getImgCover: function (htmlContent) {
+            // Auto get image at 0 of list cover images
+            getRandomImageCover: function (htmlContent) {
                 var self = this;
                 document.getElementById("contentTemp").innerHTML = htmlContent;
-                //let $coverImgs = $("#coverImgs");
                 let images = document.getElementById("contentTemp").getElementsByTagName('img');
                 let srcList = [];
-                let $imgs = "";
                 let img0;
                 let localHostStr = "localhost";
                 for (let i = 0; i < images.length; i++) {
@@ -1171,23 +1207,64 @@
                         isError = true;
                     }
 
-                    if(!self.isFileImage(src)){
-                        isError = true;
-                    }
-
                     if (!isError) {
-                        console.log("image",src);
                         srcList.push(src);
-                        $imgs += "<img class='coverThumb' src='" + src + "' onclick=\"chooseImg($(this),'" + src + "')\"/>";
                     }
                 }
-                //$coverImgs.empty().append($imgs);
                 img0 = srcList[0];
                 return img0;
             },
 
-            isFileImage : function(file){
-                return file && file['type'] && file['type'].split('/')[0] === 'image';
+            setChooseImagesCover: function (htmlContent) {
+                var self = this;
+                document.getElementById("contentTemp").innerHTML = htmlContent;
+                let coverImages = self.getElementVal('coverImages');
+                let images = document.getElementById("contentTemp").getElementsByTagName('img');
+                let srcList = [];
+                let coverImagesHtml = "";
+                //let img0;
+                let localHostStr = "localhost";
+                for (let i = 0; i < images.length; i++) {
+                    let img = images[i];
+                    //console.log(img);
+                    let isError = false;
+                    var src = img.src;
+
+                    if(src.includes("blob:http")){
+                        isError = true;
+                    }
+
+                    if (src.indexOf(localHostStr) != -1) {
+                        isError = true;
+                    }
+
+                    if (!isError) {
+                        srcList.push(src);
+                        coverImagesHtml += `<img class='btn-choose-image coverThumb' src='${src}' onclick='clickChooseImageCover()'/>`;
+                    }
+                }
+                coverImages.empty().append(coverImagesHtml);
+            },
+
+            // Choose this image, set cache position to selected when submit 
+            clickChooseImageCover : function (ev){
+                var self = this;
+                //console.log('choose this image', target);
+
+                // All images cover
+                let coverImages = self.getElementVal('coverImages');
+                images = coverImages.find('img')
+
+                // Reset all image have class is-choosed and set is-not-choose
+                images.filter(function(index, value){
+                    var image = $(value);
+                    image.removeClass('is-choosed');
+                    image.addClass('is-not-choosed');
+                });
+
+                // Add class is-choosed for this
+                // console.log($(ev));
+                $(ev.target).removeClass('is-not-choosed').addClass('is-choosed');
             },
 
             b64toBlob: function (b64Data, contentType, sliceSize) {

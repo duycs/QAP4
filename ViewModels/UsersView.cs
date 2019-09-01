@@ -8,6 +8,7 @@ namespace QAP4.ViewModels
     public class UsersView
     {
         public Users User { get; set; }
+        public bool IsCurrentUser { get; set; }
         public IEnumerable<Tags> TagsFeature { get; set; }
         public IEnumerable<Users> UsersFollowing { get; set; }
         public IEnumerable<Posts> PostsNewest { get; set; }

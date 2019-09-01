@@ -323,9 +323,9 @@ namespace QAP4.Controllers
         [Route("/api/posts")]
         public IActionResult Posts([FromQuery]int pg, [FromQuery]string or_b, [FromQuery]int u_i, [FromQuery]int po_t, [FromQuery]int pr_i)
         {
-            var userId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
-            if(userId != u_i)
-                return Unauthorized();
+            // var userId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
+            // if(userId != u_i)
+            //     return Unauthorized();
 
             var posts = PostsRepo.GetPosts(pg, or_b, u_i, po_t, pr_i);
             
