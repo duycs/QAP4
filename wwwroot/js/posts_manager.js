@@ -808,7 +808,7 @@
                 data['HtmlContent'] = htmlContent;
                 data['Description'] = description;
                 data['Tags'] = tags;
-                //data['CoverImg'] = coverImg;
+                data['CoverImg'] = null;
                 data['RelatedPosts'] = relatedPosts;
                 data['Answer2'] = answer2;
                 data['Answer3'] = answer3;
@@ -826,6 +826,39 @@
                 let postsListTypeId = ~~window.getParameterByName(self.queries.postsListTypeId);
                 let userId = ~~window.getParameterByName(self.queries.userId);
                 let postsId = data.id || 0;
+
+                // Did set choose cover images befor by setChooseCoverImages, all images is exist
+                // Check image link or src, if src then use upload image, else save direct image link
+                // Get cover image
+                let coverImages = self.getElementVal('coverImages').find('img');
+                let isImageLink = false;
+                let coverSrc = null;
+                let isUploadCoverImage = true;
+                if(coverImages && coverImages.length > 0){
+                    let imageChoosed = null;
+                    coverImages.filter(function(index, value){
+                        if($(value).hasClass('is-choosed'))
+                            imageChoosed = value;
+                    });
+
+                    // If not choose then set default is image at 0
+                    if(imageChoosed)
+                        coverSrc = imageChoosed.src;
+                    else
+                        coverSrc = coverImages[0].src;
+
+                    // Check if this is link image
+                    isImageLink = coverSrc.includes("http");
+                    if(isImageLink) 
+                        isUploadCoverImage = false;
+                    else 
+                        isUploadCoverImage = true;
+                }
+
+                // Set direct link to save
+                if(!isUploadCoverImage)
+                    data.CoverImg = coverSrc;
+
                 //console.log(data);
                 var success = function () {
                     $.ajax({
@@ -848,27 +881,11 @@
                                 }
                                 window.showToast(result.type, result.message);
                             }
-                            console.log(data);
-                            // Get cover image
-                            let coverImages = self.getElementVal('coverImages').find('img');
-                            let isChoosedCoverImage = false;
-                            if(coverImages && coverImages.length > 0){
-                                let imageChoosed = null;
-                                coverImages.filter(function(index, value){
-                                    if($(value).hasClass('is-choosed'))
-                                        imageChoosed = value;
-                                });
-                                if(imageChoosed){
-                                    isChoosedCoverImage = true;
-                                    let src = imageChoosed.src;
-                                    self.uploadImageFile("coverImage", src, data.Id);
-                                }
-                            }
 
-                            // If not choose then set random image in images cover
-                            if(!isChoosedCoverImage){
-                                let htmlContent = self.getRandomImageCover(htmlContent);
-                                self.uploadImageFile("coverImage", htmlContent, data.Id);
+                            // Upload cover image if need
+                            //console.log(isUploadCoverImage, coverSrc);
+                            if(isUploadCoverImage){
+                                self.uploadImageFile("coverImage", coverSrc, data.Id);
                             }
                         },
                         error: function (jqXHR, textStatus, errorThrown) {
@@ -1186,34 +1203,34 @@
             },
 
             // Auto get image at 0 of list cover images
-            getRandomImageCover: function (htmlContent) {
-                var self = this;
-                document.getElementById("contentTemp").innerHTML = htmlContent;
-                let images = document.getElementById("contentTemp").getElementsByTagName('img');
-                let srcList = [];
-                let img0;
-                let localHostStr = "localhost";
-                for (let i = 0; i < images.length; i++) {
-                    let img = images[i];
-                    console.log(img);
-                    let isError = false;
-                    var src = img.src;
+            // getRandomImageCover: function (htmlContent) {
+            //     var self = this;
+            //     document.getElementById("contentTemp").innerHTML = htmlContent;
+            //     let images = document.getElementById("contentTemp").getElementsByTagName('img');
+            //     let srcList = [];
+            //     let img0;
+            //     let localHostStr = "localhost";
+            //     for (let i = 0; i < images.length; i++) {
+            //         let img = images[i];
+            //         console.log(img);
+            //         let isError = false;
+            //         var src = img.src;
 
-                    if(src.includes("blob:http")){
-                        isError = true;
-                    }
+            //         if(src.includes("blob:http")){
+            //             isError = true;
+            //         }
 
-                    if (src.indexOf(localHostStr) != -1) {
-                        isError = true;
-                    }
+            //         if (src.indexOf(localHostStr) != -1) {
+            //             isError = true;
+            //         }
 
-                    if (!isError) {
-                        srcList.push(src);
-                    }
-                }
-                img0 = srcList[0];
-                return img0;
-            },
+            //         if (!isError) {
+            //             srcList.push(src);
+            //         }
+            //     }
+            //     img0 = srcList[0];
+            //     return img0;
+            // },
 
             setChooseImagesCover: function (htmlContent) {
                 var self = this;
@@ -1294,46 +1311,46 @@
             uploadImageFile: function (fileName, srcFile, postsId) {
                 var self = this;
 
-                if (srcFile && postsId > 0) {
-                    //console.log(postsId, srcFile);
+                if (!srcFile && postsId < 1) 
+                    return;
 
-                    // Split the base64 string in data and contentType
-                    var block = srcFile.split(";");
-                    // Get the content type of the image
-                    var contentType = block[0].split(":")[1];// In this case "image/gif"
-                    // get the real base64 content of the file
-                    var realData = block[1].split(",")[1];// In this case "R0lGODlhPQBEAPeoAJosM...."
+                // Split the base64 string in data and contentType
+                var block = srcFile.split(";");
+                // Get the content type of the image
+                var contentType = block[0].split(":")[1];// In this case "image/gif"
+                // get the real base64 content of the file
+                var realData = block[1].split(",")[1];// In this case "R0lGODlhPQBEAPeoAJosM...."
 
-                    // Convert it to a blob to upload
-                    var blob = self.b64toBlob(realData, contentType);
-                    //var file = input.files[0];
-                    blob.lastModifiedDate = new Date();
-                    blob.name = fileName;
-                    var file = blob;
+                // Convert it to a blob to upload
+                var blob = self.b64toBlob(realData, contentType);
+                //var file = input.files[0];
+                blob.lastModifiedDate = new Date();
+                blob.name = fileName;
+                var file = blob;
 
-                    if (file) {
-                        //reader.readAsDataURL(file);
-                        var formData = new FormData();
-                        formData.set("file", file, file.name);
-                        $.ajax({
-                            url: '/api/images/posts/' + postsId + '/coverimg',
-                            type: 'post',
-                            data: formData,
-                            contentType: false,
-                            processData: false,
-                            async: false,
-                            success: function (response) {
-                                var imageUrl = response.imageUrl;
-                                if (imageUrl) {
-                                    console.log("upload succes ", imageUrl);
-                                }
-                            },
-                            error: function (jqXHR, textStatus, errorThrown) {
-                                self.errorCallback("uploadImageFile " + errorThrown);
-                            }
-                        });
+                if (!file)
+                    return;
+
+                //reader.readAsDataURL(file);
+                var formData = new FormData();
+                formData.set("file", file, file.name);
+                $.ajax({
+                    url: '/api/images/posts/' + postsId + '/coverimg',
+                    type: 'post',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    async: false,
+                    success: function (response) {
+                        var imageUrl = response.imageUrl;
+                        if (imageUrl) {
+                            console.log("upload succes ", imageUrl);
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        self.errorCallback("uploadImageFile " + errorThrown);
                     }
-                }
+                });
             },
 
 
