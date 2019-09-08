@@ -41,6 +41,19 @@ namespace QAP4.Controllers
             return View();
         }
 
+        
+        [HttpGet]
+        [Route("@{accountName}")]
+        public IActionResult FindUserByAccountName(string accountName)
+        {
+            if(string.IsNullOrEmpty(accountName))
+                return BadRequest();
+
+            var thisHost = $"{this.Request.Scheme}://{this.Request.Host}";
+            var url = $"{thisHost}/users/@{accountName}";
+            return Redirect(url);
+        }
+
         [HttpGet("")]
         public IActionResult Index()
         {

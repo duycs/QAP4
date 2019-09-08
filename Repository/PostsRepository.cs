@@ -432,5 +432,22 @@ namespace QAP4.Repository
         {
             return postsEntity.ToList();
         }
+
+        public Posts GetByFriendlyUrl(string friendlyUrl)
+        {
+            return postsEntity.FirstOrDefault(w=>w.FriendlyUrl == friendlyUrl);
+        }
+
+        public void UpdateRange(List<Posts> postsList)
+        {
+            postsEntity.UpdateRange(postsList);
+            context.SaveChanges();
+        }
+
+        public void UpdateRange(IEnumerable<Posts> postsList)
+        {
+            postsEntity.UpdateRange(postsList);
+            context.SaveChanges();
+        }
     }
 }

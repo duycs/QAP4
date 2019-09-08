@@ -155,6 +155,8 @@ namespace QAP4.Models
 
                 entity.Property(e => e.Title).HasMaxLength(250);
 
+                entity.Property(e=>e.FriendlyUrl).HasColumnType("varchar(max)");
+
                 entity.Property(e => e.UserDisplayName).HasMaxLength(50);
 
                 entity.Property(e => e.UserAvatar).HasColumnType("varchar(max)");
@@ -313,6 +315,7 @@ namespace QAP4.Models
                 entity.Property(e => e.AboutMe).HasMaxLength(250);
 
                 entity.Property(e => e.Address).HasMaxLength(250);
+                entity.Property(e => e.AccountName).HasColumnType("varchar(250)");
 
                 entity.Property(e => e.Avatar).HasColumnType("varchar(max)");
                 entity.Property(e => e.BannerImg).HasColumnType("varchar(max)");

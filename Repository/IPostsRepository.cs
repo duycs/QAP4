@@ -10,6 +10,7 @@ namespace QAP4.Repository
     {
         IEnumerable<Posts> GetAll();
         Posts GetPosts(int? id);
+        Posts GetByFriendlyUrl(string friendlyUrl);
         IEnumerable<Posts> GetPostsFeature(int page, int postsTypeId);
         IEnumerable<Posts> GetPostsNewest(int page, int postsTypeId);
         IEnumerable<Posts> GetPostsByUser(int page, int? userId, int postsTypeId);
@@ -25,6 +26,8 @@ namespace QAP4.Repository
         int Add(Posts item);
         int Delete(int? id);
         int Update(Posts item);
+
+        void UpdateRange(IEnumerable<Posts> postsList);
 
         //get with relation other object
         IEnumerable<Posts> GetPostsSameTags(int postsId, string tags, int postsTypeId);

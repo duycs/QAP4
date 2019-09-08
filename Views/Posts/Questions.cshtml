@@ -36,7 +36,7 @@
                             <div class="container no-padding content">
                                 <!--user create-->
                                 <div class="full-width padding-top-base head">
-                                    <a href="/user/@item.OwnerUserId"
+                                    <a href="/users/@item.OwnerUserId"
                                        class="ui basic image label">
                                         <img src="@item?.UserAvatar">
                                         @item.UserDisplayName
@@ -48,7 +48,7 @@
 
                                 <div class="container full-width no-padding">
                                     <!--title-->
-                                    <a href="/posts/@item.Id"
+                                    <a href="/posts/@item.FriendlyUrl"
                                        class="header title-post left">
                                         @item.Title
                                     </a>
@@ -75,7 +75,7 @@
 
                                 @if (item.PostTypeId == 2)
                                 {
-                                    <a href="/posts/@item.Id"
+                                    <a href="/posts/@item.FriendlyUrl"
                                        class="left ui green tiny button">
                                         Trả lời
                                     </a>
@@ -127,7 +127,7 @@
                             <div class="container no-padding content">
                                 <!--user create-->
                                 <div class="full-width padding-top-base head">
-                                    <a href="/user/@item.OwnerUserId"
+                                    <a href="/users/@item.OwnerUserId"
                                        class="ui basic image label">
                                         <img src="@item?.UserAvatar">
                                         @item.UserDisplayName
@@ -139,7 +139,7 @@
 
                                 <div class="container no-padding full-width">
                                     <!--title-->
-                                    <a href="/posts/@item.Id"
+                                    <a href="/posts/@item.FriendlyUrl"
                                        class="header title-post left">
                                         @item.Title
                                     </a>
@@ -167,7 +167,7 @@
 
                                 @if (item.PostTypeId == 2)
                                 {
-                                    <a href="/posts/@item.Id"
+                                    <a href="/posts/@item.FriendlyUrl"
                                        class="left ui green  tiny button">
                                         Thêm trả lời
                                     </a>
@@ -256,7 +256,7 @@
                 <div class="ui labels">
                     @foreach (var user in usersFeature)
                     {
-                        <a href="\users\@user.Id"
+                        <a href="\users\@@user.AccountName"
                            class="ui basic image label">
                             <img src="@user.ProfileImageUrl">
                             @user.DisplayName

@@ -7,6 +7,7 @@ namespace QAP4.Models
     {
         public int Id { get; set; }
         public int? AccountId { get; set; }
+        public string AccountName{get;set;}
         public string Address { get; set; }
         public int? Age { get; set; }
         public string AboutMe { get; set; }

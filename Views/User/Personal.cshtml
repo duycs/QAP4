@@ -14,14 +14,13 @@
 
 @model UsersView
 @using QAP4.ViewModels
-@{var user = Model.User;}
+@{ var user = Model.User;}
 @{ var postsNewest = Model.PostsNewest;}
 @{ var questionsNewest = Model.QuestionsNewest;}
 @{ var usersFollowing = Model.UsersFollowing;}
 @{ var testsNewest = Model.TestsNewest;}
 @{ var tutorialsNewest = Model.TutorialsNewest;}
 @{ var tagsFeature = Model.TagsFeature;}
-
 
 <div id="personal" class="container body-content personal">
     <div class="col-lg-2 col-md-2 col-sx-12 col-sm-12">
@@ -36,7 +35,7 @@
             <div class="container avartar full-width" style="height:14vh;">
                 <a class="ui basic massive image label">
                     <img class="avatar-on-banner" src="@Model.User?.Avatar">
-                    @user.DisplayName
+                    @user?.DisplayName
                     @*<div class="detail"></div>*@
                 </a>
             </div>
@@ -50,10 +49,10 @@
                         <div class="column no-padding-lr"><p class="caption-text hide">Down vote</p></div>
                     </div>
                     <div class="ui stackable four column grid" style="margin:0px">
-                        <div class="column no-padding-lr"><p class="caption-text">@user.PostsCount</p></div>
+                        <div class="column no-padding-lr"><p class="caption-text">@user?.PostsCount</p></div>
                         <div class="column no-padding-lr"><p class="caption-text">@usersFollowing.Count()</p></div>
-                        <div class="column no-padding-lr"><p class="caption-text">@user.UpVotes</p></div>
-                        <div class="column no-padding-lr"><p class="caption-text">@user.DownVotes</p></div>
+                        <div class="column no-padding-lr"><p class="caption-text">@user?.UpVotes</p></div>
+                        <div class="column no-padding-lr"><p class="caption-text">@user?.DownVotes</p></div>
                     </div>
                 </div>
 
@@ -61,7 +60,7 @@
                 <div class="col-lg-6 col-md-6 col-xs-12">
                     @if (user.Id > 0)
                     {
-                        <a href="/posts/manager?u_i=@user.Id">
+                        <a href="/posts/manager?u_i=@@user.AccountName">
                             <div class="ui basic small button">
                                 <i class="write icon"></i>
                                 Viết bài
@@ -165,13 +164,13 @@
                     {
                         <div class="ui items">
                             <div class="item border-bottom">
-                                <a href="/posts/@item.Id?po=@item.Id&u=@ViewBag.UserId"
+                                <a href="/posts/@item.FriendlyUrl?po=@item.Id&u=@ViewBag.UserId"
                                    class="ui small image">
                                     <img src="@item.CoverImg" alt="">
                                 </a>
                                 <div class="content">
 
-                                    <a href="/posts/@item.Id?po=@item.Id&u=@ViewBag.UserId"
+                                    <a href="/posts/@item.FriendlyUrl?po=@item.Id&u=@ViewBag.UserId"
                                        class="header title-post left">
                                         @item.Title
                                     </a>
@@ -189,7 +188,7 @@
                                         <p>@item.HeadContent<span>...</span></p>
                                     </div>
                                     <div class="container infor full-width no-padding left">
-                                        <a href="/user/@user.Id"
+                                        <a href="/users/@@user.AccountName"
                                            class="ui basic image label">
                                             <img src="@item?.UserAvatar">
                                             @item.UserDisplayName
@@ -252,7 +251,7 @@
 
                                         <div class="content">
                                             <!--title-->
-                                            <a href="/posts/@item.Id"
+                                            <a href="/posts/@item.FriendlyUrl"
                                                class="header title-post left">@item.Title</a>
                                             <!--description-->
                                             <div class="description full-width padding-bottom-base left">
@@ -409,7 +408,7 @@ function uploadAvatarFile(input) {
       var formData = new FormData();
     formData.set("file", file, file.name);
         $.ajax({
-            url: '/api/user/@user.Id/avatar',
+            url: '/api/users/@@user.AccountName/avatar',
             type: 'post',
             data: formData,
             contentType: false,
@@ -440,7 +439,7 @@ function uploadAvatarFile(input) {
       var formData = new FormData();
     formData.set("file", file, file.name);
         $.ajax({
-            url: '/api/user/@user.Id/banner',
+            url: '/api/users/@@user.AccountName/banner',
             type: 'post',
             data: formData,
             contentType: false,

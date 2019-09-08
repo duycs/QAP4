@@ -32,6 +32,7 @@ namespace QAP4.Models
         public DateTime? LastActivityDate { get; set; }
         public DateTime? LastEditDate { get; set; }
         public int? LastEditorUserId { get; set; }
+        public string FriendlyUrl {get;set;}
         public int? VoteCount { get; set; }
         public int? ViewCount { get; set; }
         public string Answer2 { get; set; }

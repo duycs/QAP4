@@ -32,7 +32,7 @@
                             <div class="container no-padding content">
                                 <!--user create-->
                                 <div class="full-width padding-top-base head">
-                                    <a href="/user/@item.OwnerUserId"
+                                    <a href="/users/@item.OwnerUserId"
                                        class="ui basic image label">
                                         <img src="@item?.UserAvatar">
                                         @item.UserDisplayName
@@ -44,7 +44,7 @@
 
                                 <div class="container no-padding left">
                                     <!--title-->
-                                    <a href="/posts/@item.Id"
+                                    <a href="/posts/@item.FriendlyUrl"
                                        class="header title-post">
                                         @item.Title
                                     </a>
@@ -69,7 +69,7 @@
                                     <p class="grey">@item.HeadContent</p>
                                 </div>
 
-                                <a href="/posts/@item.Id"
+                                <a href="/posts/@item.FriendlyUrl"
                                    class="left ui green tiny button">
                                     Học theo
                                 </a>
@@ -115,7 +115,7 @@
                         <div class="container no-padding content">
                             <!--user create-->
                             <div class="full-width padding-top-base head">
-                                <a href="/user/@item.OwnerUserId"
+                                <a href="/users/@item.OwnerUserId"
                                    class="ui basic image label">
                                     <img src="@item?.UserAvatar">
                                     @item.UserDisplayName
@@ -127,7 +127,7 @@
 
                             <div class="container no-padding left">
                                 <!--title-->
-                                <a href="/posts/@item.Id"
+                                <a href="/posts/@item.FriendlyUrl"
                                    class="header title-post">
                                     @item.Title
                                 </a>
@@ -152,7 +152,7 @@
                                 <p class="grey">@item.HeadContent</p>
                             </div>
 
-                            <a href="/posts/@item.Id"
+                            <a href="/posts/@item.FriendlyUrl"
                                class="left ui green tiny button">
                                 Học theo
                             </a>
@@ -230,7 +230,7 @@
                 <div class="ui labels">
                     @foreach (var user in usersFeature)
                     {
-                        <a href="\users\@user.Id"
+                        <a href="\users\@@user.AccountName"
                            class="ui basic image label">
                             <img src="@user.ProfileImageUrl">
                             @user.DisplayName

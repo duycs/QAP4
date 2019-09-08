@@ -43,13 +43,13 @@
                             <div class="item border-bottom">
                                 @if (!string.IsNullOrEmpty(item.CoverImg))
                                 {
-                                    <a href="/posts/@item.Id"
+                                    <a href="/posts/@item.FriendlyUrl"
                                        class="ui small image">
                                         <img src="@item.CoverImg" alt="">
                                     </a>
                                 }
                                 <div class="content">
-                                    <a href="/posts/@item.Id"
+                                    <a href="/posts/@item.FriendlyUrl"
                                        class="header title-post left">@item.Title</a>
                                     @if (!string.IsNullOrEmpty(item.Tags))
                                     {
@@ -66,7 +66,7 @@
                                         <p>@item.HeadContent<span>...</span></p>
                                     </div>
                                     <div class="container infor full-width no-padding left">
-                                        <a href="/user/@item.OwnerUserId"
+                                        <a href="/users/@item.OwnerUserId"
                                            class="ui basic image label">
                                             <img src="@item?.UserAvatar">
                                             @item.UserDisplayName
@@ -81,14 +81,14 @@
                                     {
                                         @if (item.AnswerCount == 0)
                                         {
-                                            <a href="/posts/@item.Id"
+                                            <a href="/posts/@item.FriendlyUrl"
                                                class="left ui green tiny button">
                                                 Trả lời
                                             </a>
                                         }
                                         else
                                         {
-                                            <a href="/posts/@item.Id"
+                                            <a href="/posts/@item.FriendlyUrl"
                                                class="left ui green tiny button">
                                                 Thêm trả lời
                                             </a>
@@ -133,13 +133,13 @@
                             <div class="item border-bottom">
                                 @if (!string.IsNullOrEmpty(item.CoverImg))
                                 {
-                                    <a href="/posts/@item.Id"
+                                    <a href="/posts/@item.FriendlyUrl"
                                        class="ui small image">
                                         <img src="@item.CoverImg" alt="">
                                     </a>
                                 }
                                 <div class="content">
-                                    <a href="/posts/@item.Id"
+                                    <a href="/posts/@item.FriendlyUrl"
                                        class="header title-post left">@item.Title</a>
                                     @if (!string.IsNullOrEmpty(item.Tags))
                                     {
@@ -156,7 +156,7 @@
                                         <p>@item.HeadContent<span>...</span></p>
                                     </div>
                                     <div class="container infor full-width no-padding left">
-                                        <a href="/user/@item.OwnerUserId"
+                                        <a href="/users/@item.OwnerUserId"
                                            class="ui basic image label">
                                             <img src="@item?.UserAvatar">
                                             @item.UserDisplayName
@@ -169,14 +169,14 @@
 
                                     @if (item.AnswerCount == 0 && string.IsNullOrEmpty(item.RelatedPosts))
                                     {
-                                        <a href="/posts/@item.Id"
+                                        <a href="/posts/@item.FriendlyUrl"
                                            class="left ui green tiny button">
                                             Trả lời
                                         </a>
                                     }
                                     else
                                     {
-                                        <a href="/posts/@item.Id"
+                                        <a href="/posts/@item.FriendlyUrl"
                                            class="left ui green tiny button">
                                             Thêm trả lời
                                         </a>
@@ -220,13 +220,13 @@
                         <div class="ui items">
                             <div class="item border-bottom">
                                 @if (!string.IsNullOrEmpty(item.CoverImg)) { 
-                                    <a href="/posts/@item.Id"
+                                    <a href="/posts/@item.FriendlyUrl"
                                        class="ui small image">
                                         <img src="@item.CoverImg" alt="">
                                     </a>
                                 }
                                 <div class="content">
-                                    <a href="/posts/@item.Id"
+                                    <a href="/posts/@item.FriendlyUrl"
                                        class="header title-post left">@item.Title</a>
                                     @if (!string.IsNullOrEmpty(item.Tags))
                                     {
@@ -243,7 +243,7 @@
                                         <p>@item.HeadContent<span>...</span></p>
                                     </div>
                                     <div class="container infor full-width no-padding left">
-                                        <a href="/user/@item.OwnerUserId"
+                                        <a href="/users/@item.OwnerUserId"
                                            class="ui basic image label">
                                             <img src="@item?.UserAvatar">
                                             @item.UserDisplayName

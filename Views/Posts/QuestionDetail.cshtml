@@ -63,7 +63,7 @@
                     </div>
                 }
                 <div class="right">
-                    <a href="/user/@posts.OwnerUserId"
+                    <a href="/users/@posts.OwnerUserId"
                        class="ui basic image label">
                         <img src="@posts?.UserAvatar">
                         @posts.UserDisplayName
@@ -99,7 +99,7 @@
                 {
                     <div class="item border-bottom padding-bottom-base">
                         <div class="full-width left padding-top-base user-info">
-                            <a href="/user/@item.OwnerUserId"
+                            <a href="/users/@item.OwnerUserId"
                                class="ui basic image label">
                                 <img src="@item?.UserAvatar">
                                 @item.UserDisplayName
@@ -175,7 +175,7 @@
                     {
                         <div class="item">
                             <i></i><div class="content">
-                                <a href="/posts/@item.Id?po_t=2&amp;u_i=3" class="header">@item.Title</a>
+                                <a href="/posts/@item.FriendlyUrl?po_t=2&amp;u_i=3" class="header">@item.Title</a>
                             </div>
                         </div>
                     }

@@ -39,6 +39,9 @@ namespace QAP4.Controllers
         [HttpGet("login")]
         public ActionResult Login(UsersView item, [FromQuery]string sc)
         {
+            //TODO: Migrate
+            //var users = GetUserUpdatedAccountName();
+            //UserRepo.UpdateRange(users);
             ViewBag.Screen = sc;
             return View();
         }
@@ -63,9 +66,10 @@ namespace QAP4.Controllers
                 //var sc = item.Screen;
                 if (user != null)
                 {
-                    var userId = user.Id;
+                    var userId = @user.AccountName;
                     //set session
                     HttpContext.Session.SetInt32(AppConstants.Session.USER_ID, user.Id);
+                    HttpContext.Session.SetString(AppConstants.Session.USER_NAME, user.AccountName.EmptyIfNull());
                     HttpContext.Session.SetString(AppConstants.Session.USER_NAME, user.DisplayName.EmptyIfNull());
                     HttpContext.Session.SetString(AppConstants.Session.FIRST_NAME, user.FirstName.EmptyIfNull());
                     HttpContext.Session.SetString(AppConstants.Session.LAST_NAME, user.LastName.EmptyIfNull());
@@ -105,7 +109,7 @@ namespace QAP4.Controllers
         [HttpPost]
         public ActionResult Create(RegisterView model)
         {
-            if (model == null)
+            if (model == null || string.IsNullOrEmpty(model.EmailOrPhone) || string.IsNullOrEmpty(model.Password))
             {
                 return BadRequest();
             }
@@ -117,35 +121,49 @@ namespace QAP4.Controllers
 
             //check phone or email
             var emailOrPhone = model.EmailOrPhone;
+            bool isUserHaveEmail = false;
+
             if (ValidateExtensions.IsValidPhone(emailOrPhone))
                 model.Phone = emailOrPhone;
-            else if (ValidateExtensions.IsValidEmail(emailOrPhone))
+            else if (ValidateExtensions.IsValidEmail(emailOrPhone)){
                 model.Email = emailOrPhone;
+                isUserHaveEmail = true;
+            }
 
+            // Check email or phone is registed
+            var userRegisted = UserRepo.GetByEmailOrPhone(emailOrPhone);
+            if(userRegisted != null){
+                return RedirectToAction("Register", "User", new MessageView("User is registed by this email or phone"));
+            }
 
-            //get user 
-            Users item = new Users();
-            item.FirstName = model.FirstName;
-            item.LastName = model.LastName;
-            item.DisplayName = model.DisplayName;
-            item.Email = model.Email;
-            item.Phone = model.Phone;
-            item.Password = model.Password;
+            Users user = new Users();
+
+            // Create new account
+            var accountName = string.Empty;
+
+            if(isUserHaveEmail){
+                accountName = emailOrPhone.Split('@')[0];
+                user.AccountName = accountName;
+            }
+
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            user.DisplayName = model.DisplayName;
+            user.Email = model.Email;
+            user.Phone = model.Phone;
+            user.Password = model.Password;
 
             //add
-            bool success = UserRepo.Add(item);
+            bool success = UserRepo.Add(user);
             if (success)
             {
-                //get user inserted
-                var key = "";
-                if (string.IsNullOrEmpty(item.Email))
-                {
-                    key = item.Phone;
+                // Create account if It havent been created
+                if(!isUserHaveEmail && (!string.IsNullOrEmpty(user.FirstName) || !string.IsNullOrEmpty(user.LastName))){
+                    string fullName = $"{user.FirstName} {user.LastName}";
+                    accountName = $"{StringExtensions.StringToSlug(fullName)}---{@user.AccountName}";
+                    user.AccountName = accountName;
+                    UserRepo.Update(user);
                 }
-                else
-                    key = item.Email;
-
-                var user = UserRepo.GetByEmailOrPhone(key);
 
                 if (user != null)
                 {
@@ -155,6 +173,7 @@ namespace QAP4.Controllers
                     HttpContext.Session.SetString(AppConstants.Session.LAST_NAME, user.LastName.EmptyIfNull());
                     HttpContext.Session.SetString(AppConstants.Session.EMAIL, user.Email.EmptyIfNull());
                     HttpContext.Session.SetString(AppConstants.Session.AVARTAR, user.Avatar.EmptyIfNull());
+                    HttpContext.Session.SetString(AppConstants.Session.AVARTAR, user.AccountName.EmptyIfNull());
                     HttpContext.Session.SetInt32(AppConstants.Session.USER_ID, user.Id);
 
                     //redirect
@@ -169,7 +188,22 @@ namespace QAP4.Controllers
             {
                 return Register();
             }
+        }
 
+        private IEnumerable<Users> GetUserUpdatedAccountName(){
+            var users = UserRepo.GetAll();
+            foreach(var user in users){
+                var accountName = string.Empty;
+                if(!string.IsNullOrEmpty(user.Email)){
+                    accountName = user.Email.Split('@')[0];
+                }else if(!string.IsNullOrEmpty(user.FirstName) || !string.IsNullOrEmpty(user.LastName)){
+                    string fullName = $"{user.FirstName} {user.LastName}";
+                    accountName = $"{StringExtensions.StringToSlug(fullName)}---{@user.AccountName}";
+                }
+                user.AccountName = accountName;
+                //UserRepo.Update(user);
+                yield return user;
+            }
         }
 
         // GET: /logout
@@ -188,9 +222,16 @@ namespace QAP4.Controllers
             return View();
         }
 
-        [HttpGet("user/{id}")]
+        [HttpGet("users/{id}")]
         public IActionResult Personal(int id)
         {
+            if(id<0)
+                return BadRequest();
+
+            var user = UserRepo.GetById(id);
+            if(user == null)
+                return NoContent();
+
             var userView = new UsersView();
 
             // Check if current user or other user view profile
@@ -200,14 +241,44 @@ namespace QAP4.Controllers
                 else
                     userView.IsCurrentUser = false;    
 
-            userView.User = UserRepo.GetById(id);
+            userView.User = user;
             userView.TagsFeature = TagRepo.GetTagsFeature();
             userView.PostsNewest = PostsRepo.GetPostsSameAuthor(0, id, 1);
             userView.QuestionsNewest = PostsRepo.GetPostsSameAuthor(0, id, 2);
-            //userView.TestsNewest=
             userView.UsersFollowing = UserRepo.GetUsersFollowing(id);
 
             return View(userView);
+        }
+
+        [HttpGet]
+        [Route("users/@{accountName}")]
+        public IActionResult FindUserByAccountName(string accountName)
+        {
+            if(string.IsNullOrEmpty(accountName))
+                return BadRequest();
+
+            var user = UserRepo.FindUserByAccountName(accountName);
+            if(user == null)
+                return NoContent();
+
+            var userView = new UsersView();
+
+            // Check if current user or other user view profile
+            var currentUserId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
+        
+            if(currentUserId == user.Id)
+                userView.IsCurrentUser = true;
+            else
+                userView.IsCurrentUser = false;    
+
+            userView.User = user;
+            userView.TagsFeature = TagRepo.GetTagsFeature();
+            userView.PostsNewest = PostsRepo.GetPostsSameAuthor(0, user.Id, 1);
+            userView.QuestionsNewest = PostsRepo.GetPostsSameAuthor(0, user.Id, 2);
+            //userView.TestsNewest=
+            userView.UsersFollowing = UserRepo.GetUsersFollowing(user.Id);
+
+            return View("Personal", userView);
         }
 
         // methods for API

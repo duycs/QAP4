@@ -44,7 +44,7 @@
             <div class="padding-bottom-base border-bottom margin-bottom-base">
                 <div class="container no-padding">
                     <div class="col-lg-1 col-md-1 col-xs-2 col-sm-2 no-padding">
-                        <a href="/user/@user.Id">
+                        <a href="/users/@@user.AccountName">
                             <img src="@user.Avatar" class="ui mini image bordered">
                             @*@user.DisplayName*@
                         </a>
@@ -69,14 +69,14 @@
                             <div class="item ">
                                 @if (item.CoverImg != null)
                                 {
-                                    <a href="/posts/@item.Id?po_i=@item.Id&u_i=@ViewBag.UserId"
+                                    <a href="/posts/@item.FriendlyUrl?po_i=@item.Id&u_i=@ViewBag.UserId"
                                        class="ui small image">
                                         <img src="@item.CoverImg" alt="">
                                     </a>
                                 }
                                 <div class="content">
 
-                                    <a href="/posts/@item.Id?po_i=@item.Id&u_i=@ViewBag.UserId"
+                                    <a href="/posts/@item.FriendlyUrl?po_i=@item.Id&u_i=@ViewBag.UserId"
                                        class="header title-post left">
                                         @item.Title
                                     </a>
@@ -95,7 +95,7 @@
                                     </div>
 
                                     <div class="container infor full-width no-padding left">
-                                        <a href="/user/@item.OwnerUserId"
+                                        <a href="/users/@item.OwnerUserId"
                                            class="ui basic image label">
                                             <img src="@item?.UserAvatar">
                                             @item.UserDisplayName
@@ -136,7 +136,7 @@
                             <div class="container no-padding content">
                                 <!--user create-->
                                 <div class="full-width padding-top-base head">
-                                    <a href="/user/@item.OwnerUserId"
+                                    <a href="/users/@item.OwnerUserId"
                                        class="ui basic image label">
                                         <img src="@item?.UserAvatar">
                                         @item.UserDisplayName
@@ -148,7 +148,7 @@
 
                                 <div class="container full-width no-padding">
                                     <!--title-->
-                                    <a href="/posts/@item.Id"
+                                    <a href="/posts/@item.FriendlyUrl"
                                        class="header title-post left">
                                         @item.Title
                                     </a>
@@ -175,14 +175,14 @@
 
                                 @if (item.AnswerCount == 0)
                                 {
-                                    <a href="/posts/@item.Id"
+                                    <a href="/posts/@item.FriendlyUrl"
                                        class="left ui green tiny button">
                                         Trả lời
                                     </a>
                                 }
                                 else
                                 {
-                                    <a href="/posts/@item.Id"
+                                    <a href="/posts/@item.FriendlyUrl"
                                        class="left ui green tiny button">
                                         Thêm trả lời
                                     </a>
@@ -217,7 +217,7 @@
                         //tutorials
                         <div class="item border-bottom container no-padding">
                             <div class="infor full-width padding-top-base left">
-                                <a href="/user/@item.OwnerUserId"
+                                <a href="/users/@item.OwnerUserId"
                                    class="ui basic image label">
                                     <img src="@item?.UserAvatar">
                                     @item.UserDisplayName
@@ -228,12 +228,12 @@
                                 </span>
                             </div>
 
-                            <a href="/posts/@item.Id"
+                            <a href="/posts/@item.FriendlyUrl"
                                class="ui small image">
                                 <img src="@item.CoverImg" alt="">
                             </a>
                             <div class="content">
-                                <a href="/posts/@item.Id"
+                                <a href="/posts/@item.FriendlyUrl"
                                    class="header title-post left">@item.Title</a>
                                 @if (!string.IsNullOrEmpty(item.Tags))
                                 {
@@ -296,7 +296,7 @@
 
                                 <div class="full-width padding-top-base left">
                                     <!--title-->
-                                    <a href="/posts/@item.Id?po_br_i=@item.RelatedPosts.Split(',').ElementAt(0)"
+                                    <a href="/posts/@item.FriendlyUrl?po_br_i=@item.RelatedPosts.Split(',').ElementAt(0)"
                                        class="header title-post">
                                         @item.Title
                                     </a>
@@ -318,7 +318,7 @@
 
                                 <!--user create-->
                                 <div class="full-width padding-top-base head">
-                                    <a href="/user/@item.OwnerUserId"
+                                    <a href="/users/@item.OwnerUserId"
                                        class="ui basic image label">
                                         <img src="@item?.UserAvatar">
                                         @item.UserDisplayName
@@ -332,7 +332,7 @@
                                     <p class="grey">@item.HeadContent</p>
                                 </div>
 
-                                <a href="/posts/@item.Id"
+                                <a href="/posts/@item.FriendlyUrl"
                                    class="left ui green tiny button">
                                     Tham gia học
                                 </a>
@@ -397,7 +397,7 @@
                 <div class="ui labels">
                     @foreach (var item in usersFeature)
                     {
-                        <a href="/user/@item.Id"
+                        <a href="/users/@item.Id"
                            class="ui basic image label">
                             <img src="@item?.Avatar">
                             @item.DisplayName

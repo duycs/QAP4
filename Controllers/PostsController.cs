@@ -59,6 +59,10 @@ namespace QAP4.Controllers
 
             //var PostsLst = PostsRepo.GetPosts(pg, or_b, u_i, po_lst_t, 0);
 
+            // TODO: Migrate
+            //var postsUpdatedFriendlyUrl = GetPotsUpdatedFriendlyUrl();
+            //PostsRepo.UpdateRange(postsUpdatedFriendlyUrl);
+
             return View("PostsManager");
         }
 
@@ -305,6 +309,99 @@ namespace QAP4.Controllers
         }
 
         [HttpGet]
+        [Route("/posts/{friendlyUrl}")]
+        public IActionResult GetPostsDetailView(string friendlyUrl, [FromQuery]int po_br_i)
+        {
+            if(string.IsNullOrEmpty(friendlyUrl))
+                return BadRequest();
+
+            var userId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
+            var user = UserRepo.GetById(userId);
+            ViewBag.UserName = HttpContext.Session.GetString(AppConstants.Session.USER_NAME);
+            ViewBag.UserId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
+            
+            var posts = PostsRepo.GetByFriendlyUrl(friendlyUrl);
+            if (null == posts)
+                return NoContent();
+
+            var postTypeId = (int)posts.PostTypeId;
+
+            if(AppConstants.PostsType.POSTS.Equals(postTypeId)){
+                var PostsDetailView = new PostsDetailView();
+                PostsDetailView.User = user;
+                PostsDetailView.Posts = posts;
+                PostsDetailView.PostsSameTags = PostsRepo.GetPostsSameTags(posts.Id, posts.Tags, postTypeId);
+                PostsDetailView.PostsSameAuthor = PostsRepo.GetPostsSameAuthor(posts.Id, posts.OwnerUserId, postTypeId);
+                return View("PostsDetail", PostsDetailView);
+            }
+            else if (AppConstants.PostsType.TUTORIAL.Equals(postTypeId))
+            {
+                var TutorialView = new TutorialDetailView();
+                int relatedPost = 0;
+                TutorialView.Tutorial = posts;
+                TutorialView.User = user;
+                List<KeyValuePair<int, string>> relatedPosts = new List<KeyValuePair<int, string>>();
+
+                if (posts.RelatedPosts != null && posts.RelatedPosts.Any())
+                {
+                    //gen list link key val
+                    if (!string.IsNullOrEmpty(posts.TableContent))
+                    {
+                        var lstTitle = posts.TableContent.Split(',').ToArray();
+                        var lstId = posts.RelatedPosts.Split(',').ToArray();
+                        int i = 0;
+                        foreach (var item in lstId)
+                        {
+                            relatedPosts.Add(new KeyValuePair<int, string>(Int32.Parse(lstId[i]), lstTitle[i]));
+                            //relatedPosts.Add(new KeyValuePair<int, string>(Int32.Parse(lstId[i]), "bug title???"));
+                            i++;
+                        }
+
+                        if (po_br_i == 0)
+                        {
+                            relatedPost = Int32.Parse(lstId[0]);
+                        }
+                        else
+                        {
+                            relatedPost = po_br_i;
+                        }
+                        TutorialView.Posts = PostsRepo.GetPosts(relatedPost);
+                        TutorialView.RelatedPosts = relatedPosts;
+
+                    }
+                }
+                else
+                {
+                    //select all posts where parternId = this posts
+                    var chirldPosts = PostsRepo.GetChirldPosts(0, posts.Id, 6);
+                    if (chirldPosts != null && chirldPosts.Any())
+                    {
+
+                        //get first element
+                        TutorialView.Posts = chirldPosts.ElementAt(0);
+
+                        int i = 0;
+                        foreach (var item in chirldPosts)
+                        {
+                            relatedPosts.Add(new KeyValuePair<int, string>(item.Id, i + ""));
+                            i++;
+                        }
+
+                        TutorialView.RelatedPosts = relatedPosts;
+                    }
+
+                }
+                //same question
+                //AnswerView.SameQuestions = PostsRepo.GetSameQuestion(posts.Title, 5);
+
+                return View("TutorialDetail", TutorialView);
+            }
+
+            return View("Error");
+        }
+
+
+        [HttpGet]
         [Route("/posts/list")]
         public IActionResult PostsList([FromQuery]int pg, [FromQuery]string or_b, [FromQuery]int u_i, [FromQuery]int po_t, [FromQuery]int pr_i)
         {
@@ -412,7 +509,6 @@ namespace QAP4.Controllers
                 posts.Score = 0;
                 posts.CommentCount = 0;
 
-
                 if (AppConstants.PostsType.POSTS.Equals(postTypeId))
                 {
                     if (string.IsNullOrEmpty(model.HtmlContent))
@@ -491,7 +587,6 @@ namespace QAP4.Controllers
                     posts.TableContent = tableOfcontent;
                     PostsRepo.Update(posts);
                 }
-
             }
             else
             {
@@ -550,8 +645,46 @@ namespace QAP4.Controllers
                     }
                 }
             }
-            return Json(new MessageView(id, AppConstants.Message.MSG_1000));
 
+            // Update friendly url
+            UpdateFriendlyUrl(posts);
+
+            return Json(new MessageView(id, AppConstants.Message.MSG_1000));
+        }
+
+        private IEnumerable<Posts> GetPotsUpdatedFriendlyUrl(){
+            var postsAll = PostsRepo.GetAll();
+
+            foreach (var posts in postsAll)
+            {
+                    // Create slug with title
+                var friendlyTitle = FriendlyUrlHelpers.GetFriendlyTitle(posts.Title);
+
+                // Create slug identify with ---id
+                var friendlyWithId = $"{friendlyTitle}---{posts.Id}";
+
+                // Update friendly url for this posts
+                posts.FriendlyUrl = friendlyWithId;
+
+                yield return posts;
+            }
+        }
+
+        private void UpdateFriendlyUrl(Posts posts)
+        {
+            // Create slug with title
+            var friendlyTitle = FriendlyUrlHelpers.GetFriendlyTitle(posts.Title);
+
+            // Create slug identify with ---id
+            var friendlyWithId = $"{friendlyTitle}---{posts.Id}";
+
+            // If title not change then friend url not change
+            if(friendlyWithId == posts.FriendlyUrl)
+                return;
+
+            // Update friendly url for this posts
+            posts.FriendlyUrl = friendlyWithId;
+            PostsRepo.Update(posts);
         }
 
         private void UpdateParentIdChirldPosts(int parentPostsId, List<string> relatedPosts)

@@ -143,6 +143,20 @@ namespace QAP4.Repository
             }
         }
 
+        public Users FindUserByAccountName(string accountName)
+        {
+            if(string.IsNullOrEmpty(accountName))
+                return null;
 
+            var user = userEntity.FirstOrDefault(w=>w.AccountName == accountName);
+
+            return user;
+        }
+
+        public void UpdateRange(IEnumerable<Users> users)
+        {
+            userEntity.UpdateRange(users);
+            context.SaveChanges();
+        }
     }
 }
