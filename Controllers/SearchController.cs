@@ -84,7 +84,7 @@ namespace QAP4.Controllers
             //default page=1
             int page = pg == 0 ? 1 : pg;
 
-            var PostsList = PostsRepo.SearchInPosts(page, q, po_t);
+            var PostsList = PostsRepo.SearchInPosts(page, q, po_t).Where(w=>w.LastActivityDate != null && w.DeletionDate == null);;
             return new ObjectResult(PostsList);
         }
 
@@ -108,15 +108,15 @@ namespace QAP4.Controllers
 
             if (posts.Any())
             {
-                var simplePosts = posts.Where(w => w.PostTypeId == AppConstants.PostsType.POSTS);
+                var simplePosts = posts.Where(w => w.PostTypeId == AppConstants.PostsType.POSTS).Where(w=>w.LastActivityDate != null && w.DeletionDate == null);
                 var questions = posts.Where(w => w.PostTypeId == AppConstants.PostsType.QUESTION);
-                var tutorials = posts.Where(w => w.PostTypeId == AppConstants.PostsType.TUTORIAL);
+                var tutorials = posts.Where(w => w.PostTypeId == AppConstants.PostsType.TUTORIAL).Where(w=>w.LastActivityDate != null && w.DeletionDate == null);
 
                 SearchView.SimplePosts = simplePosts;
                 SearchView.Questions = questions;
                 SearchView.Tutorials = tutorials;
 
-                SearchView.Count += posts.Count();
+                SearchView.Count += simplePosts.Count() + questions.Count() + tutorials.Count();
             }
 
             //tags
@@ -150,7 +150,7 @@ namespace QAP4.Controllers
                 SearchView.TagsRelation = tagsRelation;
 
             //get all posts
-            var posts = PostsRepo.SearchInPosts(page, query, postsTypeId);
+            var posts = PostsRepo.SearchInPosts(page, query, postsTypeId).Where(w=>w.LastActivityDate != null && w.DeletionDate == null);;
 
 
             if (posts.Any())

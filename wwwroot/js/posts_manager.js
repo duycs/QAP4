@@ -931,8 +931,18 @@
 
                 $.each(data, function (i, v) {
                     let description = v.headContent === null ? "" : v.headContent;
+                    let lastActivityDate = v.lastActivityDate || null;
+                    let isLock = lastActivityDate == null
+                    let isUnlock = lastActivityDate !=null;
+                    let classInlock = '';
+                    if(isLock){
+                        classInlock = 'lock';
+                    }else if(isUnlock){
+                        classInlock = 'unlock';
+                    }
                     items += "<div data-id='" + v.id + "'  class='item cursor-pointer padding-right-base'>" +
-                        "<div class='ui checkbox'><input type='checkbox'></div>" +
+                        "<div class='ui right '><i class='publish-or-private icon pointer right grey "+ classInlock +"'></i></div>" +
+                        "<div class='ui checkbox hide'><input type='checkbox'></div>" +
                         "<div  data-id='" + v.id + "' class='content'>" +
                         //"<div class='ui checkbox'><input type='checkbox'>" +
                         "<label class='ui big header green cursor-pointer'>" + v.title + "</label>" +

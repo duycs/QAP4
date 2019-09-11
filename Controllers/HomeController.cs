@@ -66,7 +66,7 @@ namespace QAP4.Controllers
             HomeView homeView = new HomeView();
             homeView.User = user;
             int page = 0;
-            homeView.PostsFeed = PostsRepo.GetPostsByCreateDate(page);
+            homeView.PostsFeed = PostsRepo.GetPostsByCreateDate(page).Where(w=>w.LastActivityDate != null && w.DeletionDate == null);
             homeView.Quote = QuoteRepo.GetAutoQuote();
             homeView.TagsFeature = TagRepo.GetTagsFeature();
             homeView.UsersFeature = UserRepo.GetUsersFeature();

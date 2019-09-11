@@ -22,7 +22,7 @@ namespace QAP4.Repository
 
         public Posts GetPosts(int? id)
         {
-            return postsEntity.Where(o => o.Id.Equals(id) && o.LastActivityDate !=null && o.DeletionDate ==null).FirstOrDefault();
+            return postsEntity.Where(o => o.Id.Equals(id)).FirstOrDefault();
         }
 
         public IEnumerable<Posts> GetPostsFeature(int page, int postsTypeId)
@@ -50,7 +50,7 @@ namespace QAP4.Repository
                 //OFFSET 1
                 //FETCH NEXT 10 ROWS ONLY";
             }
-            return postsEntity.FromSql<Posts>(sql).Where(w=>w.LastActivityDate !=null && w.DeletionDate ==null).AsEnumerable();
+            return postsEntity.FromSql<Posts>(sql).AsEnumerable();
         }
 
         public IEnumerable<Posts> GetPostsNewest(int page, int postsTypeId)
@@ -72,7 +72,7 @@ namespace QAP4.Repository
                         PostTypeId=" + postsTypeId + " ORDER BY CreationDate ASC OFFSET " + skip + " ROWS FETCH NEXT " + pageSize + " ROWS ONLY";
 
             }
-            return postsEntity.FromSql<Posts>(sql).Where(w=>w.LastActivityDate !=null && w.DeletionDate ==null).AsEnumerable();
+            return postsEntity.FromSql<Posts>(sql).AsEnumerable();
         }
 
 
@@ -95,7 +95,7 @@ namespace QAP4.Repository
                         WHERE
                         OwnerUserId=" + userId + " AND PostTypeId=" + postsTypeId + " ORDER BY CreationDate ASC OFFSET " + skip + " ROWS FETCH NEXT " + pageSize + " ROWS ONLY";
             }
-            return postsEntity.FromSql<Posts>(sql).Where(w=>w.LastActivityDate !=null && w.DeletionDate ==null).AsEnumerable();
+            return postsEntity.FromSql<Posts>(sql).AsEnumerable();
         }
 
         //add method
@@ -145,7 +145,7 @@ namespace QAP4.Repository
                     sql = @"SELECT *  FROM Posts WHERE FREETEXT (Title, '" + q + "') OR FREETEXT (BodyContent, '" + q + "') AND PostTypeId=" + postsTypeId + " ORDER BY Title OFFSET " + skip + " ROWS FETCH NEXT " + pageSize + " ROWS ONLY";
                 }
 
-                return postsEntity.FromSql<Posts>(sql).Where(w=>w.LastActivityDate !=null && w.DeletionDate ==null);
+                return postsEntity.FromSql<Posts>(sql);
             }
             catch (Exception ex)
             {
@@ -185,7 +185,7 @@ namespace QAP4.Repository
                 var distinctLst = postsLst.GroupBy(x => x.Id)
                            .Select(g => g.First())
                            .ToList();
-                topLst = distinctLst.Where(w=>w.LastActivityDate !=null && w.DeletionDate ==null).OrderByDescending(o => o.VoteCount).Take(3);
+                topLst = distinctLst.OrderByDescending(o => o.VoteCount).Take(3);
             }
             return topLst;
         }
@@ -209,7 +209,7 @@ namespace QAP4.Repository
                 //OFFSET 1
                 //FETCH NEXT 10 ROWS ONLY";
             }
-            return postsEntity.FromSql<Posts>(sql).Where(w=>w.LastActivityDate !=null && w.DeletionDate ==null);
+            return postsEntity.FromSql<Posts>(sql);
         }
 
 
@@ -283,7 +283,7 @@ namespace QAP4.Repository
                 sql += " OFFSET " + skip + " ROWS FETCH NEXT " + pageSize + " ROWS ONLY";
             }
 
-            return postsEntity.FromSql<Posts>(sql).AsEnumerable().Where(w=>w.LastActivityDate !=null && w.DeletionDate ==null);
+            return postsEntity.FromSql<Posts>(sql);
         }
 
 
@@ -406,7 +406,7 @@ namespace QAP4.Repository
                 }
                 lstFeed.AddRange(lstLatest);
 
-                return lstFeed.Where(w=>w.LastActivityDate !=null && w.DeletionDate ==null);
+                return lstFeed;
             }
             catch
             {
@@ -430,12 +430,12 @@ namespace QAP4.Repository
 
         public IEnumerable<Posts> GetAll()
         {
-            return postsEntity.ToList().Where(w=>w.LastActivityDate !=null && w.DeletionDate ==null);
+            return postsEntity.ToList();
         }
 
         public Posts GetByFriendlyUrl(string friendlyUrl)
         {
-            return postsEntity.FirstOrDefault(w=>w.FriendlyUrl == friendlyUrl && w.LastActivityDate !=null && w.DeletionDate ==null);
+            return postsEntity.FirstOrDefault(w=>w.FriendlyUrl == friendlyUrl);
         }
 
         public void UpdateRange(List<Posts> postsList)

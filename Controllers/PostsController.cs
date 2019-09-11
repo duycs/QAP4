@@ -95,9 +95,9 @@ namespace QAP4.Controllers
                 //questions answer
                 var questionsAnswer = questions.Where(w => w.AnswerCount > 0);
 
-                postsView.PostsSimple = postsSimple;
-                postsView.QuestionsAnswer = questionsAnswer;
-                postsView.TutorialsAnswer = tutorialsAnswer;
+                postsView.PostsSimple = postsSimple.Where(w=>w.LastActivityDate != null && w.DeletionDate == null);
+                postsView.QuestionsAnswer = questionsAnswer.Where(w=>w.LastActivityDate != null && w.DeletionDate == null);
+                postsView.TutorialsAnswer = tutorialsAnswer.Where(w=>w.LastActivityDate != null && w.DeletionDate == null);
 
                 //tags and users feature
                 postsView.TagsFeature = TagRepo.GetTagsFeature();
@@ -225,8 +225,8 @@ namespace QAP4.Controllers
                 var PostsDetailView = new PostsDetailView();
                 PostsDetailView.User = user;
                 PostsDetailView.Posts = posts;
-                PostsDetailView.PostsSameTags = PostsRepo.GetPostsSameTags(id, posts.Tags, postTypeId);
-                PostsDetailView.PostsSameAuthor = PostsRepo.GetPostsSameAuthor(id, posts.OwnerUserId, postTypeId);
+                PostsDetailView.PostsSameTags = PostsRepo.GetPostsSameTags(id, posts.Tags, postTypeId).Where(w=>w.LastActivityDate != null && w.DeletionDate == null);;
+                PostsDetailView.PostsSameAuthor = PostsRepo.GetPostsSameAuthor(id, posts.OwnerUserId, postTypeId).Where(w=>w.LastActivityDate != null && w.DeletionDate == null);;
                 return View("PostsDetail", PostsDetailView);
             }
             else if (AppConstants.PostsType.QUESTION.Equals(postTypeId))
@@ -330,8 +330,8 @@ namespace QAP4.Controllers
                 var PostsDetailView = new PostsDetailView();
                 PostsDetailView.User = user;
                 PostsDetailView.Posts = posts;
-                PostsDetailView.PostsSameTags = PostsRepo.GetPostsSameTags(posts.Id, posts.Tags, postTypeId);
-                PostsDetailView.PostsSameAuthor = PostsRepo.GetPostsSameAuthor(posts.Id, posts.OwnerUserId, postTypeId);
+                PostsDetailView.PostsSameTags = PostsRepo.GetPostsSameTags(posts.Id, posts.Tags, postTypeId).Where(w=>w.LastActivityDate != null && w.DeletionDate == null);;
+                PostsDetailView.PostsSameAuthor = PostsRepo.GetPostsSameAuthor(posts.Id, posts.OwnerUserId, postTypeId).Where(w=>w.LastActivityDate != null && w.DeletionDate == null);;
                 return View("PostsDetail", PostsDetailView);
             }
             else if (AppConstants.PostsType.TUTORIAL.Equals(postTypeId))
