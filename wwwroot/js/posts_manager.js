@@ -37,7 +37,7 @@
 
                 id: null,
 
-                newPosts: function (success, error) {
+                createNewPosts: function (success, error) {
                     success();
                 },
 
@@ -55,13 +55,11 @@
 
                 postPosts: function (success, error) { success(); },
 
-                putPost: function () {
+                publishOrPrivatePosts: function (success, error) { success(); },
 
-                },
+                putPost: function (success, error) { success(); },
 
-                deletePost: function () {
-
-                },
+                deletePost: function (success, error) { success(); },
 
                 clickItemInListPosts: function (success, error) { success(); },
 
@@ -85,15 +83,15 @@
             },
 
             events: {
-                'click .posts-manager .action-posts .add': 'newPosts',
+                'click .posts-manager .action-posts .create-new': 'createNewPosts',
                 'click .posts-manager .menu-nav .search': 'searchPosts',
                 'click .posts-manager .menu-nav .books': 'getBook',
                 'click .posts-manager .action-posts .post': 'postPosts',
                 'click .posts-manager .action-posts .answer': 'addPostAnswer',
                 'click .posts-manager .action-posts .history': 'history',
-                'click .posts-manager .action-posts .trash': 'deletePosts',
+                'click .posts-manager .action-posts .remove-trash': 'removeToTrashPosts',
                 'click .posts-manager .action-posts .facebook': 'shareFacebookPosts',
-                'click .posts-manager .action-posts .lock': 'lockPosts',
+                'click .posts-manager .action-posts .publish-or-private': 'publishOrPrivatePosts',
                 'click .posts-manager .button.manager': 'showManager',
                 'click .posts-manager .posts-list .list .item': 'clickItemInListPosts',
                 'click .posts-manager .posts-list .posts-type .item': 'clickItemInPostsType',
@@ -141,6 +139,7 @@
                 'itemInPostsType': '.posts-manager .posts-list .posts-type .item',
                 'addPostAnswer': '.posts-manager .action-posts .answer',
                 'postPost': '.posts-manager .action-posts .post',
+                'publishOrPrivatePosts': '.posts-manager .action-posts .publish-or-private',
                 'previewQuesion': '.posts-manager .post-preview .question',
                 'previewRightAnswer': '.posts-manager .post-preview .answers .right-answer',
                 'previewWrongAnswers': '.posts-manager .post-preview .answers .wrong-answers',
@@ -415,7 +414,7 @@
 
             // function action
             //new posts
-            newPosts: function (ev) {
+            createNewPosts: function (ev) {
                 let self = this;
                 let newUrl = self.getUrlUpdateQueryVal(self.queries.postsId, 0);
                 let postsTypeId = window.getParameterByName(self.queries.postsTypeId);
@@ -431,7 +430,7 @@
 
                 };
 
-                this.options.newPosts(success, error);
+                this.options.createNewPosts(success, error);
             },
 
             addPostAnswer: function (ev) {
@@ -458,7 +457,7 @@
                         self.replaceState(ev, newUrl);
                     }
                     //new post
-                    self.newPosts(ev);
+                    self.createNewPosts(ev);
 
                     // post in editor is new answer
                     postTypeId = 3;
@@ -640,7 +639,7 @@
             //        //replace postTypeId
             //        self.replaceState(ev, newUrl);
             //        //replace postsId = 0
-            //        //self.newPosts(ev);
+            //        //self.createNewPosts(ev);
             //    };
             //    var error = function () {
             //        self.errorCallback("error");
@@ -666,7 +665,7 @@
 
                     self.setView();
                     //replace postsId = 0
-                    //self.newPosts(ev);
+                    //self.createNewPosts(ev);
                 };
                 var error = function () {
                     self.errorCallback("error");
@@ -1071,6 +1070,7 @@
                 let description = self.getElementVal('description');
                 let iframeEditor = self.getElementVal('iframeEditor');
                 let htmlContent = $(iframeEditor).find('iframe').contents().find('#tinymce');
+                let publishOrPrivatePosts = self.getElementVal('publishOrPrivatePosts');
                 if (postsId && postsId !== 0) {
                     console.log('bind post to editor to write');
                     let post = self.getPost(postsId);
@@ -1091,6 +1091,15 @@
                         title.val(post.title);
                         htmlContent.empty().append(post.htmlContent);
                         description.val(post.description);
+
+                        let lastActivityDate = post.lastActivityDate || null;
+                        let isLock = lastActivityDate == null
+                        let isUnlock = lastActivityDate !=null;
+                        if(isLock){
+                            $(publishOrPrivatePosts).removeClass('unlock').addClass('lock');
+                        }else if(isUnlock){
+                            $(publishOrPrivatePosts).removeClass('lock').addClass('unlock');
+                        }
 
                         // click to get coverImage
                         self.clickLoadCoverImages();
@@ -1368,16 +1377,70 @@
 
             },
 
-            deletePosts: function () {
+            removeToTrashPosts: function () {
 
             },
             shareFacebookPosts: function () {
 
             },
-            lockPosts: function () {
 
+            publishOrPrivatePosts: function (ev) {
+                let self = this;
+                let postsId = window.getParameterByName(self.queries.postsId);
+                if(!postsId) return;
+
+                let target = ev.target;
+                let isLock = $(target).hasClass('lock');
+                let isUnlock = $(target).hasClass('unlock');
+
+                // If lock then unlock, otherwise
+                if(isLock){
+                    $(target).removeClass('lock').addClass('unlock');
+                    console.log("unlock the post");
+                }
+                else if(isUnlock){
+                    $(target).removeClass('unlock').addClass('lock');
+                    console.log("lock the post");
+                }
+
+                //console.log(data);
+                var success = function () {
+                    $.ajax({
+                        url: "/api/posts/activeOrDeacitve/" + postsId,
+                        type: 'PUT',
+                        dataType: 'json',
+                        //data: data,
+                        async: false,
+                        success: function (result) {
+                            if (result.type === "msg") {
+                                window.showToast(result.type, result.message);
+                            }
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            console.log("error then set lock or unlock agian");
+                            self.errorCallback("postPosts " + errorThrown);
+                            if(isLock){
+                                $(target).removeClass('unlock').addClass('lock');
+                            }
+                            else if(isUnlock){
+                                $(target).removeClass('lock').addClass('unlock');
+                            }
+                        }
+                    });
+
+                };
+
+                var error = function () {
+                    console.log("error then set lock or unlock agian");
+                    if(isLock){
+                        $(target).removeClass('unlock').addClass('lock');
+                    }
+                    else if(isUnlock){
+                        $(target).removeClass('lock').addClass('unlock');
+                    }
+                };
+                this.options.publishOrPrivatePosts(success, error);
             },
-
 
             //style
             showManager: function () {

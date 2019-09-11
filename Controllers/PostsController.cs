@@ -790,7 +790,7 @@ namespace QAP4.Controllers
 
         //PUT: /posts/acorde/3
         [HttpPut]
-        [Route("/api/acorde/{id:int}")]
+        [Route("/api/posts/activeOrDeacitve/{id:int}")]
         public ActionResult ActiveOrDeactive(int id)
         {
             var posts = PostsRepo.GetPosts(id);
