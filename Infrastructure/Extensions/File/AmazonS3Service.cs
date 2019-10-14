@@ -154,15 +154,5 @@ namespace QAP4.Infrastructure.Extensions.File
         {
             return Regex.Replace(str, @"\s+", charReplace);
         }
-
-        Task<FileUploadModel> IAmazonS3Service.UploadObject(string bucket, IFormFile file)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<FileUploadModel> IAmazonS3Service.RemoveObject(string bucket, string fileName)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

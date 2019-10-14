@@ -8,7 +8,7 @@ namespace QAP4.ViewModels
 {
     public class SearchView
     {
-        public Users User{get;set;}
+        public User User{get;set;}
         public string ObjType { get; set; }
         public string Key { get; set; }
         public int Count { get; set; }
@@ -17,7 +17,7 @@ namespace QAP4.ViewModels
         public IEnumerable<Posts> Questions { get; set; }
         public IEnumerable<Posts> Tutorials { get; set; }
         public IEnumerable<Tags> Tags { get; set; }
-        public IEnumerable<Users> Users { get; set; }
+        public IEnumerable<User> Users { get; set; }
         public IEnumerable<Tags> TagsRelation { get; set; }
 
     }

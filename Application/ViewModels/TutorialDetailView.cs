@@ -8,7 +8,7 @@ namespace QAP4.ViewModels
 {
     public class TutorialDetailView
     {
-        public Users User { get; set; }
+        public User User { get; set; }
         public Posts Posts { get; set; }
         public Posts Tutorial { get; set; }
         public List<KeyValuePair<int, string>> RelatedPosts { get; set; }

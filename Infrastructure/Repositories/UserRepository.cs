@@ -12,15 +12,15 @@ namespace QAP4.Infrastructure.Repositories
     public class UserRepository : IUserRepository
     {
         private QAPContext context;
-        private DbSet<Users> userEntity;
+        private DbSet<User> userEntity;
         public UserRepository(QAPContext context)
         {
             this.context = context;
-            userEntity = context.Set<Users>();
+            userEntity = context.Set<User>();
         }
 
         //add
-        public bool Add(Users item)
+        public bool Add(User item)
         {
             //check email
             var email = userEntity.SingleOrDefault(o => o.Id.Equals(item.Email));
@@ -60,59 +60,59 @@ namespace QAP4.Infrastructure.Repositories
         }
 
         //update
-        public void Update(Users user)
+        public void Update(User user)
         {
             userEntity.Update(user);
             context.SaveChanges();
         }
 
         //get and find
-        public IEnumerable<Users> GetAll()
+        public IEnumerable<User> GetAll()
         {
             return userEntity.AsEnumerable();
         }
 
-        public Users GetByName(string key)
+        public User GetByName(string key)
         {
             return userEntity.Where(o => o.DisplayName.Equals(key)).FirstOrDefault();
         }
 
-        public Users GetByEmailOrPhone(string key)
+        public User GetByEmailOrPhone(string key)
         {
             return userEntity.Where(o => o.Email.Equals(key) || o.Phone.Equals(key)).FirstOrDefault();
         }
 
-        public Users GetById(int? id)
+        public User GetById(int? id)
         {
             return userEntity.Where(o => o.Id.Equals(id)).FirstOrDefault();
         }
 
         //check login: check password, email or phone
-        public Users CheckLogin(string emailOrPhone, string password)
+        public User CheckLogin(string emailOrPhone, string password)
         {
             var passwordHash = GetHash(password);
             return userEntity.Where(o => o.Password.Equals(passwordHash) && (o.Email.Equals(emailOrPhone) || o.Phone.Equals(emailOrPhone))).FirstOrDefault();
         }
 
         //statistic
-        public IEnumerable<Users> GetUsersFeature()
+        public IEnumerable<User> GetUsersFeature()
         {
             return userEntity.OrderByDescending(o => o.UpVotes).Take(5).AsEnumerable();
         }
 
 
         //search
-        public IEnumerable<Users> SearchInUsers(string key)
+        public IEnumerable<User> SearchInUsers(string key)
         {
             var sql = @"SELECT *  FROM Users WHERE FREETEXT (DisplayName, '" + key + "') or FREETEXT(Email,'" + key + "') or FREETEXT(Phone,'" + key + "')";
-            return userEntity.FromSql<Users>(sql).AsEnumerable();
+            return userEntity.FromSql<User>(sql).AsEnumerable();
         }
 
         //get user follwing
-        public IEnumerable<Users> GetUsersFollowing(int userFollowedId)
+        public IEnumerable<User> GetUsersFollowing(int userFollowedId)
         {
             var sql = @"SELECT u.* FROM Users u INNER JOIN Following f ON u.Id=f.FollowingUserId WHERE f.FollowedUserId=" + userFollowedId;
-            return userEntity.FromSql<Users>(sql).OrderBy(o => o.DisplayName).AsEnumerable();
+            return userEntity.FromSql<User>(sql).OrderBy(o => o.DisplayName).AsEnumerable();
         }
 
         //common method

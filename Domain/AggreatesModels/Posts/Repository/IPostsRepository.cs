@@ -1,4 +1,5 @@
-﻿using QAP4.Models;
+﻿using QAP4.Domain.AggreatesModels.Posts.Models;
+using QAP4.Domain.Core.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace QAP4.Infrastructure.Repositories
 {
-    public interface IPostsRepository
+    public interface IPostsRepository : IRepository<Posts>
     {
         IEnumerable<Posts> GetAll();
         Posts GetPosts(int? id);

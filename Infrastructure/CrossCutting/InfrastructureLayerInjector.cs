@@ -14,7 +14,7 @@ namespace QAP4.Infrastructure.CrossCutting
         {
             // Infra - Data
             // services.AddDbContext<EventContext>();
-            services.AddDbContext<QAPContext>();
+            services.AddDbContext<PostsContext>();
 
             //unit of work
             services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -28,7 +28,7 @@ namespace QAP4.Infrastructure.CrossCutting
             services.AddTransient<ICommentRepository, CommentRepository>();
             services.AddTransient<IQuoteRepository, QuotesRepository>();
             services.AddTransient<IVoteRepository, VoteRepository>();
-            services.AddTransient<IPostLinkRepository, PostLinkReposity>();
+            services.AddTransient<IPostsLinkRepository, PostLinkReposity>();
 
             //Infra  - services
             services.AddTransient<IEmailSender, EmailSender>();

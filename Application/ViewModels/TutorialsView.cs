@@ -8,9 +8,9 @@ namespace QAP4.ViewModels
 {
     public class TutorialsView
     {
-        public Users User { get; set; }
+        public User User { get; set; }
         public IEnumerable<Tags> TagsFeature { get; set; }
-        public IEnumerable<Users> UsersFeature { get; set; }
+        public IEnumerable<User> UsersFeature { get; set; }
         public IEnumerable<Posts> TutorialsNewest { get; set; }
         public IEnumerable<Posts> TutorialsFeature { get; set; }
         public IEnumerable<Posts> TutorialsRequired { get; set; }

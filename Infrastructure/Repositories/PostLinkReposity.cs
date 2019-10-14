@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace QAP4.Infrastructure.Repositories
 {
-    public class PostLinkReposity : IPostLinkRepository
+    public class PostLinkReposity : IPostsLinkRepository
     {
         private QAPContext context;
         private DbSet<PostLinks> postLinkEntity;

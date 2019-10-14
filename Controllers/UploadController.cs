@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using QAP4.Application.DataTransferObjects;
+using QAP4.Application.Services;
 using QAP4.Infrastructure.Extensions;
 using QAP4.Infrastructure.Extensions.File;
 
@@ -15,17 +16,17 @@ namespace QAP4.Controllers
     [Route("api/[controller]")]
     public class UploadController : Controller
     {
-        private readonly IAmazonS3Service _amazonS3Service;
+        private readonly IFileService _fileService;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
 
         public UploadController(
-          IAmazonS3Service amazonS3Service,
+          IFileService fileService,
            IConfiguration configuration,
            IMapper mapper
             )
         {
-            _amazonS3Service = amazonS3Service;
+            _fileService = fileService;
             _configuration = configuration;
             _mapper = mapper;
         }
@@ -49,8 +50,8 @@ namespace QAP4.Controllers
                     return BadRequest();
                 }
 
-                string bucketName = _configuration.GetSection("AWSS3:BucketPostStudyLibraryImage").Value;
-                var fileDto = await UploadFileToS3(bucketName, file);
+                string bucketName = _configuration.GetSection("AWSS3:BucketPostStudyImage").Value;
+                var fileDto = await _fileService.UploadFileToS3(bucketName, file);
 
                 if (fileDto == null)
                     return StatusCode(500, "error when upload file");
@@ -82,7 +83,7 @@ namespace QAP4.Controllers
                 }
 
                 string bucketName = _configuration.GetSection("AWSS3:BucketPostStudyLibraryEbook").Value;
-                var fileDto = await UploadFileToS3(bucketName, file);
+                var fileDto = await _fileService.UploadFileToS3(bucketName, file);
 
                 if (fileDto == null)
                     return StatusCode(500, "error when upload file");
@@ -95,33 +96,5 @@ namespace QAP4.Controllers
             }
         }
 
-        /// <summary>
-        /// UploadFileToS3
-        /// </summary>
-        /// <param name="bucketName"></param>
-        /// <param name="file"></param>
-        /// <returns></returns>
-        private async Task<FileDto> UploadFileToS3(string bucketName, IFormFile file)
-        {
-            try
-            {
-                var response = await _amazonS3Service.UploadObject(bucketName, file);
-                if (!response.Success)
-                {
-                    return null;
-                }
-
-                var fileDto = _mapper.Map<FileDto>(response);
-
-                if (fileDto == null)
-                    return null;
-
-                return fileDto;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
     }
 }

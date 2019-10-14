@@ -8,7 +8,7 @@ namespace QAP4.ViewModels
 {
     public class QuestionDetailView
     {
-        public Users User { get; set; }
+        public User User { get; set; }
         public Posts Posts { get; set; }
         public IEnumerable<Posts> Answers { get; set; }
         public IEnumerable<Posts> SameQuestions { get; set; }

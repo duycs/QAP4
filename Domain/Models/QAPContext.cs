@@ -36,7 +36,7 @@ namespace QAP4.Models
         public virtual DbSet<TestType> TestType { get; set; }
         public virtual DbSet<Tests> Tests { get; set; }
         public virtual DbSet<UserTest> UserTest { get; set; }
-        public virtual DbSet<Users> Users { get; set; }
+        public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<VoteTypes> VoteTypes { get; set; }
         public virtual DbSet<Votes> Votes { get; set; }
 
@@ -308,7 +308,7 @@ namespace QAP4.Models
                 entity.Property(e => e.UserDisplayName).HasMaxLength(50);
             });
 
-            modelBuilder.Entity<Users>(entity =>
+            modelBuilder.Entity<User>(entity =>
             {
                 entity.Property(e => e.AboutMe).HasMaxLength(250);
 

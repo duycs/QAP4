@@ -1,8 +1,22 @@
+using System;
+
 namespace QAP4.Domain.Core.Models
 {
     public abstract class Entity
     {
         public int Id { get; protected set; }
+        /// <summary>
+        /// Existing: when the posts be created
+        /// </summary>
+        public DateTime? CreatedDate { get; set; }
+        /// <summary>
+        /// Existing: when the posts be deleted
+        /// </summary>
+        public DateTime? DeletedDate { get; set; }
+        /// <summary>
+        /// Existing: when the posts be deleted
+        /// </summary>
+        public bool IsDeleted { get; set; }
 
         public override bool Equals(object obj)
         {

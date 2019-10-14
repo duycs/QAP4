@@ -643,7 +643,7 @@ namespace QAP4.Controllers
                 viewModel.Email = emailOrPhone;
 
             // Get user 
-            Users newUser = new Users();
+            User newUser = new User();
             newUser.FirstName = viewModel.FirstName;
             newUser.LastName = viewModel.LastName;
             newUser.DisplayName = viewModel.DisplayName;
@@ -713,7 +713,7 @@ namespace QAP4.Controllers
         #endregion Views of User
 
 
-        private TutorialDetailView GetTutorialDetail(Users user, Posts posts, int postsParentId, int po_br_i)
+        private TutorialDetailView GetTutorialDetail(User user, Posts posts, int postsParentId, int po_br_i)
         {
             var TutorialView = new TutorialDetailView();
             int relatedPost = 0;

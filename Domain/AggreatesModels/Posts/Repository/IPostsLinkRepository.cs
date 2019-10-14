@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using QAP4.Models;
+using QAP4.Domain.AggreatesModels.Posts.Models;
+using QAP4.Domain.Core.Repositories;
 
 namespace QAP4.Infrastructure.Repositories
 {
-    public interface IPostLinkRepository
+    public interface IPostsLinkRepository : IRepository<PostsLink>
     {
         bool IsPostLinkExist(int? postId, int? RelatedPostId);
-        void Create(PostLinks model);
-        void Update(PostLinks model);
+        void Create(PostsLink model);
+        void Update(PostsLink model);
         void Delete(int? postId, int? RelatedPostId);
 
         //handler: create return true, delete return false

@@ -169,7 +169,11 @@
     <Folder Include="Domain\AggreatesModels\Posts\EventHandlers\" />
     <Folder Include="Domain\AggreatesModels\Posts\CommandHandlers\" />
     <Folder Include="Domain\AggreatesModels\Posts\Validations\" />
-    <Folder Include="Domain\AggreatesModels\Posts\Repository\" />
+    <Folder Include="Domain\AggreatesModels\Users\CommandHandlers\" />
+    <Folder Include="Domain\AggreatesModels\Users\Commands\" />
+    <Folder Include="Domain\AggreatesModels\Users\Events\" />
+    <Folder Include="Domain\AggreatesModels\Users\EventHandlers\" />
+    <Folder Include="Domain\AggreatesModels\Users\Validations\" />
   </ItemGroup>
 
 </Project>

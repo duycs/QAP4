@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using QAP4.Domain.AggreatesModels.Posts;
+using QAP4.Domain.AggreatesModels.Posts.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,10 +14,11 @@ namespace QAP4.Infrastructure.EntityConfigurations
         {
             configuration.ToTable("Posts");
             configuration.HasKey(c => c.Id);
+            configuration.Property(c => c.IsDelete);
+            configuration.Property(c => c.CreationDate);
             configuration.Property(c => c.AcceptedAnswerId);
             configuration.Property(c => c.AnswerCount);
             configuration.Property(c => c.BodyContent);
-            configuration.Property(c => c.CreationDate);
             configuration.Property(c => c.Comments);
             configuration.Property(c => c.CommentCount);
             configuration.Property(c => c.CloseDate);

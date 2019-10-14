@@ -4,13 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using QAP4.Models;
 using Microsoft.EntityFrameworkCore;
+using QAP4.Domain.AggreatesModels.Posts.Models;
 
 namespace QAP4.Infrastructure.Repositories
 {
     public class CommentRepository : ICommentRepository
     {
-        private QAPContext context;
-        private DbSet<Comments> commentEntity;
+        private DbSet<Comment> commentEntity;
         public CommentRepository(QAPContext context)
         {
             this.context = context;

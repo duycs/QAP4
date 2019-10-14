@@ -2,11 +2,10 @@
 using System;
 using System.Collections.Generic;
 
-namespace QAP4.Domain.AggreatesModels.Posts
+namespace QAP4.Domain.AggreatesModels.Posts.Models
 {
-    public class Comments : Entity, IAggregateRoot
+    public class Comment : Entity
     {
-        public DateTime? CreationDate { get; set; }
         public bool? CreationByAdmin { get; set; }
         public bool? CreationByCurrentUser { get; set; }
         public string Content { get; set; }
