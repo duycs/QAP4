@@ -191,8 +191,8 @@ namespace QAP4.Controllers
                     return Ok(new MessageView(AppConstants.Warning.WAR_2003));
 
 
-                // Update posts
-                _postsService.UpdatePosts(user.Id, posts);
+                // Update posts in editor
+                _postsService.UpdatePostsInEditor(user.Id, posts);
 
                 // Update tag relations with posts
                 
@@ -553,7 +553,7 @@ namespace QAP4.Controllers
                 //imageUrl = AmazonS3Service.GeneratePreSignedURL(bucket, imageResponse.FileName);
                 imageUrl = "https://s3-ap-southeast-1.amazonaws.com" + "/" + bucket + "/" + imageResponse.FileName;
 
-                posts.CoverImg = imageUrl;
+                posts.CoverImage = imageUrl;
 
                 _postsService.UpdatePosts(posts);
 

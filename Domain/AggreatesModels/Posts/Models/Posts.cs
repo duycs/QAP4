@@ -97,5 +97,8 @@ namespace QAP4.Domain.AggreatesModels.Posts.Models
         /// </summary>
         public string FriendlyUrl { get; set; }
 
+        public DateTime? LastActivityDate { get; set; }
+        public DateTime? LastEditDate { get; set; }
+
     }
 }
