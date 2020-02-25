@@ -326,7 +326,7 @@ namespace QAP4.Controllers
 
             var postTypeId = (int)posts.PostTypeId;
 
-            if(AppConstants.PostsType.POSTS.Equals(postTypeId)){
+            if(AppConstants.PostsType.POSTS.Equals(postTypeId) || AppConstants.PostsType.QUESTION.Equals(postTypeId)){
                 var PostsDetailView = new PostsDetailView();
                 PostsDetailView.User = user;
                 PostsDetailView.Posts = posts;
