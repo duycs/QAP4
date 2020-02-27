@@ -49,6 +49,7 @@ namespace QAP4
             // add DB and repository parttern
             services.AddSingleton<IConfiguration>(Configuration);
             services.AddDbContext<QAPContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            // services.AddDbContext<QAPContext>(options => options.UseMySQL(Configuration.GetConnectionString("DefaultConnection")));
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IPostsRepository, PostsRepository>();
             services.AddTransient<ITagRepository, TagRepository>();
