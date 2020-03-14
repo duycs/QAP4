@@ -7,6 +7,7 @@ namespace QAP4.Domain.AggreatesModels.Users.Models
     public class User : Entity, IAggregateRoot
     {
         public int AccountId { get; set; }
+
         /// <summary>
         /// Value: generate by emailName or firstName.lastName---Id
         /// </summary>
@@ -14,12 +15,14 @@ namespace QAP4.Domain.AggreatesModels.Users.Models
         public string Address { get; set; }
         public int Age { get; set; }
         public string AboutMe { get; set; }
+
         /// <summary>
         /// Value: image link or base64
         /// </summary>
         public string AvatarImage { get; set; }
         public string BannerImage { get; set; }
         public string DisplayName { get; set; }
+
         /// <summary>
         /// Value: an Id of enum VoteTypes
         /// </summary>
@@ -27,6 +30,7 @@ namespace QAP4.Domain.AggreatesModels.Users.Models
         public DateTime? DoB { get; set; }
         public string Email { get; set; }
         public int Reputation { get; set; }
+        
         /// <summary>
         /// Value: an Id of enum RankTypes
         /// </summary>

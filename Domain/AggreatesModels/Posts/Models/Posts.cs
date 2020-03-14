@@ -100,5 +100,8 @@ namespace QAP4.Domain.AggreatesModels.Posts.Models
         public DateTime? LastActivityDate { get; set; }
         public DateTime? LastEditDate { get; set; }
 
+        public string UserDisplayName {get; set;}
+        public string TableOfContent{get;set;}
+
     }
 }

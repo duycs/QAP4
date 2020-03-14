@@ -17,7 +17,7 @@ namespace QAP4.Application.Services
         private readonly IRepository<Tag> _tagRepository;
         private readonly IRepository<PostsTag> _postsTagRepository;
         private readonly IRepository<User> _userRepository;
-        private readonly IRepository<PostsLink> _postsLinkRepository;
+        private readonly IRepository<PostsLinks> _postsLinkRepository;
 
         public PostsService(
          IUnitOfWork unitOfWork,

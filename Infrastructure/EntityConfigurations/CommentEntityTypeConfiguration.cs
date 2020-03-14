@@ -14,14 +14,16 @@ namespace QAP4.Infrastructure.EntityConfigurations
         {
             configuration.ToTable("Comments");
             configuration.HasKey(c => c.Id);
-            configuration.Property(c => c.IsDelete);
-            configuration.Property(c => c.CreationDate);
+            configuration.Property(c => c.IsDeleted);
+            configuration.Property(c => c.CreatedDate);
             configuration.Property(c => c.CreationByAdmin);
             configuration.Property(c => c.CreationByCurrentUser);
             configuration.Property(c => c.Content);
+            configuration.Property(c => c.DeletedDate);
             configuration.Property(c => c.PostsId);
             configuration.Property(c => c.ParentId);
             configuration.Property(c => c.ProfilePictureUrl);
+            configuration.Property(c => c.UpdatedDate);
             configuration.Property(c => c.UserId);
             configuration.Property(c => c.UserDisplayName);
             configuration.Property(c => c.UpvoteCount);

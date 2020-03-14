@@ -14,20 +14,21 @@ namespace QAP4.Infrastructure.EntityConfigurations
         {
             configuration.ToTable("Posts");
             configuration.HasKey(c => c.Id);
-            configuration.Property(c => c.IsDelete);
-            configuration.Property(c => c.CreationDate);
-            configuration.Property(c => c.AcceptedAnswerId);
+            configuration.Property(c => c.IsDeleted);
+            configuration.Property(c => c.CreatedDate);
+            configuration.Property(c => c.UpdatedDate);
+            configuration.Property(c => c.AcceptedAnswerPostsId);
             configuration.Property(c => c.AnswerCount);
             configuration.Property(c => c.BodyContent);
             configuration.Property(c => c.Comments);
             configuration.Property(c => c.CommentCount);
-            configuration.Property(c => c.CloseDate);
+            configuration.Property(c => c.ClosedDate);
             configuration.Property(c => c.CommunityOwnedDate);
-            configuration.Property(c => c.CoverImg);
+            configuration.Property(c => c.CoverImage);
             configuration.Property(c => c.Description);
-            configuration.Property(c => c.DeletionDate);
+            configuration.Property(c => c.DeletedDate);
             configuration.Property(c => c.OwnerUserId);
-            configuration.Property(c => c.PostTypeId);
+            configuration.Property(c => c.PostsTypeId);
             configuration.Property(c => c.ParentId);
             configuration.Property(c => c.RelatedPosts);
             configuration.Property(c => c.Score);
@@ -35,7 +36,7 @@ namespace QAP4.Infrastructure.EntityConfigurations
             configuration.Property(c => c.HeadContent);
             configuration.Property(c => c.Tags);
             configuration.Property(c => c.Title);
-            configuration.Property(c => c.TableContent);
+            configuration.Property(c => c.TableOfContent);
             configuration.Property(c => c.UserDisplayName);
             configuration.Property(c => c.UserAvatar);
             configuration.Property(c => c.LastActivityDate);
