@@ -8,7 +8,7 @@ namespace QAP4.Repository
 {
     public interface IPostLinkRepository
     {
-        bool IsPostLinkExist(int? postId, int? RelatedPostId);
+        // bool IsPostLinkExist(int? postId, int? RelatedPostId);
         void Create(PostLinks model);
         void Update(PostLinks model);
         void Delete(int? postId, int? RelatedPostId);

@@ -17,7 +17,7 @@ namespace QAP4.Repository
             this.context = context;
             tagEntity = context.Set<Tags>();
         }
-        
+
         public void Create(Tags tag)
         {
             tagEntity.Add(tag);
@@ -26,9 +26,9 @@ namespace QAP4.Repository
         public int CreateOrGetTagId(int? userId, string name)
         {
             var tagId = 0;
-            var sql = @"select * from Tags where Name like N'" + name.Trim() + "'";
-            var tag = tagEntity.FromSql<Tags>(sql).FirstOrDefault();
-
+            //var sql = @"select * from Tags where Name like N'" + name.Trim() + "'";
+            //var tag = tagEntity.FromSql<Tags>(sql).FirstOrDefault();
+            var tag = tagEntity.Where(w => w.Name.Contains(name)).FirstOrDefault();
             //tag not exsit, insert new tag
             if (null == tag)
             {
@@ -70,8 +70,10 @@ namespace QAP4.Repository
 
         public IEnumerable<Tags> GetTagsByName(string name)
         {
-            var sql = @"select * from Tags where Name like N'%" + name.Trim() + "%'";
-            return tagEntity.FromSql<Tags>(sql).AsEnumerable();
+            //var sql = @"select * from Tags where Name like N'%" + name.Trim() + "%'";
+            //return tagEntity.FromSql<Tags>(sql).AsEnumerable();
+            var tags = tagEntity.Where(w => w.Name.Contains(name)).ToList();
+            return tags;
         }
 
         public void UpdateTag(Tags tag)
@@ -89,16 +91,26 @@ namespace QAP4.Repository
 
         public void DeleteTagByName(string name)
         {
-            var sql = @"select * from Tags where Name like N'" + name + "'";
-            var tag = tagEntity.FromSql<Tags>(sql).FirstOrDefault();
+            //var sql = @"select * from Tags where Name like N'" + name + "'";
+            //var tag = tagEntity.FromSql<Tags>(sql).FirstOrDefault();
+            var tag = tagEntity.Where(w => w.Name.Contains(name)).FirstOrDefault();
             tagEntity.Remove(tag);
             context.SaveChanges();
         }
 
+        // TODO: move to TagService
         public IEnumerable<Tags> GetTagsByPosts(int postsId)
         {
-            var sql = @"select t.* from Tags t inner join PostsTag pt on t.Id=pt.tagId where pt.PostsId=" + postsId + " order by Name";
-            return tagEntity.FromSql<Tags>(sql).AsEnumerable();
+            //var sql = @"select t.* from Tags t inner join PostsTag pt on t.Id=pt.tagId where pt.PostsId=" + postsId + " order by Name";
+            //return tagEntity.FromSql<Tags>(sql).AsEnumerable();
+            var tags = (from a in context.Tags
+                        join b in context.PostsTag
+                        on a.Id equals b.TagId
+                        where b.PostsId == postsId
+                        orderby a.Name
+                        select a).ToList();
+
+            return tags;
         }
 
         public IEnumerable<Tags> GetTagsFeature()
@@ -114,8 +126,12 @@ namespace QAP4.Repository
 
         public IEnumerable<Tags> SearchInTags(string key)
         {
-            var sql = @"SELECT * FROM Tags WHERE FREETEXT (Name, '" + key + "')";
-            return tagEntity.FromSql<Tags>(sql).AsEnumerable();
+            //var sql = @"SELECT * FROM Tags WHERE FREETEXT (Name, '" + key + "')";
+            //return tagEntity.FromSql<Tags>(sql).AsEnumerable();
+
+            // TODO: search free text?
+            var tags = tagEntity.Where(w => w.Name.Contains(key)).ToList();
+            return tags;
         }
     }
 }

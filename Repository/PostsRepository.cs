@@ -25,78 +25,78 @@ namespace QAP4.Repository
             return postsEntity.Where(o => o.Id.Equals(id)).FirstOrDefault();
         }
 
-        public IEnumerable<Posts> GetPostsFeature(int page, int postsTypeId)
-        {
-            //var pageSize = AppConstants.Paging.PAGE_SIZE;
-            //var skip = pageSize * (page - 1);
-            //int total = postsEntity.Count();
-            var sql = "";
+        // public IEnumerable<Posts> GetPostsFeature(int page, int postsTypeId)
+        // {
+        //     //var pageSize = AppConstants.Paging.PAGE_SIZE;
+        //     //var skip = pageSize * (page - 1);
+        //     //int total = postsEntity.Count();
+        //     var sql = "";
 
-            //if (pageSize < total)
-            //    return postsEntity.OrderByDescending(o => o.VoteCount).Skip(skip).Take(pageSize).AsEnumerable();
-            //else
+        //     //if (pageSize < total)
+        //     //    return postsEntity.OrderByDescending(o => o.VoteCount).Skip(skip).Take(pageSize).AsEnumerable();
+        //     //else
 
-            if (0 == postsTypeId)
-            {
-                sql = @"SELECT * FROM Posts ORDER BY VoteCount DESC";
-                //OFFSET 1
-                //FETCH NEXT 10 ROWS ONLY";
-            }
-            else
-            {
-                sql = @"SELECT * FROM Posts 
-                        WHERE
-                        PostTypeId=" + postsTypeId + " ORDER BY VoteCount DESC";
-                //OFFSET 1
-                //FETCH NEXT 10 ROWS ONLY";
-            }
-            return postsEntity.FromSql<Posts>(sql).AsEnumerable();
-        }
+        //     if (0 == postsTypeId)
+        //     {
+        //         sql = @"SELECT * FROM Posts ORDER BY VoteCount DESC";
+        //         //OFFSET 1
+        //         //FETCH NEXT 10 ROWS ONLY";
+        //     }
+        //     else
+        //     {
+        //         sql = @"SELECT * FROM Posts 
+        //                 WHERE
+        //                 PostTypeId=" + postsTypeId + " ORDER BY VoteCount DESC";
+        //         //OFFSET 1
+        //         //FETCH NEXT 10 ROWS ONLY";
+        //     }
+        //     return postsEntity.FromSql<Posts>(sql).AsEnumerable();
+        // }
 
-        public IEnumerable<Posts> GetPostsNewest(int page, int postsTypeId)
-        {
-            var pageSize = AppConstants.Paging.PAGE_SIZE;
-            int total = postsEntity.Count();
-            var skip = pageSize * (page - 1);
-            var sql = "";
-
-
-            if (0 == postsTypeId)
-            {
-                sql = @"SELECT * FROM Posts ORDER BY CreationDate ASC OFFSET " + skip + " ROWS FETCH NEXT " + pageSize + " ROWS ONLY";
-            }
-            else
-            {
-                sql = @"SELECT * FROM Posts 
-                        WHERE
-                        PostTypeId=" + postsTypeId + " ORDER BY CreationDate ASC OFFSET " + skip + " ROWS FETCH NEXT " + pageSize + " ROWS ONLY";
-
-            }
-            return postsEntity.FromSql<Posts>(sql).AsEnumerable();
-        }
+        // public IEnumerable<Posts> GetPostsNewest(int page, int postsTypeId)
+        // {
+        //     var pageSize = AppConstants.Paging.PAGE_SIZE;
+        //     int total = postsEntity.Count();
+        //     var skip = pageSize * (page - 1);
+        //     var sql = "";
 
 
-        public IEnumerable<Posts> GetPostsByUser(int page, int? userId, int postsTypeId)
-        {
-            var pageSize = AppConstants.Paging.PAGE_SIZE;
-            int total = postsEntity.Count();
-            var skip = pageSize * (page - 1);
-            var sql = "";
-            if (0 == postsTypeId)
-            {
-                sql = @"SELECT * FROM Posts 
-                        WHERE
-                        OwnerUserId=" + userId + " ORDER BY CreationDate ASC OFFSET " + skip + " ROWS FETCH NEXT " + pageSize + " ROWS ONLY";
+        //     if (0 == postsTypeId)
+        //     {
+        //         sql = @"SELECT * FROM Posts ORDER BY CreationDate ASC OFFSET " + skip + " ROWS FETCH NEXT " + pageSize + " ROWS ONLY";
+        //     }
+        //     else
+        //     {
+        //         sql = @"SELECT * FROM Posts 
+        //                 WHERE
+        //                 PostTypeId=" + postsTypeId + " ORDER BY CreationDate ASC OFFSET " + skip + " ROWS FETCH NEXT " + pageSize + " ROWS ONLY";
 
-            }
-            else
-            {
-                sql = @"SELECT * FROM Posts 
-                        WHERE
-                        OwnerUserId=" + userId + " AND PostTypeId=" + postsTypeId + " ORDER BY CreationDate ASC OFFSET " + skip + " ROWS FETCH NEXT " + pageSize + " ROWS ONLY";
-            }
-            return postsEntity.FromSql<Posts>(sql).AsEnumerable();
-        }
+        //     }
+        //     return postsEntity.FromSql<Posts>(sql).AsEnumerable();
+        // }
+
+
+        // public IEnumerable<Posts> GetPostsByUser(int page, int? userId, int postsTypeId)
+        // {
+        //     var pageSize = AppConstants.Paging.PAGE_SIZE;
+        //     int total = postsEntity.Count();
+        //     var skip = pageSize * (page - 1);
+        //     var sql = "";
+        //     if (0 == postsTypeId)
+        //     {
+        //         sql = @"SELECT * FROM Posts 
+        //                 WHERE
+        //                 OwnerUserId=" + userId + " ORDER BY CreationDate ASC OFFSET " + skip + " ROWS FETCH NEXT " + pageSize + " ROWS ONLY";
+
+        //     }
+        //     else
+        //     {
+        //         sql = @"SELECT * FROM Posts 
+        //                 WHERE
+        //                 OwnerUserId=" + userId + " AND PostTypeId=" + postsTypeId + " ORDER BY CreationDate ASC OFFSET " + skip + " ROWS FETCH NEXT " + pageSize + " ROWS ONLY";
+        //     }
+        //     return postsEntity.FromSql<Posts>(sql).AsEnumerable();
+        // }
 
         //add method
         public int Add(Posts item)
@@ -122,6 +122,7 @@ namespace QAP4.Repository
             return item.Id;
         }
 
+        // Move many function to PostsService
         //search full text
         public IEnumerable<Posts> SearchInPosts(int page, string q, int postsTypeId)
         {
@@ -131,21 +132,29 @@ namespace QAP4.Repository
                 int total = postsEntity.Count();
                 var skip = pageSize * (page - 1);
 
-                var sql = "";
+                //var sql = "";
                 if (0 == postsTypeId)
                 {
-                    sql = @"SELECT *  FROM Posts WHERE FREETEXT (Title, '" + q + "') OR FREETEXT (BodyContent, '" + q + "') ORDER BY Title OFFSET " + skip + " ROWS FETCH NEXT " + pageSize + " ROWS ONLY";
-                }
-                //else if (AppConstants.PostsType.QUESTION.Equals(postsTypeId))
-                //{
-                //    sql = @"SELECT *  FROM Posts WHERE FREETEXT (Title, '" + q + "') AND PostTypeId=" + postsTypeId + " ORDER BY Title OFFSET " + skip + " ROWS FETCH NEXT " + pageSize + " ROWS ONLY";
-                //}
-                else
-                {
-                    sql = @"SELECT *  FROM Posts WHERE FREETEXT (Title, '" + q + "') OR FREETEXT (BodyContent, '" + q + "') AND PostTypeId=" + postsTypeId + " ORDER BY Title OFFSET " + skip + " ROWS FETCH NEXT " + pageSize + " ROWS ONLY";
+                    //sql = @"SELECT *  FROM Posts WHERE FREETEXT (Title, '" + q + "') OR FREETEXT (BodyContent, '" + q + "') ORDER BY Title OFFSET " + skip + " ROWS FETCH NEXT " + pageSize + " ROWS ONLY";
+                    var allPosts = postsEntity.Where(w => w.Title.Contains(q) || w.BodyContent.Contains(q))
+                    .OrderBy(o => o.Title)
+                    .Skip(skip).Take(pageSize).ToList();
+
+                    return allPosts;
                 }
 
-                return postsEntity.FromSql<Posts>(sql);
+                // else
+                // {
+                //     sql = @"SELECT *  FROM Posts WHERE FREETEXT (Title, '" + q + "') OR FREETEXT (BodyContent, '" + q + "') AND PostTypeId=" + postsTypeId + " ORDER BY Title OFFSET " + skip + " ROWS FETCH NEXT " + pageSize + " ROWS ONLY";
+                // }
+
+                var posts = postsEntity.Where(w => w.PostTypeId == postsTypeId && (w.Title.Contains(q) || w.BodyContent.Contains(q)))
+                 .OrderBy(o => o.Title)
+                 .Skip(skip).Take(pageSize).ToList();
+
+                return posts;
+
+                //return postsEntity.FromSql<Posts>(sql);
             }
             catch (Exception ex)
             {
@@ -163,22 +172,37 @@ namespace QAP4.Repository
             {
                 string[] tagsLst = tags.Split(',');
                 var postsLst = new List<Posts>();
-                var sql = "";
+                // var sql = "";
                 if (0 == postsTypeId)
                 {
-                    foreach (string tag in tagsLst)
+                    foreach (string tagName in tagsLst)
                     {
-                        sql = @"SELECT TOP 3 p.* FROM Posts p INNER JOIN PostsTag pt ON p.Id=pt.PostsId WHERE pt.PostsId!=" + postsId + " AND pt.TagId=(SELECT Id from Tags WHERE Name=N'" + tag + "') ORDER BY p.VoteCount DESC;";
-                        var subPostsLst = postsEntity.FromSql<Posts>(sql).AsEnumerable();
+                        var tag = context.Tags.Where(w => w.Name.Contains(tagName)).FirstOrDefault();
+                        //sql = @"SELECT TOP 3 p.* FROM Posts p INNER JOIN PostsTag pt ON p.Id=pt.PostsId WHERE pt.PostsId!=" + postsId + " AND pt.TagId=(SELECT Id from Tags WHERE Name=N'" + tag + "') ORDER BY p.VoteCount DESC;";
+                        //var subPostsLst = postsEntity.FromSql<Posts>(sql).AsEnumerable();
+                        var subPostsLst = (from a in context.Posts
+                                           join b in context.PostsTag
+                                           on a.Id equals b.PostsId
+                                           where b.PostsId != postsId && b.TagId == tag.Id
+                                           orderby a.VoteCount
+                                           select a).Take(3).ToList();
+
                         postsLst.AddRange(subPostsLst);
                     }
                 }
                 else
                 {
-                    foreach (string tag in tagsLst)
+                    foreach (string tagName in tagsLst)
                     {
-                        sql = @"SELECT TOP 3 p.* FROM Posts p INNER JOIN PostsTag pt ON p.Id=pt.PostsId WHERE pt.PostsId!=" + postsId + " AND pt.TagId=(SELECT Id from Tags WHERE Name=N'" + tag + "') AND PostTypeId=" + postsTypeId + " ORDER BY p.VoteCount DESC;";
-                        var subPostsLst = postsEntity.FromSql<Posts>(sql).AsEnumerable();
+                        var tag = context.Tags.Where(w => w.Name.Contains(tagName)).FirstOrDefault();
+                        //sql = @"SELECT TOP 3 p.* FROM Posts p INNER JOIN PostsTag pt ON p.Id=pt.PostsId WHERE pt.PostsId!=" + postsId + " AND pt.TagId=(SELECT Id from Tags WHERE Name=N'" + tag + "') AND PostTypeId=" + postsTypeId + " ORDER BY p.VoteCount DESC;";
+                        //var subPostsLst = postsEntity.FromSql<Posts>(sql).AsEnumerable();
+                        var subPostsLst = (from a in context.Posts
+                                           join b in context.PostsTag
+                                           on a.Id equals b.PostsId
+                                           where b.PostsId != postsId && b.TagId == tag.Id && a.PostTypeId == postsTypeId
+                                           orderby a.VoteCount
+                                           select a).Take(3).ToList();
                         postsLst.AddRange(subPostsLst);
                     }
                 }
@@ -192,24 +216,34 @@ namespace QAP4.Repository
 
         public IEnumerable<Posts> GetPostsSameAuthor(int postsId, int? userId, int postsTypeId)
         {
-            var sql = "";
+            //var sql = "";
             if (0 == postsTypeId)
             {
-                sql = @"SELECT TOP 3.* FROM Posts 
-                        WHERE
-                        Id!=" + postsId + " AND OwnerUserId=" + userId + " ORDER BY CreationDate DESC";
+                // sql = @"SELECT TOP 3.* FROM Posts 
+                //         WHERE
+                //         Id!=" + postsId + " AND OwnerUserId=" + userId + " ORDER BY CreationDate DESC";
+
                 //OFFSET 1
                 //FETCH NEXT 10 ROWS ONLY";
+
+                var posts = context.Posts.Where(w => w.Id != postsId && w.OwnerUserId == userId)
+                .OrderBy(o => o.CreationDate).Take(3).ToList();
+
+                return posts;
             }
-            else
-            {
-                sql = @"SELECT TOP 3.* FROM Posts 
-                        WHERE
-                        Id!=" + postsId + " AND OwnerUserId=" + userId + " AND PostTypeId=" + postsTypeId + " ORDER BY CreationDate DESC";
-                //OFFSET 1
-                //FETCH NEXT 10 ROWS ONLY";
-            }
-            return postsEntity.FromSql<Posts>(sql);
+
+            // sql = @"SELECT TOP 3.* FROM Posts 
+            //             WHERE
+            //             Id!=" + postsId + " AND OwnerUserId=" + userId + " AND PostTypeId=" + postsTypeId + " ORDER BY CreationDate DESC";
+            //OFFSET 1
+            //FETCH NEXT 10 ROWS ONLY";
+
+            var postsByType = context.Posts.Where(w => w.Id != postsId && w.OwnerUserId == userId && w.PostTypeId == postsTypeId)
+            .OrderBy(o => o.CreationDate).Take(3).ToList();
+
+            return postsByType;
+
+            //return postsEntity.FromSql<Posts>(sql);
         }
 
 
@@ -276,14 +310,13 @@ namespace QAP4.Repository
                 sql += " ORDER BY " + nameof(Posts.CreationDate) + " DESC ";
             }
 
-
             // paging
             if (page != 0)
             {
                 sql += " OFFSET " + skip + " ROWS FETCH NEXT " + pageSize + " ROWS ONLY";
             }
 
-            return postsEntity.FromSql<Posts>(sql);
+            return postsEntity.FromSqlRaw<Posts>(sql).AsEnumerable();
         }
 
 
@@ -318,7 +351,7 @@ namespace QAP4.Repository
                 sql += " OFFSET " + skip + " ROWS FETCH NEXT " + pageSize + " ROWS ONLY";
             }
 
-            return postsEntity.FromSql<Posts>(sql);
+            return postsEntity.FromSqlRaw<Posts>(sql);
         }
 
         public IEnumerable<Posts> GetAnswersNewest(int page, int userId)
@@ -342,7 +375,7 @@ namespace QAP4.Repository
                 sql += " OFFSET " + skip + " ROWS FETCH NEXT " + pageSize + " ROWS ONLY";
             }
 
-            return postsEntity.FromSql<Posts>(sql);
+            return postsEntity.FromSqlRaw<Posts>(sql);
         }
 
         public IEnumerable<Posts> GetChirldPosts(int page, int parentId, int postsTypeId)
@@ -366,7 +399,7 @@ namespace QAP4.Repository
                 sql += " OFFSET " + skip + " ROWS FETCH NEXT " + pageSize + " ROWS ONLY";
             }
 
-            return postsEntity.FromSql<Posts>(sql);
+            return postsEntity.FromSqlRaw<Posts>(sql);
         }
 
         public IEnumerable<Posts> GetSameQuestion(string title, int take)
@@ -390,36 +423,37 @@ namespace QAP4.Repository
             return topLst;
         }
 
-        public IEnumerable<Posts> GetPostsFeed(int page, int? userId)
-        {
-            try
-            {
-                var sqlTopVote = @"SELECT TOP 3.* FROM Posts ORDER BY VoteCount DESC";
-                var sqlLatest = @"SELECT * FROM Posts WHERE PostTypeId != 3 ORDER BY CreationDate DESC";
+        // public IEnumerable<Posts> GetPostsFeed(int page, int? userId)
+        // {
+        //     try
+        //     {
+        //         var sqlTopVote = @"SELECT TOP 3.* FROM Posts ORDER BY VoteCount DESC";
+        //         var sqlLatest = @"SELECT * FROM Posts WHERE PostTypeId != 3 ORDER BY CreationDate DESC";
 
-                var lstTopVote = postsEntity.FromSql<Posts>(sqlTopVote).AsEnumerable().ToList();
-                var lstLatest = postsEntity.FromSql<Posts>(sqlLatest).AsEnumerable().ToList();
-                var lstFeed = lstTopVote;
-                foreach (var item in lstTopVote)
-                {
-                    lstLatest.Remove(item);
-                }
-                lstFeed.AddRange(lstLatest);
+        //         var lstTopVote = postsEntity.FromSql<Posts>(sqlTopVote).AsEnumerable().ToList();
+        //         var lstLatest = postsEntity.FromSql<Posts>(sqlLatest).AsEnumerable().ToList();
+        //         var lstFeed = lstTopVote;
+        //         foreach (var item in lstTopVote)
+        //         {
+        //             lstLatest.Remove(item);
+        //         }
+        //         lstFeed.AddRange(lstLatest);
 
-                return lstFeed;
-            }
-            catch
-            {
-                return null;
-            }
-        }
+        //         return lstFeed;
+        //     }
+        //     catch
+        //     {
+        //         return null;
+        //     }
+        // }
 
         public IEnumerable<Posts> GetPostsByOwnerUserId(int page, int? userId)
         {
             try
             {
-                var sqlPostsByOwnerUserId = @"SELECT * FROM Posts WHERE OwnerUserId='" + userId + "'";
-                var postsList = postsEntity.FromSql<Posts>(sqlPostsByOwnerUserId).AsEnumerable().ToList();
+                // var sqlPostsByOwnerUserId = @"SELECT * FROM Posts WHERE OwnerUserId='" + userId + "'";
+                // var postsList = postsEntity.FromSql<Posts>(sqlPostsByOwnerUserId).AsEnumerable().ToList();
+                var postsList = postsEntity.Where(w => w.OwnerUserId == userId).ToList();
                 return postsList;
             }
             catch (Exception ex)
@@ -435,19 +469,19 @@ namespace QAP4.Repository
 
         public Posts GetByFriendlyUrl(string friendlyUrl)
         {
-            return postsEntity.FirstOrDefault(w=>w.FriendlyUrl == friendlyUrl);
+            return postsEntity.FirstOrDefault(w => w.FriendlyUrl == friendlyUrl);
         }
 
-        public void UpdateRange(List<Posts> postsList)
-        {
-            postsEntity.UpdateRange(postsList);
-            context.SaveChanges();
-        }
+        // public void UpdateRange(List<Posts> postsList)
+        // {
+        //     postsEntity.UpdateRange(postsList);
+        //     context.SaveChanges();
+        // }
 
-        public void UpdateRange(IEnumerable<Posts> postsList)
-        {
-            postsEntity.UpdateRange(postsList);
-            context.SaveChanges();
-        }
+        // public void UpdateRange(IEnumerable<Posts> postsList)
+        // {
+        //     postsEntity.UpdateRange(postsList);
+        //     context.SaveChanges();
+        // }
     }
 }

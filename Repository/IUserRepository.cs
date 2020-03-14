@@ -8,13 +8,15 @@ namespace QAP4.Repository
 {
     public interface IUserRepository
     {
-        bool Add(Users item);
-        IEnumerable<Users> GetAll();
         Users GetById(int? id);
+        IEnumerable<Users> GetAll();
+
         Users GetByEmailOrPhone(string key);
         Users GetByName(string key);
         Users FindUserByAccountName(string accountName);
         Users CheckLogin(string emailOrPhone, string password);
+        bool Add(Users item);
+
         void Delete(string id);
         void Update(Users item);
 

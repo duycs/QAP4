@@ -9,12 +9,13 @@ using QAP4.Repository;
 using QAP4.Models;
 using QAP4.Middleware;
 using QAP4.Extensions;
+using Microsoft.Extensions.Hosting;
 
 namespace QAP4
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        public Startup(IHostEnvironment env)
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
@@ -44,7 +45,10 @@ namespace QAP4
 
 
             // Add framework services.
-            services.AddMvc();
+            // services.AddMvc();
+            services.AddMvc(options => options.EnableEndpointRouting = false);
+            services.AddControllers(options => options.EnableEndpointRouting = false);
+            //services.AddControllers();
 
             // add DB and repository parttern
             services.AddSingleton<IConfiguration>(Configuration);
@@ -67,16 +71,16 @@ namespace QAP4
             {
                 // Set a short timeout for easy testing.
                 options.IdleTimeout = TimeSpan.FromMinutes(100);
-                options.CookieHttpOnly = true;
-                options.CookieName = ".MyApplication";
+                // options.CookieHttpOnly = true;
+                // options.CookieName = ".MyApplication";
             });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostEnvironment env, ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
+            // loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+            // loggerFactory.AddDebug();
 
             // Add cors befor add MVC
             app.UseCors(AppAllowSpecificOrigins);
@@ -84,16 +88,17 @@ namespace QAP4
             //session
             app.UseSession();
 
+            // app.UseBrowserLink();
+
             //route
-            //if (env.IsDevelopment())
-            //{
-            app.UseDeveloperExceptionPage();
-            app.UseBrowserLink();
-            //}
-            //else
-            //{
-            //    app.UseExceptionHandler("/Home/Error");
-            //}
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
+            }
 
             app.UseStaticFiles();
 
@@ -101,82 +106,12 @@ namespace QAP4
             //app.UseWebSockets();
             //app.UseMiddleware<ChatWebSocketMiddleware>();
 
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-            });
-
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=User}/{action=Index}/{id?}");
-            });
-
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Group}/{action=Index}/{id?}");
-            });
-
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Posts}");
-            });
-
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Question}/{action=Index}/{id?}");
-            });
-
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Tutorial}/{action=Index}/{id?}");
-            });
-
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Test}/{action=Index}/{id?}");
-            });
-
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Tag}/{action=Index}/{id?}");
-            });
-
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Search}/{action=Index}/{id?}");
-            });
-
-
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=x}/{action=Index}/{id?}");
-            });
-
-            //error handler
-            //app.UseMiddleware(typeof(ErrorHandlingMiddleware));
-
             //mvc route
             app.UseMvcWithDefaultRoute();
+            // app.UseEndpoints(endpoints =>
+            // {
+            //     endpoints.MapControllers();
+            // });
         }
     }
 }

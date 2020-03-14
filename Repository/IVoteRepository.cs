@@ -14,7 +14,7 @@ namespace QAP4.Repository
         void Create(Votes model);
         void Update(Votes model);
         void Delete(int? id);
-        void Delete(int? userId, int? postsId, int? voteTypeId);
-        bool CheckUserVoted(int? userId, int? postsId, int? voteTypeId, bool? isOn);
+        // void Delete(int? userId, int? postsId, int? voteTypeId);
+        bool IsUserVoted(int? userId, int? postsId, int? voteTypeId, bool? isOn);
     }
 }

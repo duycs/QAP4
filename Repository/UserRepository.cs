@@ -104,19 +104,30 @@ namespace QAP4.Repository
         //search
         public IEnumerable<Users> SearchInUsers(string key)
         {
-            var sql = @"SELECT *  FROM Users WHERE FREETEXT (DisplayName, '" + key + "') or FREETEXT(Email,'" + key + "') or FREETEXT(Phone,'" + key + "')";
-            return userEntity.FromSql<Users>(sql).AsEnumerable();
+            //var sql = @"SELECT *  FROM Users WHERE FREETEXT (DisplayName, '" + key + "') or FREETEXT(Email,'" + key + "') or FREETEXT(Phone,'" + key + "')";
+            //return userEntity.FromSql<Users>(sql).AsEnumerable();
+            var users = userEntity.Where(w => w.DisplayName.Contains(key) || w.Email.Contains(key) || w.Phone.Contains(key)).ToList();
+            return users;
         }
 
         //get user follwing
+        // TODO: move to UserService
         public IEnumerable<Users> GetUsersFollowing(int userFollowedId)
         {
-            var sql = @"SELECT u.* FROM Users u INNER JOIN Following f ON u.Id=f.FollowingUserId WHERE f.FollowedUserId=" + userFollowedId;
-            return userEntity.FromSql<Users>(sql).OrderBy(o => o.DisplayName).AsEnumerable();
+            //var sql = @"SELECT u.* FROM Users u INNER JOIN Following f ON u.Id=f.FollowingUserId WHERE f.FollowedUserId=" + userFollowedId;
+            //return userEntity.FromSql<Users>(sql).OrderBy(o => o.DisplayName).AsEnumerable();
+            var users = (from a in context.Users
+                         join b in context.Following
+                         on a.Id equals b.FollowingUserId
+                         where b.FollowedUserId == userFollowedId
+                         orderby a.DisplayName
+                         select a).ToList();
+
+            return users;
         }
 
         //common method
-
+        // TODO: remove to EndcodeExtension
         //get hash
         private static string GetHash(string text)
         {
@@ -145,10 +156,10 @@ namespace QAP4.Repository
 
         public Users FindUserByAccountName(string accountName)
         {
-            if(string.IsNullOrEmpty(accountName))
+            if (string.IsNullOrEmpty(accountName))
                 return null;
 
-            var user = userEntity.FirstOrDefault(w=>w.AccountName == accountName);
+            var user = userEntity.FirstOrDefault(w => w.AccountName == accountName);
 
             return user;
         }

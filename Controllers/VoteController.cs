@@ -53,7 +53,7 @@ namespace QAP4.Controllers
             }
 
             //check voted
-            bool userVoted = VoteRepo.CheckUserVoted((int)userId, (int)model.PostsId, (int)model.VoteTypeId, (bool)model.IsOn);
+            bool userVoted = VoteRepo.IsUserVoted((int)userId, (int)model.PostsId, (int)model.VoteTypeId, (bool)model.IsOn);
             if (userVoted)
             {
                 return Json(new MessageView(AppConstants.Warning.WAR_2002));

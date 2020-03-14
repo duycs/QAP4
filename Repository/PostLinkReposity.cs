@@ -23,16 +23,16 @@ namespace QAP4.Repository
             context.SaveChanges();
         }
 
-        public bool CreateOrDelete(int? postId, int? relatedPostId, int? linkTypeId)
+        public bool CreateOrDelete(int? postsId, int? relatedPostsId, int? linkTypeId)
         {
-            var model = postLinkEntity.Where(o => o.PostId.Equals(postId) && o.RelatedPostId.Equals(relatedPostId) && o.LinkTypeId.Equals(linkTypeId)).FirstOrDefault();
+            var model = postLinkEntity.Where(w => w.PostId.Equals(postsId) && w.RelatedPostId.Equals(relatedPostsId) && w.LinkTypeId.Equals(linkTypeId)).FirstOrDefault();
 
             //create
             if (model == null)
             {
                 model = new PostLinks();
-                model.RelatedPostId = (int)relatedPostId;
-                model.PostId = (int)postId;
+                model.RelatedPostId = (int)relatedPostsId;
+                model.PostId = (int)postsId;
                 model.LinkTypeId = (byte)linkTypeId;
                 model.CreationDate = DateTime.Now;
                 postLinkEntity.Add(model);
@@ -48,28 +48,29 @@ namespace QAP4.Repository
             }
         }
 
-        public void Delete(int? postId, int? relatedPostId)
+        public void Delete(int? postsId, int? relatedPostsId)
         {
-            var sql = @"SELECT * FROM PostLinks WHERE RelatedPostId = " + relatedPostId + " AND PostsId = " + postId;
-            var model = postLinkEntity.FromSql<PostLinks>(sql).FirstOrDefault();
-            if (model != null)
+            //var sql = @"SELECT * FROM PostLinks WHERE relatedPostsId = " + relatedPostsId + " AND PostsId = " + postsId;
+            //var model = postLinkEntity.FromSql<PostLinks>(sql).FirstOrDefault();
+            var postLink = postLinkEntity.Where(w=>w.PostId == postsId && w.RelatedPostId == relatedPostsId).FirstOrDefault();
+            if (postLink != null)
             {
-                postLinkEntity.Remove(model);
+                postLinkEntity.Remove(postLink);
                 context.SaveChanges();
             }
         }
 
-        public bool IsPostLinkExist(int? postId, int? relatedPostId)
-        {
-            var result = false;
-            var sql = @"SELECT * FROM PostLinks WHERE RelatedPostId = " + relatedPostId + " AND PostsId = " + postId;
-            var model = postLinkEntity.FromSql<PostLinks>(sql).FirstOrDefault();
-            if (model != null)
-            {
-                result = true;
-            }
-            return result;
-        }
+        // public bool IsPostLinkExist(int? postsId, int? relatedPostsId)
+        // {
+        //     var result = false;
+        //     var sql = @"SELECT * FROM PostLinks WHERE relatedPostsId = " + relatedPostsId + " AND PostsId = " + postsId;
+        //     var model = postLinkEntity.FromSql<PostLinks>(sql).FirstOrDefault();
+        //     if (model != null)
+        //     {
+        //         result = true;
+        //     }
+        //     return result;
+        // }
 
         public void Update(PostLinks model)
         {
