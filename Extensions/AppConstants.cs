@@ -8,6 +8,10 @@ namespace QAP4.Extensions
     public static class AppConstants
     {
 
+
+        // Order
+        public const string ORDER_CREATION_DATE = "CreationDate";
+
         //session
         public static class Session
         {

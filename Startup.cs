@@ -10,6 +10,7 @@ using QAP4.Models;
 using QAP4.Middleware;
 using QAP4.Extensions;
 using Microsoft.Extensions.Hosting;
+using QAP4.Services;
 
 namespace QAP4
 {
@@ -54,6 +55,9 @@ namespace QAP4
             services.AddSingleton<IConfiguration>(Configuration);
             services.AddDbContext<QAPContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             // services.AddDbContext<QAPContext>(options => options.UseMySQL(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
+            services.AddTransient<IPostsService, PostsService>();
+
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IPostsRepository, PostsRepository>();
             services.AddTransient<ITagRepository, TagRepository>();
@@ -62,6 +66,7 @@ namespace QAP4
             services.AddTransient<IQuoteRepository, QuotesRepository>();
             services.AddTransient<IVoteRepository, VoteRepository>();
             services.AddTransient<IPostLinkRepository, PostLinkReposity>();
+            
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
 
             // Adds a default in-memory implementation of IDistributedCache.
@@ -108,10 +113,6 @@ namespace QAP4
 
             //mvc route
             app.UseMvcWithDefaultRoute();
-            // app.UseEndpoints(endpoints =>
-            // {
-            //     endpoints.MapControllers();
-            // });
         }
     }
 }

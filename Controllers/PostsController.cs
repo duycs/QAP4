@@ -7,6 +7,7 @@ using QAP4.Models;
 using QAP4.ViewModels;
 using QAP4.Repository;
 using System.Collections.Generic;
+using QAP4.Services;
 
 namespace QAP4.Controllers
 {
@@ -14,19 +15,25 @@ namespace QAP4.Controllers
     public class PostsController : Controller
     {
         //private QAPContext DBContext;
-        private IPostsRepository PostsRepo { get; set; }
+        //private I_postsServicesitory _postsService { get; set; }
         private ITagRepository TagRepo { get; set; }
         private IPostsTagRepository PostsTagRepo { get; set; }
         private IUserRepository UserRepo { get; set; }
         private IPostLinkRepository PostLinkRepo { get; set; }
 
-        public PostsController(IPostsRepository _postsRepo
-            , ITagRepository _tagRepo
+
+        private readonly IPostsService _postsService;
+
+        public PostsController(IPostsService postsService,
+            //IpostsServicesitory __postsService
+             ITagRepository _tagRepo
             , IPostsTagRepository _postsTag
             , IUserRepository _userRepo
             , IPostLinkRepository _postLinkRepo)
         {
-            PostsRepo = _postsRepo;
+            _postsService = postsService;
+
+            //_postsService = __postsService;
             TagRepo = _tagRepo;
             PostsTagRepo = _postsTag;
             UserRepo = _userRepo;
@@ -57,11 +64,11 @@ namespace QAP4.Controllers
             ViewBag.UserName = HttpContext.Session.GetString(AppConstants.Session.USER_NAME);
             ViewBag.UserId = userId;
 
-            //var PostsLst = PostsRepo.GetPosts(pg, or_b, u_i, po_lst_t, 0);
+            //var PostsLst = _postsService.GetPosts(pg, or_b, u_i, po_lst_t, 0);
 
             // TODO: Migrate
             //var postsUpdatedFriendlyUrl = GetPotsUpdatedFriendlyUrl();
-            //PostsRepo.UpdateRange(postsUpdatedFriendlyUrl);
+            //_postsService.UpdateRange(postsUpdatedFriendlyUrl);
 
             return View("PostsManager");
         }
@@ -71,7 +78,7 @@ namespace QAP4.Controllers
         // GET: /posts?pg=1&or_b=1&po_t=0
         // posts can be a posts normal (1), a question (2) or an answer (postType=3)
         [HttpGet]
-        public IActionResult PostsView([FromQuery]int pg, [FromQuery]string type)
+        public IActionResult PostsView([FromQuery]int pg, [FromQuery]int pageSize = AppConstants.Paging.PAGE_SIZE, [FromQuery]string type = null)
         {
             var userId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
             var user = UserRepo.GetById(userId);
@@ -85,9 +92,9 @@ namespace QAP4.Controllers
                 PostsView postsView = new PostsView();
                 postsView.User = user;
 
-                var postsSimple = PostsRepo.GetPostsByType(pg, 1);
-                var tutorials = PostsRepo.GetPostsByType(pg, 6);
-                var questions = PostsRepo.GetPostsByType(pg, 2);
+                var postsSimple = _postsService.GetPostsByType(pg, pageSize, AppConstants.PostsType.POSTS);
+                var tutorials = _postsService.GetPostsByType(pg, pageSize, AppConstants.PostsType.TUTORIAL);
+                var questions = _postsService.GetPostsByType(pg, pageSize, AppConstants.PostsType.QUESTION);
 
                 //tutorial answer
                 var tutorialsAnswer = tutorials.Where(w => !string.IsNullOrEmpty(w.RelatedPosts));
@@ -95,9 +102,9 @@ namespace QAP4.Controllers
                 //questions answer
                 var questionsAnswer = questions.Where(w => w.AnswerCount > 0);
 
-                postsView.PostsSimple = postsSimple.Where(w=>w.LastActivityDate != null && w.DeletionDate == null);
-                postsView.QuestionsAnswer = questionsAnswer.Where(w=>w.LastActivityDate != null && w.DeletionDate == null);
-                postsView.TutorialsAnswer = tutorialsAnswer.Where(w=>w.LastActivityDate != null && w.DeletionDate == null);
+                postsView.PostsSimple = postsSimple.Where(w => w.LastActivityDate != null && w.DeletionDate == null);
+                postsView.QuestionsAnswer = questionsAnswer.Where(w => w.LastActivityDate != null && w.DeletionDate == null);
+                postsView.TutorialsAnswer = tutorialsAnswer.Where(w => w.LastActivityDate != null && w.DeletionDate == null);
 
                 //tags and users feature
                 postsView.TagsFeature = TagRepo.GetTagsFeature();
@@ -113,8 +120,8 @@ namespace QAP4.Controllers
                 var postsAnswer = new List<Posts>();
 
                 //all posts, these are tutorials or questions
-                var tutorials = PostsRepo.GetPostsByType(pg, 6);
-                var questions = PostsRepo.GetPostsByType(pg, 2);
+                var tutorials = _postsService.GetPostsByType(pg, pageSize, AppConstants.PostsType.TUTORIAL);
+                var questions = _postsService.GetPostsByType(pg, pageSize, AppConstants.PostsType.QUESTION);
 
                 //tutorial wait answer
                 var tutorialsWaitAnswer = tutorials.Where(w => string.IsNullOrEmpty(w.RelatedPosts));
@@ -156,7 +163,7 @@ namespace QAP4.Controllers
         // posts can be a posts normal (1), a question (2) or an answer (postType=3)
         [HttpGet]
         [Route("/posts/questions")]
-        public ActionResult QuestionsView(int pg, [FromQuery]int postsTypeId)
+        public ActionResult QuestionsView([FromQuery]int pg, [FromQuery]int pageSize = 25, [FromQuery]int postsTypeId = 0)
         {
             ViewBag.UserName = HttpContext.Session.GetString(AppConstants.Session.USER_NAME);
             ViewBag.UserId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
@@ -164,15 +171,15 @@ namespace QAP4.Controllers
             var postWaitAnswer = new List<Posts>();
 
             //get posts wait answer
-            var tutorialWaitAnswer = PostsRepo.GetPostsByType(pg, postsTypeId);
+            var tutorialWaitAnswer = _postsService.GetPostsByType(pg, pageSize, postsTypeId);
 
-            var questionWaitAnswer = PostsRepo.GetQuestionsQueue(pg, 0);
+            var questionWaitAnswer = _postsService.GetQuestionsQueue(pg, pageSize);
             postWaitAnswer.AddRange(questionWaitAnswer);
             postWaitAnswer.AddRange(tutorialWaitAnswer);
             questionsView.PostsWaitAnswer = postWaitAnswer;
 
             //get posts answer
-            questionsView.PostsAnswer = PostsRepo.GetAnswersNewest(pg, 0);
+            questionsView.PostsAnswer = _postsService.GetAnswersNewest(pg, 0);
 
             //get tags
             questionsView.TagsFeature = TagRepo.GetTagsFeature();
@@ -207,17 +214,17 @@ namespace QAP4.Controllers
 
 
         [HttpGet("{id:int}")]
-        public IActionResult PostDetail(int id, [FromQuery]int po_br_i)
+        public IActionResult PostDetail(int id, [FromQuery]int pageIndex, [FromQuery]int pageSize = AppConstants.Paging.PAGE_SIZE,
+        [FromQuery]string orderBy = AppConstants.QueryString.CREATION_DATE, [FromQuery]int po_br_i = 0)
         {
             var userId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
             var user = UserRepo.GetById(userId);
             ViewBag.UserName = HttpContext.Session.GetString(AppConstants.Session.USER_NAME);
             ViewBag.UserId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
-            var posts = PostsRepo.GetPosts(id);
+            var posts = _postsService.GetPostsById(id);
+
             if (null == posts)
-            {
                 return BadRequest();
-            }
 
             var postTypeId = (int)posts.PostTypeId;
             if (AppConstants.PostsType.POSTS.Equals(postTypeId))
@@ -225,24 +232,26 @@ namespace QAP4.Controllers
                 var PostsDetailView = new PostsDetailView();
                 PostsDetailView.User = user;
                 PostsDetailView.Posts = posts;
-                PostsDetailView.PostsSameTags = PostsRepo.GetPostsSameTags(id, posts.Tags, postTypeId).Where(w=>w.LastActivityDate != null && w.DeletionDate == null);;
-                PostsDetailView.PostsSameAuthor = PostsRepo.GetPostsSameAuthor(id, posts.OwnerUserId, postTypeId).Where(w=>w.LastActivityDate != null && w.DeletionDate == null);;
+                PostsDetailView.PostsSameTags = _postsService.GetPostsSameTags(pageIndex, pageSize, orderBy, id, posts.Tags, postTypeId);
+                PostsDetailView.PostsSameAuthor = _postsService.GetPostsSameAuthor(pageIndex, pageSize, orderBy, id, (int)posts.OwnerUserId, postTypeId);
                 return View("PostsDetail", PostsDetailView);
             }
-            else if (AppConstants.PostsType.QUESTION.Equals(postTypeId))
+
+            if (AppConstants.PostsType.QUESTION.Equals(postTypeId))
             {
 
                 var questionDetailView = new QuestionDetailView();
                 questionDetailView.User = user;
                 questionDetailView.Posts = posts;
-                questionDetailView.Answers = PostsRepo.GetPosts(0, AppConstants.QueryString.CREATION_DATE, 0, AppConstants.PostsType.ANSWER, id);
+                questionDetailView.Answers = _postsService.GetPosts(pageIndex, pageSize, orderBy, 0, AppConstants.PostsType.ANSWER, id);
 
                 //same question
-                questionDetailView.SameQuestions = PostsRepo.GetSameQuestion(posts.Title, 5);
+                questionDetailView.SameQuestions = _postsService.GetSameQuestion(pageIndex, pageSize, orderBy, posts.Title, 5);
 
                 return View("QuestionDetail", questionDetailView);
             }
-            else if (AppConstants.PostsType.TUTORIAL.Equals(postTypeId))
+
+            if (AppConstants.PostsType.TUTORIAL.Equals(postTypeId))
             {
                 var TutorialView = new TutorialDetailView();
                 int relatedPost = 0;
@@ -273,7 +282,7 @@ namespace QAP4.Controllers
                         {
                             relatedPost = po_br_i;
                         }
-                        TutorialView.Posts = PostsRepo.GetPosts(relatedPost);
+                        TutorialView.Posts = _postsService.GetPostsById(relatedPost);
                         TutorialView.RelatedPosts = relatedPosts;
 
                     }
@@ -281,7 +290,7 @@ namespace QAP4.Controllers
                 else
                 {
                     //select all posts where parternId = this posts
-                    var chirldPosts = PostsRepo.GetChirldPosts(0, id, 6);
+                    var chirldPosts = _postsService.GetChirldPosts(pageIndex, pageSize, orderBy, 0, id, 6);
                     if (chirldPosts != null && chirldPosts.Any())
                     {
 
@@ -300,7 +309,7 @@ namespace QAP4.Controllers
 
                 }
                 //same question
-                //AnswerView.SameQuestions = PostsRepo.GetSameQuestion(posts.Title, 5);
+                //AnswerView.SameQuestions = _postsService.GetSameQuestion(posts.Title, 5);
 
                 return View("TutorialDetail", TutorialView);
             }
@@ -310,28 +319,30 @@ namespace QAP4.Controllers
 
         [HttpGet]
         [Route("/posts/{friendlyUrl}")]
-        public IActionResult GetPostsDetailView(string friendlyUrl, [FromQuery]int po_br_i)
+        public IActionResult GetPostsDetailView(string friendlyUrl, [FromQuery]int pageIndex, [FromQuery]int pageSize = AppConstants.Paging.PAGE_SIZE,
+        [FromQuery]string orderBy = null, [FromQuery]int po_br_i = 0)
         {
-            if(string.IsNullOrEmpty(friendlyUrl))
+            if (string.IsNullOrEmpty(friendlyUrl))
                 return BadRequest();
 
             var userId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
             var user = UserRepo.GetById(userId);
             ViewBag.UserName = HttpContext.Session.GetString(AppConstants.Session.USER_NAME);
             ViewBag.UserId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
-            
-            var posts = PostsRepo.GetByFriendlyUrl(friendlyUrl);
+
+            var posts = _postsService.GetByFriendlyUrl(friendlyUrl);
             if (null == posts)
                 return NoContent();
 
             var postTypeId = (int)posts.PostTypeId;
 
-            if(AppConstants.PostsType.POSTS.Equals(postTypeId) || AppConstants.PostsType.QUESTION.Equals(postTypeId)){
+            if (AppConstants.PostsType.POSTS.Equals(postTypeId) || AppConstants.PostsType.QUESTION.Equals(postTypeId))
+            {
                 var PostsDetailView = new PostsDetailView();
                 PostsDetailView.User = user;
                 PostsDetailView.Posts = posts;
-                PostsDetailView.PostsSameTags = PostsRepo.GetPostsSameTags(posts.Id, posts.Tags, postTypeId).Where(w=>w.LastActivityDate != null && w.DeletionDate == null);;
-                PostsDetailView.PostsSameAuthor = PostsRepo.GetPostsSameAuthor(posts.Id, posts.OwnerUserId, postTypeId).Where(w=>w.LastActivityDate != null && w.DeletionDate == null);;
+                PostsDetailView.PostsSameTags = _postsService.GetPostsSameTags(pageIndex, pageSize, orderBy, posts.Id, posts.Tags, postTypeId);
+                PostsDetailView.PostsSameAuthor = _postsService.GetPostsSameAuthor(pageIndex, pageSize, orderBy, posts.Id, (int)posts.OwnerUserId, postTypeId);
                 return View("PostsDetail", PostsDetailView);
             }
             else if (AppConstants.PostsType.TUTORIAL.Equals(postTypeId))
@@ -365,7 +376,7 @@ namespace QAP4.Controllers
                         {
                             relatedPost = po_br_i;
                         }
-                        TutorialView.Posts = PostsRepo.GetPosts(relatedPost);
+                        TutorialView.Posts = _postsService.GetPostsById(relatedPost);
                         TutorialView.RelatedPosts = relatedPosts;
 
                     }
@@ -373,7 +384,7 @@ namespace QAP4.Controllers
                 else
                 {
                     //select all posts where parternId = this posts
-                    var chirldPosts = PostsRepo.GetChirldPosts(0, posts.Id, 6);
+                    var chirldPosts = _postsService.GetChirldPosts(pageIndex, pageSize, orderBy, 0, posts.Id, 6);
                     if (chirldPosts != null && chirldPosts.Any())
                     {
 
@@ -392,7 +403,7 @@ namespace QAP4.Controllers
 
                 }
                 //same question
-                //AnswerView.SameQuestions = PostsRepo.GetSameQuestion(posts.Title, 5);
+                //AnswerView.SameQuestions = _postsService.GetSameQuestion(posts.Title, 5);
 
                 return View("TutorialDetail", TutorialView);
             }
@@ -403,11 +414,12 @@ namespace QAP4.Controllers
 
         [HttpGet]
         [Route("/posts/list")]
-        public IActionResult PostsList([FromQuery]int pg, [FromQuery]string or_b, [FromQuery]int u_i, [FromQuery]int po_t, [FromQuery]int pr_i)
+        public IActionResult PostsList([FromQuery]int pg, [FromQuery]int pageSize = AppConstants.Paging.PAGE_SIZE, [FromQuery]string or_b = null,
+        [FromQuery]int u_i = 0, [FromQuery]int po_t = 0, [FromQuery]int pr_i = 0)
         {
             ViewBag.UserName = HttpContext.Session.GetString(AppConstants.Session.USER_NAME);
             ViewBag.UserId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
-            var postsList = PostsRepo.GetPosts(pg, or_b, u_i, po_t, pr_i);
+            var postsList = _postsService.GetPosts(pg, pageSize, or_b, u_i, po_t, pr_i);
             return View("PostsList", postsList);
         }
 
@@ -418,42 +430,44 @@ namespace QAP4.Controllers
         // posts can be a posts normal (1), a question (2) or an answer (postType=3)
         [HttpGet]
         [Route("/api/posts")]
-        public IActionResult Posts([FromQuery]int pg, [FromQuery]string or_b, [FromQuery]int u_i, [FromQuery]int po_t, [FromQuery]int pr_i)
+        public IActionResult Posts([FromQuery]int pg, [FromQuery]int pageSize = AppConstants.Paging.PAGE_SIZE, [FromQuery]string or_b = null,
+        [FromQuery]int u_i = 0, [FromQuery]int po_t = 0, [FromQuery]int pr_i = 0)
         {
             // var userId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
             // if(userId != u_i)
             //     return Unauthorized();
 
-            var posts = PostsRepo.GetPosts(pg, or_b, u_i, po_t, pr_i);
-            
+            var posts = _postsService.GetPosts(pg, pageSize, or_b, u_i, po_t, pr_i);
+
             return Ok(posts);
         }
 
-        [HttpGet]
-        [Route("/api/exportBook")]
-        public IEnumerable<Book> ExportBook()
-        {
-            return PostsRepo.GetAll().Where(w => w.DeletionDate == null && w.PostTypeId != 2 && w.PostTypeId != 3).Select(s => new Book
-            {
-                Uid = s.Id,
-                Id = 0,
-                Isbn = 0,
-                CoverImage = s.CoverImg,
-                Description = s.HeadContent,
-                Title = s.Title,
-                Subject = null,
-                Publisher = null,
-                Language = null,
-                PageNumber = 0,
-            }).ToList();
-        }
+        // TODO:
+        // [HttpGet]
+        // [Route("/api/exportBook")]
+        // public IEnumerable<Book> ExportBook()
+        // {
+        //     return _postsService.GetAll().Where(w => w.DeletionDate == null && w.PostTypeId != 2 && w.PostTypeId != 3).Select(s => new Book
+        //     {
+        //         Uid = s.Id,
+        //         Id = 0,
+        //         Isbn = 0,
+        //         CoverImage = s.CoverImg,
+        //         Description = s.HeadContent,
+        //         Title = s.Title,
+        //         Subject = null,
+        //         Publisher = null,
+        //         Language = null,
+        //         PageNumber = 0,
+        //     }).ToList();
+        // }
 
         // GET: /posts/7?t=1
         [HttpGet]
         [Route("/api/posts/{id:int}")]
         public Posts Posts(int id)
         {
-            return PostsRepo.GetPosts(id);
+            return _postsService.GetPostsById(id);
         }
 
 
@@ -538,13 +552,13 @@ namespace QAP4.Controllers
                 //if posts answer, update answer count of parent posts
                 else if (AppConstants.PostsType.ANSWER.Equals(postTypeId))
                 {
-                    var postsParent = PostsRepo.GetPosts(model.ParentId);
+                    var postsParent = _postsService.GetPostsById((int)model.ParentId);
                     if (postsParent != null)
                     {
                         var answerCount = postsParent.AnswerCount;
                         answerCount++;
                         postsParent.AnswerCount = answerCount;
-                        PostsRepo.Update(postsParent);
+                        _postsService.UpdatePosts(postsParent);
                     }
                 }
                 else if (postTypeId != 0)
@@ -562,7 +576,9 @@ namespace QAP4.Controllers
                 }
 
                 // add  posts
-                id = PostsRepo.Add(posts);
+                var postsAdded = _postsService.AddPosts(posts);
+
+                id = postsAdded.Id;
 
                 //handle update parentId in related posts
                 if (relatedPosts.Any())
@@ -585,13 +601,13 @@ namespace QAP4.Controllers
                     // create table of content 
                     string tableOfcontent = GetTableOfContent(posts.Id, relatedPosts);
                     posts.TableContent = tableOfcontent;
-                    PostsRepo.Update(posts);
+                    _postsService.UpdatePosts(posts);
                 }
             }
             else
             {
                 //update
-                posts = PostsRepo.GetPosts(id);
+                posts = _postsService.GetPostsById(id);
                 if (null != posts)
                 {
                     //var oldPosts = posts;
@@ -633,7 +649,9 @@ namespace QAP4.Controllers
                         posts.TableContent = tableOfcontent;
                     }
 
-                    id = PostsRepo.Update(posts);
+                    _postsService.UpdatePosts(posts);
+
+                    id = posts.Id;
 
                     //handler tag
                     //if tag change
@@ -652,12 +670,13 @@ namespace QAP4.Controllers
             return Json(new MessageView(id, AppConstants.Message.MSG_1000));
         }
 
-        private IEnumerable<Posts> GetPotsUpdatedFriendlyUrl(){
-            var postsAll = PostsRepo.GetAll();
+        private IEnumerable<Posts> GetPotsUpdatedFriendlyUrl()
+        {
+            var postsAll = _postsService.GetPosts();
 
             foreach (var posts in postsAll)
             {
-                    // Create slug with title
+                // Create slug with title
                 var friendlyTitle = FriendlyUrlHelpers.GetFriendlyTitle(posts.Title);
 
                 // Create slug identify with ---id
@@ -679,12 +698,12 @@ namespace QAP4.Controllers
             var friendlyWithId = $"{friendlyTitle}---{posts.Id}";
 
             // If title not change then friend url not change
-            if(friendlyWithId == posts.FriendlyUrl)
+            if (friendlyWithId == posts.FriendlyUrl)
                 return;
 
             // Update friendly url for this posts
             posts.FriendlyUrl = friendlyWithId;
-            PostsRepo.Update(posts);
+            _postsService.UpdatePosts(posts);
         }
 
         private void UpdateParentIdChirldPosts(int parentPostsId, List<string> relatedPosts)
@@ -694,11 +713,11 @@ namespace QAP4.Controllers
                 foreach (var chirldPostId in relatedPosts)
                 {
                     int postsId = Int32.Parse(chirldPostId);
-                    var posts = PostsRepo.GetPosts(postsId);
+                    var posts = _postsService.GetPostsById(postsId);
                     if (posts != null)
                     {
                         posts.ParentId = parentPostsId;
-                        PostsRepo.Update(posts);
+                        _postsService.UpdatePosts(posts);
                     }
                 }
             }
@@ -732,13 +751,13 @@ namespace QAP4.Controllers
 
                 case AppConstants.PostsType.ANSWER:
                     //if posts answer, update answer count of parent posts
-                    var parent = PostsRepo.GetPosts(post.ParentId);
+                    var parent = _postsService.GetPostsById((int)post.ParentId);
                     if (parent != null)
                     {
                         var answerCount = parent.AnswerCount;
                         answerCount++;
                         parent.AnswerCount = answerCount;
-                        PostsRepo.Update(parent);
+                        _postsService.UpdatePosts(parent);
                     }
                     break;
                 case AppConstants.PostsType.TUTORIAL:
@@ -780,11 +799,11 @@ namespace QAP4.Controllers
             {
                 return BadRequest();
             }
-            var posts = PostsRepo.GetPosts(id);
+            var posts = _postsService.GetPostsById(id);
             var dateTime = DateTime.Now;
             posts.LastEditDate = dateTime;
             posts.DeletionDate = dateTime;
-            PostsRepo.Update(posts);
+            _postsService.UpdatePosts(posts);
             return Json(new MessageView(id, AppConstants.Message.MSG_1000));
         }
 
@@ -793,7 +812,7 @@ namespace QAP4.Controllers
         [Route("/api/posts/activeOrDeacitve/{id:int}")]
         public ActionResult ActiveOrDeactive(int id)
         {
-            var posts = PostsRepo.GetPosts(id);
+            var posts = _postsService.GetPostsById(id);
             if (null == posts)
             {
                 return BadRequest();
@@ -808,7 +827,7 @@ namespace QAP4.Controllers
             else
                 posts.LastActivityDate = null;
 
-            PostsRepo.Update(posts);
+            _postsService.UpdatePosts(posts);
             return Json(new MessageView(id, AppConstants.Message.MSG_1000));
         }
 
@@ -872,7 +891,7 @@ namespace QAP4.Controllers
             for (int i = 0; i < relatedPosts.Count(); ++i)
             {
                 int postsId = Int32.Parse(relatedPosts[i]);
-                var model = PostsRepo.GetPosts(postsId);
+                var model = _postsService.GetPostsById(postsId);
                 if (model != null)
                 {
                     tableOfContent[i] = model.Title;
