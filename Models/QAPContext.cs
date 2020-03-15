@@ -1,6 +1,8 @@
 ﻿using System;
+using System.IO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.Configuration;
 
 namespace QAP4.Models
 {
@@ -45,6 +47,9 @@ namespace QAP4.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            var config = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json").Build();
+            //optionsBuilder.UseMySQL(config.GetConnectionString("DefaultConnection"));
+             optionsBuilder.UseSqlServer(config.GetConnectionString("DefaultConnection"));
         }
         public QAPContext(DbContextOptions<QAPContext> options) : base(options)
         {

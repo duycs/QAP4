@@ -7,7 +7,7 @@ using Amazon.S3.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 
-namespace QAP4.Extensions
+namespace QAP4.Infrastructure.Helpers.File
 {
     public class AmazonS3Service : IAmazonS3Service
     {

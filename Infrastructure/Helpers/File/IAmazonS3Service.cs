@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace QAP4.Extensions
+namespace QAP4.Infrastructure.Helpers.File
 {
     public interface IAmazonS3Service
     {
