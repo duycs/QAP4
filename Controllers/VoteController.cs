@@ -8,6 +8,7 @@ using QAP4.Repository;
 using QAP4.Models;
 using QAP4.ViewModels;
 using QAP4.Extensions;
+using QAP4.Application.Services;
 
 namespace QAP4.Controllers
 {
@@ -15,15 +16,15 @@ namespace QAP4.Controllers
     [Route("[controller]")]
     public class VoteController : Controller
     {
-        private IPostsRepository PostsRepo { get; set; }
+        private readonly IPostsService _postsService;
         private IVoteRepository VoteRepo { get; set; }
-        private IUserRepository UserRepo { get; set; }
+        private readonly IUserService _userService;
 
-        public VoteController(IPostsRepository _postsRepo, IVoteRepository _voteRepo, IUserRepository _userRepo)
+        public VoteController(IPostsService postsService, IVoteRepository _voteRepo, IUserService userService)
         {
-            PostsRepo = _postsRepo;
+            _postsService = postsService;
             VoteRepo = _voteRepo;
-            UserRepo = _userRepo;
+            _userService = userService;
         }
 
         // GET: /api/vote?po_i=1&vo_t=1&u_i=0
@@ -46,7 +47,7 @@ namespace QAP4.Controllers
             }
 
             var userId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
-            var user = UserRepo.GetById(userId);
+            var user = _userService.GetUserById(userId);
             if (null == user)
             {
                 return Json(new MessageView(AppConstants.Warning.WAR_2003));
@@ -71,7 +72,8 @@ namespace QAP4.Controllers
                 vote.IsOn = model.IsOn;
                 vote.CreationDate = DateTime.Now;
                 VoteRepo.Create(vote);
-            }else
+            }
+            else
             {
                 voteCheck.IsOn = model.IsOn;
                 voteCheck.CreationDate = DateTime.Now;
@@ -79,7 +81,7 @@ namespace QAP4.Controllers
             }
 
             //update voteCount in posts
-            var posts = PostsRepo.GetPosts(model.PostsId);
+            var posts = _postsService.GetPostsById((int)model.PostsId);
             if (posts != null)
             {
                 var count = posts.VoteCount;
@@ -92,7 +94,7 @@ namespace QAP4.Controllers
                     count--;
                 }
                 posts.VoteCount = count;
-                PostsRepo.Update(posts);
+                _postsService.UpdatePosts(posts);
             }
 
             return Json(new MessageView(AppConstants.Message.MSG_1000));

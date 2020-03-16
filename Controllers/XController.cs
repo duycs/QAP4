@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QAP4.Repository;
 using QAP4.Models;
+using QAP4.Application.Services;
 
 namespace QAP4.Controllers
 {
@@ -13,26 +14,25 @@ namespace QAP4.Controllers
     [Route("[controller]")]
     public class XController : Controller
     {
-        private IPostsRepository PostsRepo { get; set; }
-        private ITagRepository TagRepo { get; set; }
+        private readonly IPostsService _postsService;
+        private readonly ITagService _tagService;
         private IPostsTagRepository PostsTagRepo { get; set; }
-        private IUserRepository UserRepo { get; set; }
+        private readonly IUserService _userService;
 
-
-        public XController(IPostsRepository _postsRepo, ITagRepository _tagRepo, IPostsTagRepository _postsTag, IUserRepository _userRepo)
+        public XController(IPostsService postsService, ITagService tagService, IPostsTagRepository _postsTag, IUserService userService)
         {
-            PostsRepo = _postsRepo;
-            TagRepo = _tagRepo;
+            _postsService = postsService;
+            _tagService = tagService;
             PostsTagRepo = _postsTag;
-            UserRepo = _userRepo;
+            _userService = userService;
         }
 
-        // GET: /x/sách
+        // GET: /x/sach
         [HttpGet]
         [Route("{name}")]
         public ActionResult SearchInTags(string name)
         {
-            var result = TagRepo.SearchInTags(name);
+            var result = _tagService.SearchInTags(name);
             return View("X", result);
         }
 

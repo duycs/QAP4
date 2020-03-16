@@ -11,28 +11,33 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using QAP4.ViewModels;
 using Microsoft.Extensions.Configuration;
 using QAP4.Infrastructure.Helpers.File;
+using QAP4.Application.Services;
 
 namespace QAP4.Controllers
 {
     public class UserController : Controller
     {
-        //private QAPContext DBContext;
-        private IUserRepository UserRepo { get; set; }
-        private IPostsRepository PostsRepo { get; set; }
-        private ITagRepository TagRepo { get; set; }
+        private readonly IUserService _userService;
+        private readonly IPostsService _postsService;
+        private readonly ITagService _tagService;
         private IPostsTagRepository PostsTagRepo { get; set; }
 
-        private readonly IConfiguration Configuration;
+        private readonly IConfiguration _configuration;
         private readonly IAmazonS3Service AmazonS3Service;
 
-        public UserController(IConfiguration configuration, IAmazonS3Service amazonS3Service, IPostsRepository _postsRepo, ITagRepository _tagRepo, IPostsTagRepository _postsTag, IUserRepository _userRepo)
+        public UserController(IConfiguration configuration,
+        IAmazonS3Service amazonS3Service,
+        IPostsService postsService,
+        ITagService tagService,
+        IPostsTagRepository _postsTag,
+        IUserService userService)
         {
-            Configuration = configuration;
+            _configuration = configuration;
             AmazonS3Service = amazonS3Service;
-            PostsRepo = _postsRepo;
-            TagRepo = _tagRepo;
+            _postsService = postsService;
+            _tagService = tagService;
             PostsTagRepo = _postsTag;
-            UserRepo = _userRepo;
+            _userService = userService;
         }
 
         // methods for MVC
@@ -42,7 +47,7 @@ namespace QAP4.Controllers
         {
             //TODO: Migrate
             //var users = GetUserUpdatedAccountName();
-            //UserRepo.UpdateRange(users);
+            //_userService.UpdateUserRange(users);
             ViewBag.Screen = sc;
             return View();
         }
@@ -63,7 +68,7 @@ namespace QAP4.Controllers
             {
                 var thatUrl = HttpContext.Session.GetString("thisUrl");
 
-                var user = UserRepo.CheckLogin(item.EmailOrPhone.Trim(), item.Password.Trim());
+                var user = _userService.GetUserIsLogin(item.EmailOrPhone.Trim(), item.Password.Trim());
                 //var sc = item.Screen;
                 if (user != null)
                 {
@@ -126,14 +131,16 @@ namespace QAP4.Controllers
 
             if (ValidateExtensions.IsValidPhone(emailOrPhone))
                 model.Phone = emailOrPhone;
-            else if (ValidateExtensions.IsValidEmail(emailOrPhone)){
+            else if (ValidateExtensions.IsValidEmail(emailOrPhone))
+            {
                 model.Email = emailOrPhone;
                 isUserHaveEmail = true;
             }
 
             // Check email or phone is registed
-            var userRegisted = UserRepo.GetByEmailOrPhone(emailOrPhone);
-            if(userRegisted != null){
+            var userRegisted = _userService.GetUserByEmailOrPhone(emailOrPhone);
+            if (userRegisted != null)
+            {
                 return RedirectToAction("Register", "User", new MessageView("User is registed by this email or phone"));
             }
 
@@ -142,7 +149,8 @@ namespace QAP4.Controllers
             // Create new account
             var accountName = string.Empty;
 
-            if(isUserHaveEmail){
+            if (isUserHaveEmail)
+            {
                 accountName = emailOrPhone.Split('@')[0];
                 user.AccountName = accountName;
             }
@@ -155,15 +163,16 @@ namespace QAP4.Controllers
             user.Password = model.Password;
 
             //add
-            bool success = UserRepo.Add(user);
-            if (success)
+            Users userAdded = _userService.AddUser(user);
+            if (userAdded != null)
             {
                 // Create account if It havent been created
-                if(!isUserHaveEmail && (!string.IsNullOrEmpty(user.FirstName) || !string.IsNullOrEmpty(user.LastName))){
+                if (!isUserHaveEmail && (!string.IsNullOrEmpty(user.FirstName) || !string.IsNullOrEmpty(user.LastName)))
+                {
                     string fullName = $"{user.FirstName} {user.LastName}";
                     accountName = $"{StringExtensions.StringToSlug(fullName)}---{@user.AccountName}";
                     user.AccountName = accountName;
-                    UserRepo.Update(user);
+                    _userService.UpdateUser(user);
                 }
 
                 if (user != null)
@@ -191,21 +200,26 @@ namespace QAP4.Controllers
             }
         }
 
-        private IEnumerable<Users> GetUserUpdatedAccountName(){
-            var users = UserRepo.GetAll();
-            foreach(var user in users){
-                var accountName = string.Empty;
-                if(!string.IsNullOrEmpty(user.Email)){
-                    accountName = user.Email.Split('@')[0];
-                }else if(!string.IsNullOrEmpty(user.FirstName) || !string.IsNullOrEmpty(user.LastName)){
-                    string fullName = $"{user.FirstName} {user.LastName}";
-                    accountName = $"{StringExtensions.StringToSlug(fullName)}---{@user.AccountName}";
-                }
-                user.AccountName = accountName;
-                //UserRepo.Update(user);
-                yield return user;
-            }
-        }
+        // private IEnumerable<Users> GetUserUpdatedAccountName()
+        // {
+        //     var users = _userService.GetAll();
+        //     foreach (var user in users)
+        //     {
+        //         var accountName = string.Empty;
+        //         if (!string.IsNullOrEmpty(user.Email))
+        //         {
+        //             accountName = user.Email.Split('@')[0];
+        //         }
+        //         else if (!string.IsNullOrEmpty(user.FirstName) || !string.IsNullOrEmpty(user.LastName))
+        //         {
+        //             string fullName = $"{user.FirstName} {user.LastName}";
+        //             accountName = $"{StringExtensions.StringToSlug(fullName)}---{@user.AccountName}";
+        //         }
+        //         user.AccountName = accountName;
+        //         //_userService.UpdateUser(user);
+        //         yield return user;
+        //     }
+        // }
 
         // GET: /logout
         [HttpGet("logout")]
@@ -224,144 +238,145 @@ namespace QAP4.Controllers
         }
 
         [HttpGet("users/{id}")]
-        public IActionResult Personal(int id)
+        public IActionResult Personal(int id, [FromQuery]int pageIndex, [FromQuery]int pageSize, [FromQuery]string orderBy)
         {
-            if(id<0)
+            if (id < 0)
                 return BadRequest();
 
-            var user = UserRepo.GetById(id);
-            if(user == null)
+            var user = _userService.GetUserById(id);
+            if (user == null)
                 return NoContent();
 
             var userView = new UsersView();
 
             // Check if current user or other user view profile
             var currentUserId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
-                if(currentUserId == id)
-                    userView.IsCurrentUser = true;
-                else
-                    userView.IsCurrentUser = false;    
+            if (currentUserId == id)
+                userView.IsCurrentUser = true;
+            else
+                userView.IsCurrentUser = false;
 
             userView.User = user;
-            userView.TagsFeature = TagRepo.GetTagsFeature();
-            userView.PostsNewest = PostsRepo.GetPostsSameAuthor(0, id, 1);
-            userView.QuestionsNewest = PostsRepo.GetPostsSameAuthor(0, id, 2);
-            userView.UsersFollowing = UserRepo.GetUsersFollowing(id);
+            userView.TagsFeature = _tagService.GetTagsFeature(5);
+            userView.PostsNewest = _postsService.GetPostsSameAuthor(pageIndex, pageSize, orderBy, 0, id, 1);
+            userView.QuestionsNewest = _postsService.GetPostsSameAuthor(pageIndex, pageSize, orderBy, 0, id, 2);
+            userView.UsersFollowing = _userService.GetUsersFollowing(id);
 
             return View(userView);
         }
 
         [HttpGet]
         [Route("users/@{accountName}")]
-        public IActionResult FindUserByAccountName(string accountName)
+        public IActionResult FindUserByAccountName(string accountName, [FromQuery]int pageIndex, [FromQuery]int pageSize, [FromQuery]string orderBy)
         {
-            if(string.IsNullOrEmpty(accountName))
+            if (string.IsNullOrEmpty(accountName))
                 return BadRequest();
 
-            var user = UserRepo.FindUserByAccountName(accountName);
-            if(user == null)
+            var user = _userService.GetUserByAccountName(accountName);
+            if (user == null)
                 return NoContent();
 
             var userView = new UsersView();
 
             // Check if current user or other user view profile
             var currentUserId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
-        
-            if(currentUserId == user.Id)
+
+            if (currentUserId == user.Id)
                 userView.IsCurrentUser = true;
             else
-                userView.IsCurrentUser = false;    
+                userView.IsCurrentUser = false;
 
             userView.User = user;
-            userView.TagsFeature = TagRepo.GetTagsFeature();
-            userView.PostsNewest = PostsRepo.GetPostsSameAuthor(0, user.Id, 1);
-            userView.QuestionsNewest = PostsRepo.GetPostsSameAuthor(0, user.Id, 2);
+            userView.TagsFeature = _tagService.GetTagsFeature(5);
+            userView.PostsNewest = _postsService.GetPostsSameAuthor(pageIndex, pageSize, orderBy, 0, user.Id, 1);
+            userView.QuestionsNewest = _postsService.GetPostsSameAuthor(pageIndex, pageSize, orderBy, 0, user.Id, 2);
             //userView.TestsNewest=
-            userView.UsersFollowing = UserRepo.GetUsersFollowing(user.Id);
+            userView.UsersFollowing = _userService.GetUsersFollowing(user.Id);
 
             return View("Personal", userView);
         }
 
         // methods for API
 
-        [HttpGet]
-        public IEnumerable<Users> ApiUsers()
-        {
-            return UserRepo.GetAll();
-        }
+        // [HttpGet]
+        // public IEnumerable<Users> ApiUsers()
+        // {
+        //     return UserRepo.GetAll();
+        // }
 
         [HttpGet]
         public IActionResult GetById(int id)
         {
-            var item = UserRepo.GetById(id);
-            if (item == null)
-            {
+            if (id < 1)
+                return BadRequest();
+
+            var user = _userService.GetUserById(id);
+            if (user == null)
                 return NotFound();
-            }
-            return new ObjectResult(item);
+
+            return Ok(user);
         }
 
+        [HttpDelete]
+        public void Delete(string id)
+        {
+            _userService.DeleteUser(id);
+        }
 
 
         //update avatar
         [HttpPost("api/user/{id:int}/avatar")]
         public async Task<IActionResult> UpdateAvatar(int id)
         {
-            try
+            var userId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
+            if (userId != id)
+                return Unauthorized();
+
+            var file = this.Request.Form.Files[0];
+            var imageUrl = string.Empty;
+
+            // File type validation
+            if (!file.ContentType.Contains("image"))
             {
-                var userId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
-                if(userId != id)
-                    return Unauthorized();
-
-                var file = this.Request.Form.Files[0];
-                var imageUrl = string.Empty;
-
-                // File type validation
-                if (!file.ContentType.Contains("image"))
-                {
-                    return StatusCode(500, "image file not found");
-                }
-
-                var bucket = Configuration.GetSection("AWSS3:BucketPostStudy").Value;
-                var imageResponse = await AmazonS3Service.UploadObject(bucket, file);
-
-                if (!imageResponse.Success)
-                {
-                    return StatusCode(500, "can not upload image to S3");
-                }
-                else
-                {
-                    //imageUrl = AmazonS3Service.GeneratePreSignedURL(bucket, imageResponse.FileName);
-                    imageUrl = "https://s3-ap-southeast-1.amazonaws.com" + "/" + bucket + "/" + imageResponse.FileName;
-                }
-
-                if (string.IsNullOrEmpty(imageUrl))
-                {
-                    return BadRequest();
-                }
-
-                var user = UserRepo.GetById(id);
-                if (user == null)
-                {
-                    return NotFound();
-                }
-                user.Avatar = imageUrl;
-                UserRepo.Update(user);
-
-                //update userAvatar in posts
-                UpdateUserAvatarInPosts(user.Id, imageUrl);
-
-                var response = new
-                {
-                    Success = true,
-                    ImageUrl = imageUrl
-                };
-                return Ok(response);
+                return StatusCode(500, "image file not found");
             }
-            catch (Exception ex)
+
+            var bucket = _configuration.GetSection("AWSS3:BucketPostStudy").Value;
+            var imageResponse = await AmazonS3Service.UploadObject(bucket, file);
+
+            if (!imageResponse.Success)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, "can not upload image to S3");
             }
+            else
+            {
+                //imageUrl = AmazonS3Service.GeneratePreSignedURL(bucket, imageResponse.FileName);
+                imageUrl = "https://s3-ap-southeast-1.amazonaws.com" + "/" + bucket + "/" + imageResponse.FileName;
+            }
+
+            if (string.IsNullOrEmpty(imageUrl))
+            {
+                return BadRequest();
+            }
+
+            var user = _userService.GetUserById(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            user.Avatar = imageUrl;
+            _userService.UpdateUser(user);
+
+            //update userAvatar in posts
+            UpdateUserAvatarInPosts(user.Id, imageUrl);
+
+            var response = new
+            {
+                Success = true,
+                ImageUrl = imageUrl
+            };
+            return Ok(response);
+
         }
 
         [HttpPost("api/images/posts/{id:int}/coverimg")]
@@ -379,7 +394,7 @@ namespace QAP4.Controllers
                     return StatusCode(500, "image file not found");
                 }
 
-                var bucket = Configuration.GetSection("AWSS3:BucketPostStudy").Value;
+                var bucket = _configuration.GetSection("AWSS3:BucketPostStudy").Value;
                 var imageResponse = await AmazonS3Service.UploadObject(bucket, file);
 
                 if (!imageResponse.Success)
@@ -397,13 +412,13 @@ namespace QAP4.Controllers
                     return BadRequest();
                 }
 
-                var posts = PostsRepo.GetPosts(id);
+                var posts = _postsService.GetPostsById(id);
                 if (posts == null)
                 {
                     return NotFound();
                 }
                 posts.CoverImg = imageUrl;
-                PostsRepo.Update(posts);
+                _postsService.UpdatePosts(posts);
 
                 var response = new
                 {
@@ -425,7 +440,7 @@ namespace QAP4.Controllers
             try
             {
                 var userId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
-                if(userId != id)
+                if (userId != id)
                     return Unauthorized();
 
                 var file = this.Request.Form.Files[0];
@@ -437,7 +452,7 @@ namespace QAP4.Controllers
                     return StatusCode(500, "image file not found");
                 }
 
-                var bucket = Configuration.GetSection("AWSS3:BucketPostStudy").Value;
+                var bucket = _configuration.GetSection("AWSS3:BucketPostStudy").Value;
                 var imageResponse = await AmazonS3Service.UploadObject(bucket, file);
                 if (!imageResponse.Success)
                 {
@@ -454,13 +469,13 @@ namespace QAP4.Controllers
                     return BadRequest();
                 }
 
-                var user = UserRepo.GetById(id);
+                var user = _userService.GetUserById(id);
                 if (user == null)
                 {
                     return NotFound();
                 }
                 user.BannerImg = imageUrl;
-                UserRepo.Update(user);
+                _userService.UpdateUser(user);
 
                 var response = new
                 {
@@ -480,13 +495,13 @@ namespace QAP4.Controllers
         {
             try
             {
-                var postsByOwnerId = PostsRepo.GetPostsByOwnerUserId(0, userId);
+                var postsByOwnerId = _postsService.GetPostsByOwnerUserId(0, 0, null, userId);
                 if (!postsByOwnerId.Any()) return;
 
                 foreach (var posts in postsByOwnerId)
                 {
                     posts.UserAvatar = userAvatar;
-                    PostsRepo.Update(posts);
+                    _postsService.UpdatePosts(posts);
                 }
             }
             catch (Exception ex)
@@ -496,16 +511,6 @@ namespace QAP4.Controllers
         }
 
         //delete
-        [HttpDelete]
-        public void Delete(string id)
-        {
-            UserRepo.Delete(id);
-        }
 
-        public class UserUpdateInfo
-        {
-            public string Avatar { get; set; }
-            public string Phone { get; set; }
-        }
     }
 }

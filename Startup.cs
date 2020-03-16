@@ -10,7 +10,6 @@ using QAP4.Models;
 using QAP4.Middleware;
 using QAP4.Extensions;
 using Microsoft.Extensions.Hosting;
-using QAP4.Services;
 using QAP4.Infrastructure.CrossCutting;
 
 namespace QAP4
@@ -47,30 +46,11 @@ namespace QAP4
 
 
             // Add framework services.
-            // services.AddMvc();
             services.AddMvc(options => options.EnableEndpointRouting = false);
             services.AddControllers(options => options.EnableEndpointRouting = false);
-            //services.AddControllers();
 
             // add DB and repository parttern
             services.AddSingleton<IConfiguration>(Configuration);
-            //services.AddDbContext<QAPContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-            //services.AddDbContext<QAPContext>(options => options.UseMySQL(Configuration.GetConnectionString("DefaultConnection")));
-
-            //services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
-            //services.AddTransient<IPostsService, PostsService>();
-
-            // services.AddTransient<IUserRepository, UserRepository>();
-            // services.AddTransient<IPostsRepository, PostsRepository>();
-            // services.AddTransient<ITagRepository, TagRepository>();
-            // services.AddTransient<IPostsTagRepository, PostsTagRepository>();
-            // services.AddTransient<ICommentRepository, CommentRepository>();
-            // services.AddTransient<IQuoteRepository, QuotesRepository>();
-            // services.AddTransient<IVoteRepository, VoteRepository>();
-            // services.AddTransient<IPostLinkRepository, PostLinkReposity>();
-
-            //services.AddTransient<IAmazonS3Service, AmazonS3Service>();
-
             RegisterServices(services);
 
             // Adds a default in-memory implementation of IDistributedCache.

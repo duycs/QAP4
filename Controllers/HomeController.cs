@@ -9,24 +9,29 @@ using QAP4.Extensions;
 using QAP4.Models;
 using Microsoft.AspNetCore.Http.Features;
 using QAP4.ViewModels;
+using QAP4.Application.Services;
 
 namespace QAP4.Controllers
 {
     public class HomeController : Controller
     {
-        private IPostsRepository PostsRepo { get; set; }
-        private ITagRepository TagRepo { get; set; }
+        private readonly IPostsService _postsService;
+        private readonly ITagService _tagService;
         private IPostsTagRepository PostsTagRepo { get; set; }
-        private IUserRepository UserRepo { get; set; }
+        private readonly IUserService _userService;
         private IQuoteRepository QuoteRepo { get; set; }
 
 
-        public HomeController(IPostsRepository _postsRepo, ITagRepository _tagRepo, IPostsTagRepository _postsTag, IUserRepository _userRepo, IQuoteRepository _quoteRepo)
+        public HomeController(IPostsService postsService, 
+        ITagService tagService, 
+        IPostsTagRepository _postsTag, 
+        IUserService userService, 
+        IQuoteRepository _quoteRepo)
         {
-            PostsRepo = _postsRepo;
-            TagRepo = _tagRepo;
+            _postsService = postsService;
+            _tagService = tagService;
             PostsTagRepo = _postsTag;
-            UserRepo = _userRepo;
+            _userService = userService;
             QuoteRepo = _quoteRepo;
         }
 
@@ -60,16 +65,18 @@ namespace QAP4.Controllers
             var userId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
             ViewBag.UserName = HttpContext.Session.GetString(AppConstants.Session.USER_NAME);
             ViewBag.UserId = userId;
-            var user = UserRepo.GetById(userId);
+            var user = _userService.GetUserById(userId);
 
 
             HomeView homeView = new HomeView();
             homeView.User = user;
-            int page = 0;
-            homeView.PostsFeed = PostsRepo.GetPostsByCreateDate(page).Where(w=>w.LastActivityDate != null && w.DeletionDate == null);
+            int pageIndex = 0;
+            int pageSize = AppConstants.Paging.PAGE_SIZE;
+
+            homeView.PostsFeed = _postsService.GetPostsByCreateDate(pageIndex, pageSize).Where(w=>w.LastActivityDate != null);
             homeView.Quote = QuoteRepo.GetAutoQuote();
-            homeView.TagsFeature = TagRepo.GetTagsFeature();
-            homeView.UsersFeature = UserRepo.GetUsersFeature();
+            homeView.TagsFeature = _tagService.GetTagsFeature(5);
+            homeView.UsersFeature = _userService.GetUsersFeature(5);
 
             return View(homeView);
         }

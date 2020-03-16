@@ -21,11 +21,11 @@ namespace QAP4.Infrastructure.CrossCutting
             //Infra - repository
             services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
             
-            services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<IPostsRepository, PostsRepository>();
-            services.AddScoped<ITagRepository, TagRepository>();
+            // services.AddScoped<IUserRepository, UserRepository>();
+            // services.AddScoped<IPostsRepository, PostsRepository>();
+            // services.AddScoped<ITagRepository, TagRepository>();
             services.AddScoped<IPostsTagRepository, PostsTagRepository>();
-            services.AddScoped<ICommentRepository, CommentRepository>();
+            // services.AddScoped<ICommentRepository, CommentRepository>();
             services.AddScoped<IQuoteRepository, QuotesRepository>();
             services.AddScoped<IVoteRepository, VoteRepository>();
             services.AddScoped<IPostLinkRepository, PostLinkReposity>();

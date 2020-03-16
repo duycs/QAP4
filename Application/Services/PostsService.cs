@@ -5,7 +5,7 @@ using QAP4.Extensions;
 using QAP4.Models;
 using QAP4.Repository;
 
-namespace QAP4.Services
+namespace QAP4.Application.Services
 {
 
     public class PostsService : IPostsService

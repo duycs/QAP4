@@ -7,112 +7,145 @@ using QAP4.Models;
 using QAP4.Repository;
 using QAP4.ViewModels;
 using QAP4.Extensions;
+using QAP4.Application.Services;
 
 namespace QAP4.Controllers
 {
     [Route("[controller]")]
     public class TagController : Controller
     {
-        //private QAPContext DBContext;
-        private ITagRepository TagRepo { get; set; }
+        private readonly ITagService _tagService;
 
-        public TagController(ITagRepository _repo)
+        public TagController(ITagService tagService)
         {
-            TagRepo = _repo;
+            _tagService = tagService;
         }
-
-
-        //----- methods for API
 
         // GET: /tag/1
         [HttpGet]
         [Route("/tag/{id:int}")]
-        public Tags GetTag(int id)
+        public IActionResult GetTag(int id)
         {
-            return TagRepo.GetTag(id);
+            if (id < 1)
+                return BadRequest();
+
+            var tag = _tagService.GetTagById(id);
+
+            if (tag == null)
+                return NotFound();
+
+            return Ok(tag);
         }
 
         // GET: /tag/sách
         [HttpGet]
         [Route("{name}")]
-        public IEnumerable<Tags> GetTagsByName(string name)
+        public IActionResult GetTagsByName(string name)
         {
-            return TagRepo.GetTagsByName(name);
+            if (string.IsNullOrEmpty(name))
+                return BadRequest();
+
+            var tags = _tagService.GetTagsByName(name);
+
+            if (tags == null)
+                return NotFound();
+
+            return Ok(tags);
         }
 
         // GET: /tag?po=2
         [HttpGet]
         [Route("/tag")]
-        public IEnumerable<Tags> GetTagsByPosts([FromQuery]int po_i)
+        public IActionResult GetTagsByPosts([FromQuery]int po_i)
         {
-            return TagRepo.GetTagsByPosts(po_i);
+            if (po_i < 1)
+                return BadRequest();
+
+            var tags = _tagService.GetTagsByPostsId(po_i);
+
+            if (tags == null)
+                return NotFound();
+
+            return Ok(tags);
         }
 
         // POST: /tag
         [HttpPost]
-        public ActionResult CreateTag([FromBody]Tags model)
+        public ActionResult CreateTag([FromBody]Tags tagViewModel)
         {
-            if (null == model)
-            {
+            if (tagViewModel == null)
                 return BadRequest();
-            }
-            TagRepo.Create(model);
-            return Json(new MessageView(model.Id, AppConstants.Message.MSG_1000));
+
+            var tagAdded = _tagService.AddTag(tagViewModel);
+
+            return Ok(new MessageView(tagAdded.Id, AppConstants.Message.MSG_1000));
         }
 
         // UPDATE: /tag/1
         [HttpPut]
         [Route("/tag/{id:int}")]
-        public ActionResult UpdateTag(int id, [FromBody]Tags model)
+        public ActionResult UpdateTag(int id, [FromBody]Tags tagViewModel)
         {
-            var tag = TagRepo.GetTag(id);
-            if (null == tag)
-            {
+            if (id < 1)
                 return BadRequest();
-            }
-            tag = (Tags)ReflectionExtensions.CopyObjectValue(model, tag);
-            TagRepo.UpdateTag(tag);
-            return Json(new MessageView(id, AppConstants.Message.MSG_1000));
+
+            var tag = _tagService.GetTagById(id);
+
+            if (tag == null)
+                return BadRequest();
+
+            tag = (Tags)ReflectionExtensions.CopyObjectValue(tagViewModel, tag);
+
+            _tagService.UpdateTag(tag);
+
+            return Ok(new MessageView(id, AppConstants.Message.MSG_1000));
         }
 
         // UPDATE: /tag/sách
         [HttpPut]
         [Route("/tag/{name}")]
-        public ActionResult UpdateTagByName(string name, [FromBody]Tags model)
+        public ActionResult UpdateTagByName(string name, [FromBody]Tags tagViewModel)
         {
-            var tag = TagRepo.GetTagByName(name);
-            if (null == tag)
-            {
+            if (string.IsNullOrEmpty(name))
                 return BadRequest();
-            }
-            tag = (Tags)ReflectionExtensions.CopyObjectValue(model, tag);
-            TagRepo.UpdateTag(tag);
-            return Json(new MessageView(tag.Id, AppConstants.Message.MSG_1000));
+
+            var tag = _tagService.GetTagByName(name);
+
+            if (null == tag)
+                return BadRequest();
+
+            tag = (Tags)ReflectionExtensions.CopyObjectValue(tagViewModel, tag);
+            _tagService.UpdateTag(tag);
+
+            return Ok(new MessageView(tag.Id, AppConstants.Message.MSG_1000));
         }
 
         // DELETE: /tag/1
         [HttpDelete("{id:int}")]
         public ActionResult DeleteTag(int id)
         {
-            if (0 == id)
-            {
+            if (id < 1)
                 return BadRequest();
-            }
-            TagRepo.DeleteTag(id);
-            return Json(new MessageView(id, AppConstants.Message.MSG_1000));
+
+            _tagService.DeleteTagById(id);
+
+            return Ok(new MessageView(id, AppConstants.Message.MSG_1000));
         }
 
         // DELETE: /tag/sách
         [HttpDelete("{name}")]
         public ActionResult DeleteTagByName(string name)
         {
-            var tag = TagRepo.GetTagByName(name);
-            if (null == tag)
-            {
+            if (string.IsNullOrEmpty(name))
                 return BadRequest();
-            }
-            TagRepo.DeleteTagByName(name);
-            return Json(new MessageView(tag.Id, AppConstants.Message.MSG_1000));
+
+            var tag = _tagService.GetTagByName(name);
+            if (tag == null)
+                return BadRequest();
+
+            _tagService.DeleteTagByName(name);
+
+            return Ok(new MessageView(tag.Id, AppConstants.Message.MSG_1000));
         }
 
     }

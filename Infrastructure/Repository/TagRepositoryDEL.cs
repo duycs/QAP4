@@ -8,7 +8,7 @@ using QAP4.Extensions;
 
 namespace QAP4.Repository
 {
-    public class TagRepository : ITagRepository
+    public class TagRepository
     {
         private QAPContext context;
         private DbSet<Tags> tagEntity;

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace QAP4.Repository
 {
-    public class PostsRepository : IPostsRepository
+    public class PostsRepository
     {
         private QAPContext context;
         private DbSet<Posts> postsEntity;

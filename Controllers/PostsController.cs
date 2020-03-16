@@ -7,36 +7,29 @@ using QAP4.Models;
 using QAP4.ViewModels;
 using QAP4.Repository;
 using System.Collections.Generic;
-using QAP4.Services;
+using QAP4.Application.Services;
 
 namespace QAP4.Controllers
 {
     [Route("[controller]")]
     public class PostsController : Controller
     {
-        //private QAPContext DBContext;
-        //private I_postsServicesitory _postsService { get; set; }
-        private ITagRepository TagRepo { get; set; }
+        private readonly ITagService _tagService;
         private IPostsTagRepository PostsTagRepo { get; set; }
-        private IUserRepository UserRepo { get; set; }
+        private readonly IUserService _userService;
         private IPostLinkRepository PostLinkRepo { get; set; }
-
-
         private readonly IPostsService _postsService;
 
         public PostsController(IPostsService postsService,
-            //IpostsServicesitory __postsService
-             ITagRepository _tagRepo
-            , IPostsTagRepository _postsTag
-            , IUserRepository _userRepo
-            , IPostLinkRepository _postLinkRepo)
+            ITagService tagService,
+            IPostsTagRepository _postsTag,
+            IUserService userService,
+            IPostLinkRepository _postLinkRepo)
         {
             _postsService = postsService;
-
-            //_postsService = __postsService;
-            TagRepo = _tagRepo;
+            _tagService = tagService;
             PostsTagRepo = _postsTag;
-            UserRepo = _userRepo;
+            _userService = userService;
             PostLinkRepo = _postLinkRepo;
         }
 
@@ -54,7 +47,7 @@ namespace QAP4.Controllers
             HttpContext.Session.SetString("thisUrl", thisUrl);
 
             var userId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
-            var user = UserRepo.GetById(userId);
+            var user = _userService.GetUserById(userId);
 
             if (user == null)
             {
@@ -81,7 +74,7 @@ namespace QAP4.Controllers
         public IActionResult PostsView([FromQuery]int pg, [FromQuery]int pageSize = AppConstants.Paging.PAGE_SIZE, [FromQuery]string type = null)
         {
             var userId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
-            var user = UserRepo.GetById(userId);
+            var user = _userService.GetUserById(userId);
 
             ViewBag.UserName = HttpContext.Session.GetString(AppConstants.Session.USER_NAME);
             ViewBag.UserId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
@@ -107,8 +100,8 @@ namespace QAP4.Controllers
                 postsView.TutorialsAnswer = tutorialsAnswer.Where(w => w.LastActivityDate != null && w.DeletionDate == null);
 
                 //tags and users feature
-                postsView.TagsFeature = TagRepo.GetTagsFeature();
-                postsView.UsersFeature = UserRepo.GetUsersFeature();
+                postsView.TagsFeature = _tagService.GetTagsFeature(5);
+                postsView.UsersFeature = _userService.GetUsersFeature(5);
 
                 return View("Posts", postsView);
             }
@@ -144,8 +137,8 @@ namespace QAP4.Controllers
                 questionsView.PostsAnswer = postsAnswer;
 
                 //tags and users feature
-                questionsView.TagsFeature = TagRepo.GetTagsFeature();
-                questionsView.UsersFeature = UserRepo.GetUsersFeature();
+                questionsView.TagsFeature = _tagService.GetTagsFeature(5);
+                questionsView.UsersFeature = _userService.GetUsersFeature(5);
 
                 //get total posts
                 questionsView.Count = questionsView.PostsAnswer.Count() + questionsView.PostsWaitAnswer.Count();
@@ -182,8 +175,8 @@ namespace QAP4.Controllers
             questionsView.PostsAnswer = _postsService.GetAnswersNewest(pg, 0);
 
             //get tags
-            questionsView.TagsFeature = TagRepo.GetTagsFeature();
-            questionsView.UsersFeature = UserRepo.GetUsersFeature();
+            questionsView.TagsFeature = _tagService.GetTagsFeature(5);
+            questionsView.UsersFeature = _userService.GetUsersFeature(5);
 
             return View("Posts", questionsView);
         }
@@ -199,7 +192,7 @@ namespace QAP4.Controllers
             HttpContext.Session.SetString("thisUrl", thisUrl);
 
             var userId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
-            var user = UserRepo.GetById(userId);
+            var user = _userService.GetUserById(userId);
 
             if (user == null)
             {
@@ -218,7 +211,7 @@ namespace QAP4.Controllers
         [FromQuery]string orderBy = AppConstants.QueryString.CREATION_DATE, [FromQuery]int po_br_i = 0)
         {
             var userId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
-            var user = UserRepo.GetById(userId);
+            var user = _userService.GetUserById(userId);
             ViewBag.UserName = HttpContext.Session.GetString(AppConstants.Session.USER_NAME);
             ViewBag.UserId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
             var posts = _postsService.GetPostsById(id);
@@ -326,7 +319,7 @@ namespace QAP4.Controllers
                 return BadRequest();
 
             var userId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
-            var user = UserRepo.GetById(userId);
+            var user = _userService.GetUserById(userId);
             ViewBag.UserName = HttpContext.Session.GetString(AppConstants.Session.USER_NAME);
             ViewBag.UserId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
 
@@ -489,7 +482,7 @@ namespace QAP4.Controllers
             HttpContext.Session.SetString("thisUrl", thisUrl);
 
             var userId = HttpContext.Session.GetInt32(AppConstants.Session.USER_ID);
-            var user = UserRepo.GetById(userId);
+            var user = _userService.GetUserById(userId);
             int postTypeId = (int)model.PostTypeId;
             if (null == user)
             {
@@ -839,14 +832,14 @@ namespace QAP4.Controllers
             foreach (string tag in tags)
             {
                 //method handler: if tag not exist, create new tag and tag exist then get tag id
-                var tagId = TagRepo.CreateOrGetTagId(userId, tag);
+                var tagId = _tagService.CreateOrGetTagId(userId, tag);
 
                 //method handler: if object exist then remove and return false, not exist then create and return true
                 bool isCreate = PostsTagRepo.CreateOrDelete(postsId, tagId);
 
                 //statistic count tag: is create then is up, do not reverse
                 bool isUp = isCreate;
-                TagRepo.UpdateTagCount(isUp, tagId);
+                _tagService.UpdateTagCount(isUp, tagId);
             }
         }
 

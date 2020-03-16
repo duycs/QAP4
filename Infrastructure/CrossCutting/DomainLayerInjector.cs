@@ -1,6 +1,6 @@
 ﻿
 using Microsoft.Extensions.DependencyInjection;
-using QAP4.Services;
+using QAP4.Application.Services;
 
 namespace QAP4.Infrastructure.CrossCutting
 {
