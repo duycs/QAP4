@@ -17,22 +17,19 @@ namespace QAP4.Controllers
     {
         private readonly IPostsService _postsService;
         private readonly ITagService _tagService;
-        private IPostsTagRepository PostsTagRepo { get; set; }
         private readonly IUserService _userService;
-        private IQuoteRepository QuoteRepo { get; set; }
+        private readonly IRepository<Quotes> _quotesRepository;
 
 
-        public HomeController(IPostsService postsService, 
-        ITagService tagService, 
-        IPostsTagRepository _postsTag, 
-        IUserService userService, 
-        IQuoteRepository _quoteRepo)
+        public HomeController(IPostsService postsService,
+        ITagService tagService,
+        IUserService userService,
+        IRepository<Quotes> quoteRepository)
         {
             _postsService = postsService;
             _tagService = tagService;
-            PostsTagRepo = _postsTag;
             _userService = userService;
-            QuoteRepo = _quoteRepo;
+            _quotesRepository = quoteRepository;
         }
 
 
@@ -46,12 +43,12 @@ namespace QAP4.Controllers
             return View();
         }
 
-        
+
         [HttpGet]
         [Route("@{accountName}")]
         public IActionResult FindUserByAccountName(string accountName)
         {
-            if(string.IsNullOrEmpty(accountName))
+            if (string.IsNullOrEmpty(accountName))
                 return BadRequest();
 
             var thisHost = $"{this.Request.Scheme}://{this.Request.Host}";
@@ -73,8 +70,18 @@ namespace QAP4.Controllers
             int pageIndex = 0;
             int pageSize = AppConstants.Paging.PAGE_SIZE;
 
-            homeView.PostsFeed = _postsService.GetPostsByCreateDate(pageIndex, pageSize).Where(w=>w.LastActivityDate != null);
-            homeView.Quote = QuoteRepo.GetAutoQuote();
+            homeView.PostsFeed = _postsService.GetPostsByCreateDate(pageIndex, pageSize).Where(w => w.LastActivityDate != null);
+
+            //Get auto quote
+            var quotes = _quotesRepository.Table.AsEnumerable().ToList();
+            if (quotes.Any())
+            {
+                int num = new Random().Next(1, quotes.Count());
+                var quote = quotes.FirstOrDefault(o => o.Id.Equals(num));
+
+                homeView.Quote = quote;
+            }
+
             homeView.TagsFeature = _tagService.GetTagsFeature(5);
             homeView.UsersFeature = _userService.GetUsersFeature(5);
 

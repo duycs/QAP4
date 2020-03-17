@@ -15,22 +15,16 @@ namespace QAP4.Controllers
     public class PostsController : Controller
     {
         private readonly ITagService _tagService;
-        private IPostsTagRepository PostsTagRepo { get; set; }
         private readonly IUserService _userService;
-        private IPostLinkRepository PostLinkRepo { get; set; }
         private readonly IPostsService _postsService;
 
         public PostsController(IPostsService postsService,
             ITagService tagService,
-            IPostsTagRepository _postsTag,
-            IUserService userService,
-            IPostLinkRepository _postLinkRepo)
+            IUserService userService)
         {
             _postsService = postsService;
             _tagService = tagService;
-            PostsTagRepo = _postsTag;
             _userService = userService;
-            PostLinkRepo = _postLinkRepo;
         }
 
         // methods for MVC
@@ -835,7 +829,7 @@ namespace QAP4.Controllers
                 var tagId = _tagService.CreateOrGetTagId(userId, tag);
 
                 //method handler: if object exist then remove and return false, not exist then create and return true
-                bool isCreate = PostsTagRepo.CreateOrDelete(postsId, tagId);
+                bool isCreate = _tagService.CreateOrDeletePostsTag(postsId, tagId);
 
                 //statistic count tag: is create then is up, do not reverse
                 bool isUp = isCreate;
@@ -859,7 +853,7 @@ namespace QAP4.Controllers
             foreach (string postId in relatedPosts)
             {
                 int postsId = Int32.Parse(postId);
-                bool isCreate = PostLinkRepo.CreateOrDelete(relatedPostId, postsId, linkTypeId);
+                bool isCreate = _postsService.CreateOrDeletePostsLink(relatedPostId, postsId, linkTypeId);
                 if (isCreate)
                 {
                     //TODO: statistic 

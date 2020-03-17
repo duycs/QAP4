@@ -16,14 +16,14 @@ namespace QAP4.Controllers
     [Route("[controller]")]
     public class VoteController : Controller
     {
+        private readonly IVoteService _voteService;
         private readonly IPostsService _postsService;
-        private IVoteRepository VoteRepo { get; set; }
         private readonly IUserService _userService;
 
-        public VoteController(IPostsService postsService, IVoteRepository _voteRepo, IUserService userService)
+        public VoteController(IVoteService voteService, IPostsService postsService, IUserService userService)
         {
+            _voteService = voteService;
             _postsService = postsService;
-            VoteRepo = _voteRepo;
             _userService = userService;
         }
 
@@ -32,8 +32,11 @@ namespace QAP4.Controllers
         [Route("/api/vote")]
         public IActionResult Get([FromQuery]int po_i, [FromQuery]int vo_t, [FromQuery]int u_i)
         {
-            var votes = VoteRepo.GetVotes(po_i, vo_t, u_i);
-            return Json(votes);
+            if (po_i < 0 && vo_t < 1 && u_i < 1)
+                return BadRequest();
+
+            var votes = _voteService.GetVotes(u_i, po_i, vo_t);
+            return Ok(votes);
         }
 
         // POST: /api/vote
@@ -54,7 +57,7 @@ namespace QAP4.Controllers
             }
 
             //check voted
-            bool userVoted = VoteRepo.IsUserVoted((int)userId, (int)model.PostsId, (int)model.VoteTypeId, (bool)model.IsOn);
+            bool userVoted = _voteService.IsUserVoted((int)userId, (int)model.PostsId, (int)model.VoteTypeId, (bool)model.IsOn);
             if (userVoted)
             {
                 return Json(new MessageView(AppConstants.Warning.WAR_2002));
@@ -62,7 +65,7 @@ namespace QAP4.Controllers
 
             //create or update vote
 
-            var voteCheck = VoteRepo.GetVote((int)userId, (int)model.PostsId, (int)model.VoteTypeId);
+            var voteCheck = _voteService.GetVote((int)userId, (int)model.PostsId, (int)model.VoteTypeId);
             if (voteCheck == null)
             {
                 var vote = new Votes();
@@ -71,13 +74,14 @@ namespace QAP4.Controllers
                 vote.UserId = userId;
                 vote.IsOn = model.IsOn;
                 vote.CreationDate = DateTime.Now;
-                VoteRepo.Create(vote);
+
+                _voteService.AddVote(vote);
             }
             else
             {
                 voteCheck.IsOn = model.IsOn;
                 voteCheck.CreationDate = DateTime.Now;
-                VoteRepo.Update(voteCheck);
+                _voteService.UpdateVote(voteCheck);
             }
 
             //update voteCount in posts

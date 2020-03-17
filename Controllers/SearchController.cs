@@ -16,15 +16,13 @@ namespace QAP4.Controllers
         //private QAPContext DBContext;
         private readonly IPostsService _postsService;
         private readonly ITagService _tagService;
-        private IPostsTagRepository PostsTagRepo { get; set; }
         private readonly IUserService _userService;
 
 
-        public SearchController(IPostsService postsService, ITagService tagService, IPostsTagRepository _postsTag, IUserService userService)
+        public SearchController(IPostsService postsService, ITagService tagService, IUserService userService)
         {
             _postsService = postsService;
             _tagService = tagService;
-            PostsTagRepo = _postsTag;
             _userService = userService;
         }
 

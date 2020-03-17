@@ -13,20 +13,27 @@ namespace QAP4.Controllers
     [Route("[controller]")]
     public class QuoteController : Controller
     {
-        private IQuoteRepository QuoteRepo { get; set; }
+        private readonly IRepository<Quotes> _quotesRepository;
 
-        public QuoteController(IQuoteRepository _repo)
+        public QuoteController(IRepository<Quotes> quotesRepository)
         {
-            QuoteRepo = _repo;
+            _quotesRepository = quotesRepository;
         }
 
         [HttpGet]
         [Route("/api/quotes")]
-        public Quotes GetAutoQuote()
+        public IActionResult GetAutoQuote()
         {
-            return QuoteRepo.GetAutoQuote();
+            var quotes = _quotesRepository.Table.AsEnumerable().ToList();
+            if (!quotes.Any())
+                return NotFound();
+
+            int num = new Random().Next(1, quotes.Count());
+            var quote = quotes.FirstOrDefault(o => o.Id.Equals(num));
+
+            return Ok(quote);
         }
-        
+
 
     }
 }

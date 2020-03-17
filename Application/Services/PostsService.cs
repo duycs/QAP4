@@ -11,10 +11,12 @@ namespace QAP4.Application.Services
     public class PostsService : IPostsService
     {
         private readonly IRepository<Posts> _postsRepository;
+        private readonly IRepository<PostLinks> _postsLinkRepository;
 
-        public PostsService(IRepository<Posts> postsRepository)
+        public PostsService(IRepository<Posts> postsRepository, IRepository<PostLinks> postsLinkRepository)
         {
             _postsRepository = postsRepository;
+            _postsLinkRepository = postsLinkRepository;
         }
 
         public Posts AddPosts(Posts posts)
@@ -482,6 +484,47 @@ namespace QAP4.Application.Services
             //return postsEntity.FirstOrDefault(w => w.FriendlyUrl == friendlyUrl);
             var posts = _postsRepository.Table.Where(w => w.FriendlyUrl == friendlyUrl).FirstOrDefault();
             return posts;
+        }
+
+
+        // PostsLink relation
+        public void AddPostsLink(PostLinks postsLinkViewModel)
+        {
+            var postsLink = postsLinkViewModel;
+            _postsLinkRepository.Insert(postsLink);
+        }
+
+        public bool CreateOrDeletePostsLink(int? postsId, int? relatedPostsId, int? linkTypeId)
+        {
+            var postsLink = _postsLinkRepository.Table.Where(w => w.PostId.Equals(postsId) && w.RelatedPostId.Equals(relatedPostsId) && w.LinkTypeId.Equals(linkTypeId)).FirstOrDefault();
+
+            if (postsLink == null)
+            {
+                var newPostsLink = new PostLinks();
+                newPostsLink.RelatedPostId = (int)relatedPostsId;
+                newPostsLink.PostId = (int)postsId;
+                newPostsLink.LinkTypeId = (byte)linkTypeId;
+                newPostsLink.CreationDate = DateTime.Now;
+                _postsLinkRepository.Insert(newPostsLink);
+
+                return true;
+            }
+            else
+            {
+                _postsLinkRepository.Delete(postsLink);
+                return false;
+            }
+        }
+
+        public void DeletePostsLink(int? postsId, int? relatedPostsId)
+        {
+            var postsLink = _postsLinkRepository.Table.Where(w => w.PostId == postsId && w.RelatedPostId == relatedPostsId).FirstOrDefault();
+            _postsLinkRepository.Delete(postsLink);
+        }
+        public void Update(PostLinks viewModel)
+        {
+            var postsLink = viewModel;
+            _postsLinkRepository.Update(postsLink);
         }
 
     }

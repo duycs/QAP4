@@ -22,12 +22,13 @@ namespace QAP4.Application.Services
             IRepository<Tags> tagRepository,
             IRepository<Posts> postsRepository,
             IRepository<PostsTag> postsTagRepository,
-            IRepository<Following> _followingRepository)
+            IRepository<Following> followingRepository)
         {
             _userRepository = userRepository;
             _tagRepository = tagRepository;
             _postsRepository = postsRepository;
             _postsTagRepository = postsTagRepository;
+            _followingRepository = followingRepository;
         }
 
         public Users AddUser(Users userViewModel)
@@ -96,14 +97,14 @@ namespace QAP4.Application.Services
 
         public IEnumerable<Users> GetUsersFollowing(int userFollowedId)
         {
-            var query = (from a in _userRepository.Table
-                         join b in _followingRepository.Table
-                         on a.Id equals b.FollowingUserId
-                         where b.FollowedUserId == userFollowedId
-                         orderby a.DisplayName
-                         select a).OrderBy(a => a.DisplayName);
+            var query = from a in _userRepository.Table
+                        join b in _followingRepository.Table
+                        on a.Id equals b.FollowingUserId
+                        where b.FollowedUserId == userFollowedId
+                        orderby a.DisplayName
+                        select a;
 
-            return query.ToList();
+            return query.AsEnumerable().OrderBy(a => a.DisplayName).ToList();
         }
 
         public IEnumerable<Users> SearchInUsers(string key)

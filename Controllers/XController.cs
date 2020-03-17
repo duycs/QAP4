@@ -16,14 +16,12 @@ namespace QAP4.Controllers
     {
         private readonly IPostsService _postsService;
         private readonly ITagService _tagService;
-        private IPostsTagRepository PostsTagRepo { get; set; }
         private readonly IUserService _userService;
 
-        public XController(IPostsService postsService, ITagService tagService, IPostsTagRepository _postsTag, IUserService userService)
+        public XController(IPostsService postsService, ITagService tagService, IUserService userService)
         {
             _postsService = postsService;
             _tagService = tagService;
-            PostsTagRepo = _postsTag;
             _userService = userService;
         }
 

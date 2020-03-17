@@ -41,5 +41,14 @@ namespace QAP4.Application.Services
         IEnumerable<Posts> GetPostsByOwnerUserId(int pageIndex, int pageSize, string orderBy, int userId);
 
         Posts GetByFriendlyUrl(string friendlyUrl);
+
+
+        #region  PostsLink relation
+        void AddPostsLink(PostLinks postsLinkViewModel);
+        bool CreateOrDeletePostsLink(int? postsId, int? relatedPostsId, int? linkTypeId);
+        void DeletePostsLink(int? postsId, int? relatedPostsId);
+        void Update(PostLinks viewModel);
+
+        #endregion PostsLink relation 
     }
 }

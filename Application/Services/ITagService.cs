@@ -28,5 +28,12 @@ namespace QAP4.Application.Services
         // TODO: refactor
         int CreateOrGetTagId(int? userId, string name);
 
+
+        // Tag to Posts, use PostsTag relation
+
+        void AddPostsTag(int postsId, int tagId);
+        void DeletePostsTag(int? postsId, int? tagId);
+        bool CreateOrDeletePostsTag(int postsId, int tagId);
+
     }
 }

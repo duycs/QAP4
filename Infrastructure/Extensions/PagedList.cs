@@ -9,7 +9,7 @@ namespace QAP4.Extensions
     /// </summary>
     /// <typeparam name="T">T</typeparam>
     [Serializable]
-    public class PagedList<T> : List<T>, IPagedList<T> 
+    public class PagedList<T> : List<T>, IPagedList<T>
     {
         /// <summary>
         /// Ctor
@@ -20,6 +20,9 @@ namespace QAP4.Extensions
         /// <param name="getOnlyTotalCount">A value in indicating whether you want to load only total number of records. Set to "true" if you don't want to load data from database</param>
         public PagedList(IQueryable<T> source, int pageIndex, int pageSize, bool getOnlyTotalCount = false)
         {
+            if (pageSize == 0)
+                return;
+                
             var total = source.Count();
             TotalCount = total;
             TotalPages = total / pageSize;

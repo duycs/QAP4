@@ -15,6 +15,7 @@ namespace QAP4.Infrastructure.CrossCutting
             services.AddScoped<ICommentService, CommentService>();
             services.AddScoped<ITagService, TagService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IVoteService, VoteService>();
 
             // Application Service
         }

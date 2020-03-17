@@ -20,8 +20,6 @@ namespace QAP4.Controllers
         private readonly IUserService _userService;
         private readonly IPostsService _postsService;
         private readonly ITagService _tagService;
-        private IPostsTagRepository PostsTagRepo { get; set; }
-
         private readonly IConfiguration _configuration;
         private readonly IAmazonS3Service AmazonS3Service;
 
@@ -29,14 +27,12 @@ namespace QAP4.Controllers
         IAmazonS3Service amazonS3Service,
         IPostsService postsService,
         ITagService tagService,
-        IPostsTagRepository _postsTag,
         IUserService userService)
         {
             _configuration = configuration;
             AmazonS3Service = amazonS3Service;
             _postsService = postsService;
             _tagService = tagService;
-            PostsTagRepo = _postsTag;
             _userService = userService;
         }
 

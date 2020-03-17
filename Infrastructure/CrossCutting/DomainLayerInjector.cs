@@ -20,6 +20,7 @@ namespace QAP4.Infrastructure.CrossCutting
 
             // Application Service
             services.AddTransient<PostsService>();
+            services.AddTransient<UserService>();
 
 
             // Domain - Services

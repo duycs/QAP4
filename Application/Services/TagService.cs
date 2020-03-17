@@ -173,5 +173,49 @@ namespace QAP4.Application.Services
             tagId = tag.Id;
             return tagId;
         }
+
+
+        // Tag to Posts, use PostsTag relation
+        public void AddPostsTag(int postsId, int tagId)
+        {
+            var postsTag = _postsTagRepository.Table.Where(o => o.PostsId.Equals(postsId) && o.TagId.Equals(tagId)).FirstOrDefault();
+            if (postsTag != null)
+                return;
+
+            var newPostsTag = new PostsTag();
+            newPostsTag.TagId = tagId;
+            newPostsTag.PostsId = postsId;
+
+            _postsTagRepository.Insert(newPostsTag);
+        }
+
+        public void DeletePostsTag(int? postsId, int? tagId)
+        {
+            var postsTag = _postsTagRepository.Table.Where(o => o.PostsId.Equals(postsId) && o.TagId.Equals(tagId)).FirstOrDefault();
+
+            _postsTagRepository.Delete(postsTag);
+        }
+
+        public bool CreateOrDeletePostsTag(int postsId, int tagId)
+        {
+            var postsTag = _postsTagRepository.Table.Where(o => o.PostsId.Equals(postsId) && o.TagId.Equals(tagId)).FirstOrDefault();
+
+            //create
+            if (postsTag == null)
+            {
+                var newPostsTag = new PostsTag();
+                newPostsTag.TagId = tagId;
+                newPostsTag.PostsId = postsId;
+                _postsTagRepository.Insert(newPostsTag);
+
+                return true;
+            }
+            else
+            {
+                //delele
+                _postsTagRepository.Delete(postsTag);
+                return false;
+            }
+        }
     }
 }
