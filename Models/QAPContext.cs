@@ -48,8 +48,8 @@ namespace QAP4.Models
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var config = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json").Build();
-            //optionsBuilder.UseMySQL(config.GetConnectionString("DefaultConnection"));
-             optionsBuilder.UseSqlServer(config.GetConnectionString("DefaultConnection"));
+            optionsBuilder.UseMySQL(config.GetConnectionString("DefaultConnection"));
+            //optionsBuilder.UseSqlServer(config.GetConnectionString("DefaultConnection"));
         }
         public QAPContext(DbContextOptions<QAPContext> options) : base(options)
         {

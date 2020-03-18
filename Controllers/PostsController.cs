@@ -5,7 +5,6 @@ using QAP4.Extensions;
 using Microsoft.AspNetCore.Http;
 using QAP4.Models;
 using QAP4.ViewModels;
-using QAP4.Repository;
 using System.Collections.Generic;
 using QAP4.Application.Services;
 
@@ -14,11 +13,12 @@ namespace QAP4.Controllers
     [Route("[controller]")]
     public class PostsController : Controller
     {
+        private readonly IPostsService _postsService;
         private readonly ITagService _tagService;
         private readonly IUserService _userService;
-        private readonly IPostsService _postsService;
 
-        public PostsController(IPostsService postsService,
+        public PostsController(
+            IPostsService postsService,
             ITagService tagService,
             IUserService userService)
         {
@@ -27,7 +27,7 @@ namespace QAP4.Controllers
             _userService = userService;
         }
 
-        // methods for MVC
+        #region MVC methods
 
         // GET: /posts/manager?t=1&u=6&p=1
         // t: type of object
@@ -54,7 +54,7 @@ namespace QAP4.Controllers
             //var PostsLst = _postsService.GetPosts(pg, or_b, u_i, po_lst_t, 0);
 
             // TODO: Migrate
-            //var postsUpdatedFriendlyUrl = GetPotsUpdatedFriendlyUrl();
+            // var postsUpdatedFriendlyUrl = GetPotsUpdatedFriendlyUrl();
             //_postsService.UpdateRange(postsUpdatedFriendlyUrl);
 
             return View("PostsManager");
@@ -410,8 +410,10 @@ namespace QAP4.Controllers
             return View("PostsList", postsList);
         }
 
+        #endregion MVC methods
 
-        // methods for API
+
+        #region API methods
 
         // GET: /posts?u=6&t=1&p=1
         // posts can be a posts normal (1), a question (2) or an answer (postType=3)
@@ -886,6 +888,8 @@ namespace QAP4.Controllers
             }
             return String.Join(",", tableOfContent);
         }
+
+        #endregion API methods
 
     }
 
