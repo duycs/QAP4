@@ -16,8 +16,6 @@ namespace QAP4.Controllers
             _commentService = commentService;
         }
 
-        // methods for MVC
-
         // methods for API
         [HttpPost]
         [Route("/api/comments")]

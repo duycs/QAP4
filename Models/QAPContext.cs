@@ -3,6 +3,8 @@ using System.IO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using Pomelo.EntityFrameworkCore.MySql.Storage;
 
 namespace QAP4.Models
 {
@@ -48,7 +50,8 @@ namespace QAP4.Models
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var config = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json").Build();
-            optionsBuilder.UseMySQL(config.GetConnectionString("DefaultConnection"));
+            optionsBuilder.UseMySql(config.GetConnectionString("DefaultConnection"), mySqlOptions => mySqlOptions
+                    .ServerVersion(new ServerVersion(new Version(8, 0, 18), ServerType.MySql)));
             //optionsBuilder.UseSqlServer(config.GetConnectionString("DefaultConnection"));
         }
         public QAPContext(DbContextOptions<QAPContext> options) : base(options)
